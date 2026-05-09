@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ChevronRight, Play } from "lucide-react";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -34,10 +35,12 @@ export default function Hero() {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-              <button className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-full text-lg font-bold transition-all premium-shadow flex items-center justify-center gap-2 group">
-                Começar agora
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
+              <Link href="/dashboard/vehicles/new" className="w-full sm:w-auto">
+                <button className="w-full bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-full text-lg font-bold transition-all premium-shadow flex items-center justify-center gap-2 group">
+                  Começar agora
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </Link>
               <button className="w-full sm:w-auto bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/10 px-8 py-4 rounded-full text-lg font-bold transition-all flex items-center justify-center gap-2">
                 <Play className="w-5 h-5 fill-current" />
                 Ver demonstração

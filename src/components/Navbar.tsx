@@ -65,7 +65,7 @@ export default function Navbar() {
             Entrar
           </Link>
           <Link
-            href="/signup"
+            href="/dashboard/vehicles/new"
             className="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-full text-sm font-semibold transition-all premium-shadow flex items-center gap-2 group"
           >
             Começar Agora
@@ -111,7 +111,7 @@ export default function Navbar() {
                 Entrar
               </Link>
               <Link
-                href="/signup"
+                href="/dashboard/vehicles/new"
                 className="bg-primary text-white p-4 rounded-2xl text-center font-bold"
                 onClick={() => setIsMobileMenuOpen(false)}
               >

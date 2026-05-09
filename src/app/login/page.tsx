@@ -9,7 +9,7 @@ import {
   GoogleAuthProvider 
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { Car, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
+import { Car, Mail, Lock, ArrowRight, AlertCircle, Home } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -63,6 +63,20 @@ export default function LoginPage() {
       {/* Background Orbs */}
       <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/20 rounded-full blur-[120px]"></div>
       <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-secondary/20 rounded-full blur-[120px]"></div>
+
+      {/* Home Button */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="absolute top-8 left-8 z-20"
+      >
+        <Link href="/">
+          <Button variant="ghost" className="gap-2 rounded-full px-4 border border-border/40 bg-card/30 backdrop-blur-md hover:bg-card/50 transition-all">
+            <Home className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold">Voltar para Home</span>
+          </Button>
+        </Link>
+      </motion.div>
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}

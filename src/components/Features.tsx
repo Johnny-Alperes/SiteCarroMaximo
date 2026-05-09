@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Fuel, Settings, Bell, BarChart3, Shield, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const features = [
   {
@@ -106,9 +107,11 @@ export default function Features() {
                 com o Carro Máximo.
               </p>
             </div>
-            <button className="relative z-10 bg-white text-primary px-8 py-4 rounded-full font-bold text-lg hover:scale-105 transition-transform">
-              Criar minha conta agora
-            </button>
+            <Link href="/dashboard/vehicles/new">
+              <button className="relative z-10 bg-white text-primary px-8 py-4 rounded-full font-bold text-lg hover:scale-105 transition-transform">
+                Criar minha conta agora
+              </button>
+            </Link>
             
             {/* Abstract Background Shapes */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
