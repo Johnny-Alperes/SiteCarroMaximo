@@ -202,7 +202,6 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const [activeTab, setActiveTab] = useState("maintenance");
   const [loading, setLoading] = useState(true);
   
-  // Estados para dados sincronizados do App (16 Categorias)
   const [maintenances, setMaintenances] = useState<MaintenanceItem[]>([]);
   const [fuelings, setFuelings] = useState<FuelItem[]>([]);
   const [batteries, setBatteries] = useState<BatteryItem[]>([]);
@@ -227,14 +226,12 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // 1. Fetch Vehicle Info
         const docRef = doc(db, `users/${user.uid}/vehicles`, id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setVehicle({ id: docSnap.id, ...docSnap.data() } as Vehicle);
         }
 
-        // 2. LÓGICA REPLICADA DO APP: Buscar na raiz e filtrar pelo vehicleId
         const fetchCollection = async (colName: string) => {
           try {
             const colRef = collection(db, `users/${user.uid}/${colName}`);
@@ -248,7 +245,6 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           }
         };
 
-        // Carregar todas as 16 sessões em paralelo
         const results = await Promise.all([
           fetchCollection("maintenance"), fetchCollection("fuel"),
           fetchCollection("battery"), fetchCollection("oil"),
@@ -428,7 +424,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center animate-pulse">
             <CarIcon className="w-6 h-6 text-white" />
@@ -446,11 +442,11 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
   if (!vehicle) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <div className="text-center">
-          <CarIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">Veículo não encontrado</h2>
-          <p className="text-slate-500 mb-6">O veículo que você está procurando não existe ou foi removido.</p>
+          <CarIcon className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-white mb-2">Veículo não encontrado</h2>
+          <p className="text-slate-400 mb-6">O veículo que você está procurando não existe ou foi removido.</p>
           <Link href="/dashboard">
             <Button>Voltar para Garagem</Button>
           </Link>
@@ -460,12 +456,12 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   }
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-8 pb-20 bg-slate-950 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <Link 
           href="/dashboard" 
-          className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-blue-400 transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
           Voltar para Garagem
@@ -474,7 +470,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           variant="outline" 
           size="sm" 
           onClick={() => router.push(`/dashboard/vehicles/new?edit=${id}`)}
-          className="gap-2"
+          className="gap-2 text-white border-slate-700 hover:bg-slate-800"
         >
           <Edit className="w-4 h-4" />
           Editar Veículo
@@ -484,29 +480,29 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Info Sidebar */}
         <div className="w-full lg:w-1/3 space-y-6">
-          <Card className="p-8 sticky top-28 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border-slate-200 dark:border-slate-700">
+          <Card className="p-8 sticky top-28 bg-slate-900/50 backdrop-blur-sm border-slate-800">
             <div className="flex items-center gap-4 mb-6">
               <div className="bg-gradient-to-br from-blue-500 to-indigo-500 p-4 rounded-3xl shadow-lg shadow-blue-500/20">
                 <CarIcon className="text-white w-8 h-8" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{vehicle.model}</h1>
-                <p className="text-slate-500 dark:text-slate-400 font-mono text-sm tracking-widest">{vehicle.plate}</p>
+                <h1 className="text-3xl font-bold text-white">{vehicle.model}</h1>
+                <p className="text-slate-400 font-mono text-sm tracking-widest">{vehicle.plate}</p>
               </div>
             </div>
 
-            <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-slate-700">
+            <div className="space-y-4 pt-6 border-t border-slate-800">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-500 dark:text-slate-400">Ano / Modelo</span>
-                <span className="font-bold text-slate-900 dark:text-white">{vehicle.year}</span>
+                <span className="text-sm text-slate-400">Ano / Modelo</span>
+                <span className="font-bold text-white">{vehicle.year}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-500 dark:text-slate-400">Combustível</span>
-                <span className="font-bold text-slate-900 dark:text-white">{vehicle.fuelType}</span>
+                <span className="text-sm text-slate-400">Combustível</span>
+                <span className="font-bold text-white">{vehicle.fuelType}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-500 dark:text-slate-400">Cor</span>
-                <span className="font-bold text-slate-900 dark:text-white">{vehicle.color}</span>
+                <span className="text-sm text-slate-400">Cor</span>
+                <span className="font-bold text-white">{vehicle.color}</span>
               </div>
             </div>
           </Card>
@@ -516,33 +512,33 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         <div className="flex-1 space-y-8">
           {/* Stats Overview */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Card className="p-6 bg-gradient-to-br from-blue-500/5 to-blue-600/5 border-blue-500/20">
+            <Card className="p-6 bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-blue-500/20 rounded-lg text-blue-500">
+                <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400">
                   <DollarSign className="w-5 h-5" />
                 </div>
-                <TrendingUp className="w-4 h-4 text-emerald-500" />
+                <TrendingUp className="w-4 h-4 text-emerald-400" />
               </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Gasto Total</p>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <p className="text-sm text-slate-400">Gasto Total</p>
+              <h3 className="text-2xl font-bold text-white">
                 {totalCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </h3>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 {maintenances.length} serviços + {fuelings.length} abastecimentos
               </p>
             </Card>
             
-            <Card className="p-6 bg-gradient-to-br from-indigo-500/5 to-indigo-600/5 border-indigo-500/20">
+            <Card className="p-6 bg-gradient-to-br from-indigo-500/10 to-indigo-600/10 border-indigo-500/20">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-500">
+                <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400">
                   <Calendar className="w-5 h-5" />
                 </div>
               </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Última Atividade</p>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+              <p className="text-sm text-slate-400">Última Atividade</p>
+              <h3 className="text-2xl font-bold text-white">
                 {lastActivity()}
               </h3>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 Clique na aba para ver detalhes
               </p>
             </Card>
@@ -559,7 +555,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                     "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap",
                     activeTab === tab.id 
                       ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/30" 
-                      : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-500"
+                      : "bg-slate-900 border border-slate-700 text-slate-400 hover:border-blue-500 hover:text-white"
                   )}
                 >
                   {tab.icon}
@@ -568,33 +564,33 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               ))}
             </div>
 
-            <Card className="overflow-hidden border-slate-200 dark:border-slate-700">
-              <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between bg-white/30 dark:bg-slate-800/30">
-                <h3 className="font-bold text-slate-900 dark:text-white">
+            <Card className="overflow-hidden border-slate-800 bg-slate-900">
+              <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+                <h3 className="font-bold text-white">
                   Registros de {tabs.find(t => t.id === activeTab)?.label}
                 </h3>
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" className="text-slate-400 border-slate-700 hover:text-white hover:bg-slate-800">
                   Ver Histórico Completo
                 </Button>
               </div>
               
-              <div className="divide-y divide-slate-200 dark:divide-slate-700">
+              <div className="divide-y divide-slate-800">
                 {getActiveData().map((item: any) => (
-                  <div key={item.id} className="p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                  <div key={item.id} className="p-6 flex items-center justify-between hover:bg-slate-800/50 transition-colors">
                     <div className="flex items-center gap-4">
-                      <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 text-blue-500">
+                      <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 text-blue-400">
                         {getTabIcon(activeTab)}
                       </div>
                       <div>
-                        <p className="font-bold text-slate-900 dark:text-white">
+                        <p className="font-bold text-white">
                           {getItemName(item, activeTab)}
                         </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                        <p className="text-xs text-slate-400">
                           {getItemDate(item, activeTab)}
                         </p>
                       </div>
                     </div>
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                    <span className="font-bold text-emerald-400">
                       {getItemPrice(item, activeTab).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </span>
                   </div>
@@ -602,14 +598,14 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
                 {getActiveData().length === 0 && (
                   <div className="p-12 text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto mb-4">
                       {getTabIcon(activeTab)}
                     </div>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm italic">
+                    <p className="text-slate-400 text-sm italic">
                       Nenhum registro de {tabs.find(t => t.id === activeTab)?.label?.toLowerCase()} encontrado para este veículo.
                     </p>
-                    <p className="text-slate-400 dark:text-slate-500 text-xs mt-2">
-              Adicione pelo aplicativo Carro Máximo para ver aqui
+                    <p className="text-slate-500 text-xs mt-2">
+                      Adicione pelo aplicativo Carro Máximo para ver aqui
                     </p>
                   </div>
                 )}
