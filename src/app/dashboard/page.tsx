@@ -94,7 +94,7 @@ export default function DashboardPage() {
           </Link>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {vehicles.map((vehicle, index) => (
             <motion.div
               key={vehicle.id}
@@ -102,49 +102,39 @@ export default function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card className="group overflow-hidden flex flex-col h-full border-border/40 hover:border-primary/30 transition-all">
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-6">
-                    <div className="bg-primary/10 p-3 rounded-2xl group-hover:bg-primary group-hover:text-white transition-all">
-                      <CarIcon className="w-6 h-6" />
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs font-bold uppercase tracking-widest text-foreground/40">Placa</span>
-                      <p className="font-mono font-bold text-sm bg-white/5 px-2 py-1 rounded border border-border">
-                        {vehicle.plate}
-                      </p>
-                    </div>
+              <Card className="group overflow-hidden">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="bg-primary/10 p-3 rounded-2xl group-hover:bg-primary group-hover:text-white transition-all">
+                    <CarIcon className="w-6 h-6" />
                   </div>
-
-                  <div className="flex items-end justify-between mb-6">
-                    <div>
-                      <h3 className="text-3xl font-bold mb-2">{vehicle.model}</h3>
-                      <div className="flex items-center gap-4 text-sm text-foreground/60">
-                        <div className="flex items-center gap-1.5">
-                          <Calendar className="w-4 h-4" />
-                          {vehicle.year}
-                        </div>
-                        <div className="w-1 h-1 bg-border rounded-full"></div>
-                        <div className="flex items-center gap-1.5">
-                          <Fuel className="w-4 h-4" />
-                          {vehicle.fuelType}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <Link href={`/dashboard/vehicles/${vehicle.id}`}>
-                      <Button size="sm" variant="ghost" className="gap-2 text-primary hover:text-primary hover:bg-primary/5">
-                        Detalhes
-                        <ChevronRight className="w-4 h-4" />
-                      </Button>
-                    </Link>
+                  <div className="text-right">
+                    <span className="text-xs font-bold uppercase tracking-widest text-foreground/40">Placa</span>
+                    <p className="font-mono font-bold text-sm bg-white/5 px-2 py-1 rounded border border-border">
+                      {vehicle.plate}
+                    </p>
                   </div>
                 </div>
 
-                <div className="mt-auto border-t border-border/50 bg-black/20 p-6">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-4">Ações Rápidas</p>
-                  <QuickActions vehicleId={vehicle.id} compact={true} />
+                <h3 className="text-2xl font-bold mb-4">{vehicle.model}</h3>
+
+                <div className="flex items-center gap-4 text-sm text-foreground/60 mb-6">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4" />
+                    {vehicle.year}
+                  </div>
+                  <div className="w-1 h-1 bg-border rounded-full"></div>
+                  <div className="flex items-center gap-1.5">
+                    <Fuel className="w-4 h-4" />
+                    {vehicle.fuelType}
+                  </div>
                 </div>
+
+                <Link href={`/dashboard/vehicles/${vehicle.id}`}>
+                  <Button variant="outline" className="w-full justify-between group/btn">
+                    Ver detalhes
+                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
               </Card>
             </motion.div>
           ))}

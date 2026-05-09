@@ -6,11 +6,13 @@ import {
   doc, 
   getDoc, 
   collection, 
+  getDocs,
   query, 
   where, 
   onSnapshot,
   orderBy
 } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -23,22 +25,22 @@ import {
   FileText,
   TrendingUp,
   Calendar,
-  DollarSign
+  DollarSign,
+  Car as CarIcon,
+  ChevronRight,
+  Battery,
+  Droplet
 } from "lucide-react";
 import Link from "next/link";
 import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
   ResponsiveContainer,
   AreaChart,
-  Area
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip
 } from "recharts";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
 interface Vehicle {
   id: string;
@@ -54,89 +56,165 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [activeTab, setActiveTab] = useState("maintenance");
   const [loading, setLoading] = useState(true);
+  
+  // Estados para dados sincronizados do App (16 Categorias)
   const [maintenances, setMaintenances] = useState<any[]>([]);
   const [fuelings, setFuelings] = useState<any[]>([]);
+  const [batteries, setBatteries] = useState<any[]>([]);
+  const [oils, setOils] = useState<any[]>([]);
+  const [defects, setDefects] = useState<any[]>([]);
+  const [filters, setFilters] = useState<any[]>([]);
+  const [revisions, setRevisions] = useState<any[]>([]);
+  const [tires, setTires] = useState<any[]>([]);
+  const [alignments, setAlignments] = useState<any[]>([]);
+  const [acRecords, setAcRecords] = useState<any[]>([]);
+  const [washRecords, setWashRecords] = useState<any[]>([]);
+  const [travels, setTravels] = useState<any[]>([]);
+  const [calibrations, setCalibrations] = useState<any[]>([]);
+  const [licensings, setLicensings] = useState<any[]>([]);
+  const [fines, setFines] = useState<any[]>([]);
+  const [ipvas, setIpvas] = useState<any[]>([]);
   
   const router = useRouter();
 
   useEffect(() => {
     if (!id) return;
 
-    const user = auth.currentUser;
-    if (!user) return;
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // 1. Fetch Vehicle Info
+        const docRef = doc(db, `users/${user.uid}/vehicles`, id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setVehicle({ id: docSnap.id, ...docSnap.data() } as Vehicle);
+        }
 
-    // Fetch Vehicle Info
-    const fetchVehicle = async () => {
-      const docRef = doc(db, `users/${user.uid}/vehicles`, id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setVehicle({ id: docSnap.id, ...docSnap.data() } as Vehicle);
+        // 2. LÓGICA REPLICADA DO APP: Buscar na raiz e filtrar pelo vehicleId
+        const fetchCollection = async (colName: string) => {
+          try {
+            const colRef = collection(db, `users/${user.uid}/${colName}`);
+            const snapshot = await getDocs(colRef);
+            return snapshot.docs
+              .map(doc => ({ id: doc.id, ...doc.data() }))
+              .filter((item: any) => item.vehicleId === id);
+          } catch (e) {
+            console.error(`Erro ao buscar ${colName}:`, e);
+            return [];
+          }
+        };
+
+        // Carregar todas as 16 sessões em paralelo
+        const results = await Promise.all([
+          fetchCollection("maintenance"), fetchCollection("fuel"),
+          fetchCollection("battery"), fetchCollection("oil"),
+          fetchCollection("defects"), fetchCollection("filters"),
+          fetchCollection("revision"), fetchCollection("tires_records"),
+          fetchCollection("alignment"), fetchCollection("ac"),
+          fetchCollection("wash"), fetchCollection("travel"),
+          fetchCollection("calibration"), fetchCollection("licensing"),
+          fetchCollection("fines"), fetchCollection("ipva")
+        ]);
+
+        setMaintenances(results[0]); setFuelings(results[1]);
+        setBatteries(results[2]); setOils(results[3]);
+        setDefects(results[4]); setFilters(results[5]);
+        setRevisions(results[6]); setTires(results[7]);
+        setAlignments(results[8]); setAcRecords(results[9]);
+        setWashRecords(results[10]); setTravels(results[11]);
+        setCalibrations(results[12]); setLicensings(results[13]);
+        setFines(results[14]); setIpvas(results[15]);
+        setLoading(false);
       }
-      setLoading(false);
-    };
-
-    fetchVehicle();
-
-    // Fetch Maintenance
-    const qM = query(
-      collection(db, `users/${user.uid}/maintenance`), 
-      where("vehicleId", "==", id),
-      orderBy("date", "desc")
-    );
-    const unsubM = onSnapshot(qM, (snapshot) => {
-      setMaintenances(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
 
-    // Fetch Fuel
-    const qF = query(
-      collection(db, `users/${user.uid}/fuel`), 
-      where("vehicleId", "==", id),
-      orderBy("date", "desc")
-    );
-    const unsubF = onSnapshot(qF, (snapshot) => {
-      setFuelings(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
-
-    return () => {
-      unsubM();
-      unsubF();
-    };
+    return () => unsubscribeAuth();
   }, [id]);
 
-  if (loading) return <div className="p-20 text-center">Carregando...</div>;
+  if (loading) return <div className="p-20 text-center">Carregando dados do veículo...</div>;
   if (!vehicle) return <div className="p-20 text-center">Veículo não encontrado.</div>;
 
-  // Chart Data Mockup (would be calculated from data)
-  const chartData = [
-    { name: "Jan", total: 400 },
-    { name: "Fev", total: 300 },
-    { name: "Mar", total: 600 },
-    { name: "Abr", total: 800 },
-    { name: "Mai", total: 500 },
-    { name: "Jun", total: 700 },
+  const tabs = [
+    { id: "maintenance", label: "Serviços", icon: <Settings className="w-4 h-4" /> },
+    { id: "fuel", label: "Abastecimento", icon: <Fuel className="w-4 h-4" /> },
+    { id: "battery", label: "Bateria", icon: <Battery className="w-4 h-4" /> },
+    { id: "oil", label: "Óleo", icon: <Droplet className="w-4 h-4" /> },
+    { id: "defects", label: "Defeitos", icon: <AlertTriangle className="w-4 h-4" /> },
+    { id: "filters", label: "Filtros", icon: <Filter className="w-4 h-4" /> },
+    { id: "revision", label: "Revisões", icon: <ClipboardCheck className="w-4 h-4" /> },
+    { id: "tires_records", label: "Pneus", icon: <Disc className="w-4 h-4" /> },
+    { id: "alignment", label: "Alinhamentos", icon: <Compass className="w-4 h-4" /> },
+    { id: "ac", label: "Ar-Condicionado", icon: <Wind className="w-4 h-4" /> },
+    { id: "wash", label: "Lavagem", icon: <Waves className="w-4 h-4" /> },
+    { id: "travel", label: "Viagem", icon: <Map className="w-4 h-4" /> },
+    { id: "calibration", label: "Calibragem", icon: <Gauge className="w-4 h-4" /> },
+    { id: "licensing", label: "Licenciamento", icon: <CreditCard className="w-4 h-4" /> },
+    { id: "fines", label: "Multas", icon: <Ban className="w-4 h-4" /> },
+    { id: "ipva", label: "IPVA", icon: <FileText className="w-4 h-4" /> },
   ];
 
-  const tabs = [
-    { id: "maintenance", label: "Manutenções", icon: <Settings className="w-4 h-4" /> },
-    { id: "fuel", label: "Abastecimentos", icon: <Fuel className="w-4 h-4" /> },
-    { id: "fines", label: "Multas", icon: <AlertTriangle className="w-4 h-4" /> },
-    { id: "ipva", label: "IPVA/Licenc.", icon: <FileText className="w-4 h-4" /> },
-  ];
+  const getActiveData = () => {
+    switch (activeTab) {
+      case "maintenance": return maintenances;
+      case "fuel": return fuelings;
+      case "battery": return batteries;
+      case "oil": return oils;
+      case "defects": return defects;
+      case "filters": return filters;
+      case "revision": return revisions;
+      case "tires_records": return tires;
+      case "alignment": return alignments;
+      case "ac": return acRecords;
+      case "wash": return washRecords;
+      case "travel": return travels;
+      case "calibration": return calibrations;
+      case "licensing": return licensings;
+      case "fines": return fines;
+      case "ipva": return ipvas;
+      default: return [];
+    }
+  };
+
+  const getTabIcon = (tabId: string) => {
+    switch (tabId) {
+      case 'maintenance': return <Settings className="w-4 h-4" />;
+      case 'fuel': return <Fuel className="w-4 h-4" />;
+      case 'battery': return <Battery className="w-4 h-4" />;
+      case 'oil': return <Droplet className="w-4 h-4" />;
+      case 'defects': return <AlertTriangle className="w-4 h-4" />;
+      case 'filters': return <Filter className="w-4 h-4" />;
+      case 'revision': return <ClipboardCheck className="w-4 h-4" />;
+      case 'tires_records': return <Disc className="w-4 h-4" />;
+      case 'alignment': return <Compass className="w-4 h-4" />;
+      case 'ac': return <Wind className="w-4 h-4" />;
+      case 'wash': return <Waves className="w-4 h-4" />;
+      case 'travel': return <Map className="w-4 h-4" />;
+      case 'calibration': return <Gauge className="w-4 h-4" />;
+      case 'licensing': return <CreditCard className="w-4 h-4" />;
+      case 'fines': return <Ban className="w-4 h-4" />;
+      case 'ipva': return <FileText className="w-4 h-4" />;
+      default: return <FileText className="w-4 h-4" />;
+    }
+  };
 
   return (
     <div className="space-y-8 pb-20">
-      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-foreground/60 hover:text-primary transition-colors">
-        <ChevronLeft className="w-4 h-4" />
-        Voltar
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-foreground/60 hover:text-primary transition-colors">
+          <ChevronLeft className="w-4 h-4" />
+          Voltar para Garagem
+        </Link>
+        <Button variant="outline" size="sm" onClick={() => router.push(`/dashboard/vehicles/new?edit=${id}`)}>
+          Editar Veículo
+        </Button>
+      </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Info Sidebar */}
         <div className="w-full lg:w-1/3 space-y-6">
-          <Card className="p-8 sticky top-28">
+          <Card className="p-8 sticky top-28 bg-card/50 backdrop-blur-sm border-border/40">
             <div className="flex items-center gap-4 mb-6">
-              <div className="bg-primary p-4 rounded-3xl">
-                <Settings className="text-white w-8 h-8" />
+              <div className="bg-primary p-4 rounded-3xl shadow-lg shadow-primary/20">
+                <CarIcon className="text-white w-8 h-8" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold">{vehicle.model}</h1>
@@ -144,9 +222,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               </div>
             </div>
 
-            <div className="space-y-4 pt-6 border-t border-border">
+            <div className="space-y-4 pt-6 border-t border-border/50">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-foreground/60">Ano</span>
+                <span className="text-sm text-foreground/60">Ano / Modelo</span>
                 <span className="font-bold">{vehicle.year}</span>
               </div>
               <div className="flex justify-between items-center">
@@ -158,10 +236,6 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                 <span className="font-bold">{vehicle.color}</span>
               </div>
             </div>
-
-            <Button className="w-full mt-8" variant="outline">
-              Editar Veículo
-            </Button>
           </Card>
         </div>
 
@@ -176,8 +250,11 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                 </div>
                 <TrendingUp className="w-4 h-4 text-emerald-500" />
               </div>
-              <p className="text-sm text-foreground/60">Gasto Total (30 dias)</p>
-              <h3 className="text-2xl font-bold">R$ 1.240,50</h3>
+              <p className="text-sm text-foreground/60">Gasto Total em Serviços</p>
+              <h3 className="text-2xl font-bold">
+                R$ {(maintenances.reduce((acc, m) => acc + (Number(m.price) || 0), 0) + 
+                     fuelings.reduce((acc, f) => acc + (Number(f.totalPrice) || 0), 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </h3>
             </Card>
             <Card className="p-6 bg-indigo-500/5 border-indigo-500/10">
               <div className="flex items-center justify-between mb-4">
@@ -185,39 +262,16 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                   <Calendar className="w-5 h-5" />
                 </div>
               </div>
-              <p className="text-sm text-foreground/60">Próxima Revisão</p>
-              <h3 className="text-2xl font-bold">15 Jul 2026</h3>
+              <p className="text-sm text-foreground/60">Última Atividade</p>
+              <h3 className="text-2xl font-bold">
+                {maintenances[0]?.date || fuelings[0]?.date || "Nenhuma"}
+              </h3>
             </Card>
           </div>
 
-          {/* Chart Section */}
-          <Card className="p-8">
-            <h3 className="text-lg font-bold mb-6">Histórico de Gastos Mensais</h3>
-            <div className="h-[250px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1f1f1f" />
-                  <XAxis dataKey="name" stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: "#0a0a0a", border: "1px solid #1f1f1f", borderRadius: "12px" }}
-                    itemStyle={{ color: "#fff" }}
-                  />
-                  <Area type="monotone" dataKey="total" stroke="#6366f1" fillOpacity={1} fill="url(#colorTotal)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
-
           {/* Tabs Section */}
           <div className="space-y-6">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-hide">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
@@ -225,59 +279,43 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                   className={cn(
                     "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap",
                     activeTab === tab.id 
-                      ? "bg-primary text-white premium-shadow" 
+                      ? "bg-primary text-white shadow-lg shadow-primary/30" 
                       : "bg-card border border-border text-foreground/60 hover:border-primary/40"
                   )}
                 >
-                  {tab.icon}
+                  {getTabIcon(tab.id)}
                   {tab.label}
                 </button>
               ))}
             </div>
 
-            <Card className="p-0 overflow-hidden">
-              <div className="p-6 border-b border-border flex items-center justify-between">
-                <h3 className="font-bold">Lista de Registros</h3>
-                <Button size="sm">
-                  <Plus className="w-4 h-4" />
-                  Novo Registro
-                </Button>
+            <Card className="p-0 overflow-hidden border-border/40">
+              <div className="p-6 border-b border-border flex items-center justify-between bg-card/30">
+                <h3 className="font-bold">Registros de {tabs.find(t => t.id === activeTab)?.label}</h3>
+                <Link href={`/dashboard/history?category=${activeTab === 'maintenance' ? 'servicos' : activeTab}&vehicleId=${id}`}>
+                  <Button size="sm" variant="outline">Ver Histórico Detalhado</Button>
+                </Link>
               </div>
               
               <div className="divide-y divide-border">
-                {activeTab === "maintenance" && maintenances.map((m) => (
-                  <div key={m.id} className="p-6 flex items-center justify-between hover:bg-white/5 transition-colors">
+                {getActiveData().map((item: any) => (
+                  <div key={item.id} className="p-6 flex items-center justify-between hover:bg-white/5 transition-colors">
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-blue-500/10 rounded-2xl">
-                        <Settings className="w-5 h-5 text-blue-500" />
+                      <div className={`p-3 rounded-2xl bg-primary/10 text-primary`}>
+                        {getTabIcon(activeTab)}
                       </div>
                       <div>
-                        <p className="font-bold">{m.name}</p>
-                        <p className="text-xs text-foreground/40">{m.date}</p>
+                        <p className="font-bold">{item.name || item.brand || item.descricao || (item.liters ? `${item.liters}L` : "Registro")}</p>
+                        <p className="text-xs text-foreground/40">{item.date || item.data || "---"}</p>
                       </div>
                     </div>
-                    <span className="font-bold">R$ {m.price}</span>
-                  </div>
-                ))}
-                
-                {activeTab === "fuel" && fuelings.map((f) => (
-                  <div key={f.id} className="p-6 flex items-center justify-between hover:bg-white/5 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-emerald-500/10 rounded-2xl">
-                        <Fuel className="w-5 h-5 text-emerald-500" />
-                      </div>
-                      <div>
-                        <p className="font-bold">{f.liters} Litros</p>
-                        <p className="text-xs text-foreground/40">{f.date}</p>
-                      </div>
-                    </div>
-                    <span className="font-bold">R$ {f.totalPrice}</span>
+                    <span className="font-bold">R$ {(Number(item.price || item.totalPrice || item.valor || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                   </div>
                 ))}
 
-                {(activeTab === "maintenance" ? maintenances : fuelings).length === 0 && (
-                  <div className="p-12 text-center text-foreground/40 text-sm">
-                    Nenhum registro encontrado nesta categoria.
+                {getActiveData().length === 0 && (
+                  <div className="p-12 text-center text-foreground/40 text-sm italic">
+                    Nenhum registro de {tabs.find(t => t.id === activeTab)?.label.toLowerCase()} encontrado para este veículo.
                   </div>
                 )}
               </div>
