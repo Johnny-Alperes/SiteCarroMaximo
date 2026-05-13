@@ -6,7 +6,9 @@ import {
   doc, 
   getDoc, 
   collection, 
-  getDocs
+  getDocs,
+  query,
+  orderBy
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
@@ -232,10 +234,57 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           setVehicle({ id: docSnap.id, ...docSnap.data() } as Vehicle);
         }
 
+        // Função para coleções que usam campo 'date'
         const fetchCollection = async (colName: string) => {
           try {
             const colRef = collection(db, `users/${user.uid}/${colName}`);
-            const snapshot = await getDocs(colRef);
+            const q = query(colRef, orderBy("date", "desc"));
+            const snapshot = await getDocs(q);
+            return snapshot.docs
+              .map(doc => ({ id: doc.id, ...doc.data() }))
+              .filter((item: any) => item.vehicleId === id);
+          } catch (e) {
+            console.error(`Erro ao buscar ${colName}:`, e);
+            return [];
+          }
+        };
+
+        // Função para óleo (usa 'lastDate')
+        const fetchOilCollection = async () => {
+          try {
+            const colRef = collection(db, `users/${user.uid}/oil`);
+            const q = query(colRef, orderBy("lastDate", "desc"));
+            const snapshot = await getDocs(q);
+            return snapshot.docs
+              .map(doc => ({ id: doc.id, ...doc.data() }))
+              .filter((item: any) => item.vehicleId === id);
+          } catch (e) {
+            console.error(`Erro ao buscar oil:`, e);
+            return [];
+          }
+        };
+
+        // Função para AC (usa 'lastServiceDate')
+        const fetchACCollection = async () => {
+          try {
+            const colRef = collection(db, `users/${user.uid}/ac`);
+            const q = query(colRef, orderBy("lastServiceDate", "desc"));
+            const snapshot = await getDocs(q);
+            return snapshot.docs
+              .map(doc => ({ id: doc.id, ...doc.data() }))
+              .filter((item: any) => item.vehicleId === id);
+          } catch (e) {
+            console.error(`Erro ao buscar ac:`, e);
+            return [];
+          }
+        };
+
+        // Função para licenciamento e IPVA (usa 'dueDate')
+        const fetchDueDateCollection = async (colName: string) => {
+          try {
+            const colRef = collection(db, `users/${user.uid}/${colName}`);
+            const q = query(colRef, orderBy("dueDate", "desc"));
+            const snapshot = await getDocs(q);
             return snapshot.docs
               .map(doc => ({ id: doc.id, ...doc.data() }))
               .filter((item: any) => item.vehicleId === id);
@@ -246,14 +295,22 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         };
 
         const results = await Promise.all([
-          fetchCollection("maintenance"), fetchCollection("fuel"),
-          fetchCollection("battery"), fetchCollection("oil"),
-          fetchCollection("defects"), fetchCollection("filters"),
-          fetchCollection("revision"), fetchCollection("tires_records"),
-          fetchCollection("alignment"), fetchCollection("ac"),
-          fetchCollection("wash"), fetchCollection("travel"),
-          fetchCollection("calibration"), fetchCollection("licensing"),
-          fetchCollection("fines"), fetchCollection("ipva")
+          fetchCollection("maintenance"),
+          fetchCollection("fuel"),
+          fetchCollection("battery"),
+          fetchOilCollection(),
+          fetchCollection("defects"),
+          fetchCollection("filters"),
+          fetchCollection("revision"),
+          fetchCollection("tires_records"),
+          fetchCollection("alignment"),
+          fetchACCollection(),
+          fetchCollection("wash"),
+          fetchCollection("travel"),
+          fetchCollection("calibration"),
+          fetchDueDateCollection("licensing"),
+          fetchCollection("fines"),
+          fetchDueDateCollection("ipva")
         ]);
 
         setMaintenances(results[0] as MaintenanceItem[]);
@@ -299,25 +356,58 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   ];
 
   const getActiveData = () => {
+    let data: any[] = [];
     switch (activeTab) {
-      case "maintenance": return maintenances;
-      case "fuel": return fuelings;
-      case "battery": return batteries;
-      case "oil": return oils;
-      case "defects": return defects;
-      case "filters": return filters;
-      case "revision": return revisions;
-      case "tires_records": return tires;
-      case "alignment": return alignments;
-      case "ac": return acRecords;
-      case "wash": return washRecords;
-      case "travel": return travels;
-      case "calibration": return calibrations;
-      case "licensing": return licensings;
-      case "fines": return fines;
-      case "ipva": return ipvas;
-      default: return [];
+      case "maintenance": data = maintenances; break;
+      case "fuel": data = fuelings; break;
+      case "battery": data = batteries; break;
+      case "oil": data = oils; break;
+      case "defects": data = defects; break;
+      case "filters": data = filters; break;
+      case "revision": data = revisions; break;
+      case "tires_records": data = tires; break;
+      case "alignment": data = alignments; break;
+      case "ac": data = acRecords; break;
+      case "wash": data = washRecords; break;
+      case "travel": data = travels; break;
+      case "calibration": data = calibrations; break;
+      case "licensing": data = licensings; break;
+      case "fines": data = fines; break;
+      case "ipva": data = ipvas; break;
+      default: data = []; break;
     }
+
+    return [...data].sort((a, b) => {
+      const dateA = getItemDate(a, activeTab);
+      const dateB = getItemDate(b, activeTab);
+
+      const getTime = (dateVal: any) => {
+        if (!dateVal || dateVal === "---") return 0;
+        if (dateVal.seconds) return dateVal.seconds * 1000;
+        
+        // Tenta parsear formato DD/MM/YYYY ou DD/MM/YYYY HH:MM
+        if (typeof dateVal === 'string' && dateVal.includes('/')) {
+          const parts = dateVal.split(/[\s/:]+/);
+          if (parts.length >= 3) {
+            const day = parts[0].padStart(2, '0');
+            const month = parts[1].padStart(2, '0');
+            const year = parts[2];
+            // Construir ISO compatível
+            let isoStr = `${year}-${month}-${day}`;
+            if (parts.length >= 5) {
+               isoStr += `T${parts[3].padStart(2, '0')}:${parts[4].padStart(2, '0')}:00`;
+            }
+            const t = new Date(isoStr).getTime();
+            if (!isNaN(t)) return t;
+          }
+        }
+        
+        const t = new Date(dateVal).getTime();
+        return isNaN(t) ? 0 : t;
+      };
+
+      return getTime(dateB) - getTime(dateA); // Do mais recente para o mais antigo
+    });
   };
 
   const getTabIcon = (tabId: string) => {
@@ -365,25 +455,50 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   };
 
   const getItemDate = (item: any, tabId: string) => {
+    const formatDate = (dateVal: any) => {
+      if (!dateVal || dateVal === "---") return "---";
+      if (dateVal.seconds) {
+        const d = new Date(dateVal.seconds * 1000);
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+      }
+      if (typeof dateVal === 'string') {
+        if (/^\d{2}\/\d{2}\/\d{4}/.test(dateVal)) return dateVal.split(/[\sT]+/)[0];
+        if (/^\d{4}-\d{2}-\d{2}/.test(dateVal)) {
+          const parts = dateVal.split('T')[0].split('-');
+          if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+      }
+      try {
+        const d = new Date(dateVal);
+        if (!isNaN(d.getTime())) {
+          return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        }
+        return String(dateVal);
+      } catch {
+        return String(dateVal);
+      }
+    };
+
+    let rawDate = "---";
     switch (tabId) {
-      case "maintenance": return item.date;
-      case "fuel": return item.date;
-      case "battery": return item.date;
-      case "oil": return item.lastDate;
-      case "defects": return item.date;
-      case "filters": return item.date;
-      case "revision": return item.date;
-      case "tires_records": return item.date;
-      case "alignment": return item.date;
-      case "ac": return item.lastServiceDate;
-      case "wash": return item.date;
-      case "travel": return item.date;
-      case "calibration": return item.date;
-      case "licensing": return item.dueDate;
-      case "fines": return item.date;
-      case "ipva": return item.dueDate;
-      default: return "---";
+      case "maintenance": rawDate = item.date; break;
+      case "fuel": rawDate = item.date; break;
+      case "battery": rawDate = item.date; break;
+      case "oil": rawDate = item.lastDate; break;
+      case "defects": rawDate = item.date; break;
+      case "filters": rawDate = item.date; break;
+      case "revision": rawDate = item.date; break;
+      case "tires_records": rawDate = item.date; break;
+      case "alignment": rawDate = item.date; break;
+      case "ac": rawDate = item.lastServiceDate; break;
+      case "wash": rawDate = item.date; break;
+      case "travel": rawDate = item.date; break;
+      case "calibration": rawDate = item.date; break;
+      case "licensing": rawDate = item.dueDate; break;
+      case "fines": rawDate = item.date; break;
+      case "ipva": rawDate = item.dueDate; break;
     }
+    return formatDate(rawDate);
   };
 
   const getItemPrice = (item: any, tabId: string) => {
@@ -546,20 +661,21 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
           {/* Tabs Section */}
           <div className="space-y-6">
-            <div className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-hide">
+            <div className="grid grid-cols-4 md:grid-cols-8 gap-2 pb-4">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    "flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap",
+                    "flex flex-col items-center justify-center gap-1 p-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all text-center h-full",
                     activeTab === tab.id 
-                      ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/30" 
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md shadow-blue-500/20" 
                       : "bg-slate-900 border border-slate-700 text-slate-400 hover:border-blue-500 hover:text-white"
                   )}
+                  title={tab.label}
                 >
-                  {tab.icon}
-                  {tab.label}
+                  <div className="shrink-0">{tab.icon}</div>
+                  <span className="truncate w-full leading-tight">{tab.label}</span>
                 </button>
               ))}
             </div>

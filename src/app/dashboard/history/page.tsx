@@ -212,15 +212,29 @@ function HistoryContent() {
     (r.vehicleModel?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const formatDate = (date: any) => {
-    if (!date) return "---";
-    if (date.seconds) return format(new Date(date.seconds * 1000), "dd MMM yyyy", { locale: ptBR });
+  const formatDate = (dateVal: any) => {
+    if (!dateVal || dateVal === "---") return "---";
+    if (dateVal.seconds) {
+      const d = new Date(dateVal.seconds * 1000);
+      return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    }
+    
+    if (typeof dateVal === 'string') {
+      if (/^\d{2}\/\d{2}\/\d{4}/.test(dateVal)) return dateVal.split(/[\sT]+/)[0];
+      if (/^\d{4}-\d{2}-\d{2}/.test(dateVal)) {
+        const parts = dateVal.split('T')[0].split('-');
+        if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+    }
+
     try {
-      const d = new Date(date);
-      if (isNaN(d.getTime())) return String(date);
-      return format(d, "dd MMM yyyy", { locale: ptBR });
+      const d = new Date(dateVal);
+      if (!isNaN(d.getTime())) {
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+      }
+      return String(dateVal);
     } catch {
-      return String(date);
+      return String(dateVal);
     }
   };
 
@@ -279,33 +293,33 @@ function HistoryContent() {
                   transition={{ delay: index * 0.05 }}
                 >
                   <Card className="p-4 hover:border-primary/30 transition-all group">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="p-3 bg-primary/10 rounded-2xl group-hover:bg-primary group-hover:text-white transition-all">
-                          <Icon className="w-6 h-6" />
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="p-3 bg-primary/10 rounded-2xl group-hover:bg-primary group-hover:text-white transition-all shrink-0">
+                          <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-bold">{record.name}</h4>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <h4 className="font-bold truncate max-w-full text-sm sm:text-base">{record.name}</h4>
                             {record.vehicleModel && record.vehicleModel !== "---" && (
-                              <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/5 border border-border">
+                              <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/5 border border-border shrink-0">
                                 {record.vehicleModel}
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center gap-3 text-xs text-foreground/40">
-                            <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-foreground/40">
+                            <div className="flex items-center gap-1 shrink-0">
                               <Calendar className="w-3 h-3" />
-                              {formatDate(record.date)}
+                              <span className="truncate">{formatDate(record.date)}</span>
                             </div>
-                            <div className="w-1 h-1 bg-border rounded-full"></div>
-                            <div className="capitalize">{categoryNames[record.type] || record.type}</div>
+                            <div className="w-1 h-1 bg-border rounded-full shrink-0"></div>
+                            <div className="capitalize truncate">{categoryNames[record.type] || record.type}</div>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="text-right">
-                        <p className="font-bold text-lg">
+                      <div className="text-right shrink-0">
+                        <p className="font-bold text-sm sm:text-lg whitespace-nowrap">
                           {record.price ? `R$ ${record.price}` : "---"}
                         </p>
                         <p className="text-[10px] text-foreground/40 uppercase font-bold">Valor</p>
