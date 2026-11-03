@@ -518,6 +518,36 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     };
   };
 
+  const getDaysBetween = (start: Date, end: Date) => {
+    const startUtc = Date.UTC(start.getFullYear(), start.getMonth(), start.getDate());
+    const endUtc = Date.UTC(end.getFullYear(), end.getMonth(), end.getDate());
+    return Math.max(0, Math.round((endUtc - startUtc) / 86400000));
+  };
+
+  const formatDays = (days: number) => `${days} ${days === 1 ? "dia" : "dias"}`;
+
+  const getFuelingLifespan = (item: any) => {
+    const start = parseDateValue(item.date);
+    if (!start) return null;
+
+    let nextFueling: Date | null = null;
+    for (const other of fuelings) {
+      if (other.id === item.id) continue;
+      const otherDate = parseDateValue(other.date);
+      if (!otherDate || otherDate.getTime() <= start.getTime()) continue;
+      if (!nextFueling || otherDate.getTime() < nextFueling.getTime()) {
+        nextFueling = otherDate;
+      }
+    }
+
+    const end = nextFueling ?? new Date();
+    return {
+      days: getDaysBetween(start, end),
+      isCurrent: !nextFueling,
+      nextDate: nextFueling ? getItemDate({ date: nextFueling }, "fuel") : null,
+    };
+  };
+
   const getItemName = (item: any, tabId: string) => {
     switch (tabId) {
       case "maintenance": return item.name;
@@ -796,6 +826,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               <div className="divide-y divide-slate-800">
                 {getActiveData().map((item: any) => {
                   const batteryLifespan = activeTab === "battery" ? getBatteryLifespan(item) : null;
+                  const fuelLifespan = activeTab === "fuel" ? getFuelingLifespan(item) : null;
 
                   return (
                     <div key={item.id} className="p-6 flex items-center justify-between hover:bg-slate-800/50 transition-colors">
@@ -820,6 +851,29 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                                 }
                               >
                                 {batteryLifespan.text} de uso
+                              </span>
+                            )}
+                            {fuelLifespan && (
+                              <span
+                                className={cn(
+                                  "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold",
+                                  fuelLifespan.isCurrent
+                                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                                    : "border-blue-500/20 bg-blue-500/10 text-blue-400"
+                                )}
+                                title={
+                                  fuelLifespan.isCurrent
+                                    ? `Abastecimento atual desde ${getItemDate(item, activeTab)}`
+                                    : `Durou até o próximo abastecimento em ${fuelLifespan.nextDate}`
+                                }
+                              >
+                                {fuelLifespan.isCurrent
+                                  ? fuelLifespan.days === 0
+                                    ? "abastecido hoje"
+                                    : `há ${formatDays(fuelLifespan.days)}`
+                                  : fuelLifespan.days === 0
+                                    ? "durou menos de 1 dia"
+                                    : `durou ${formatDays(fuelLifespan.days)}`}
                               </span>
                             )}
                             <p className="font-bold text-white">
