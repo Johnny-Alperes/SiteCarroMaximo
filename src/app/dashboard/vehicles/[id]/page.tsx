@@ -200,6 +200,66 @@ interface IpvaItem {
   vehicleId: string;
 }
 
+const filterTypeTranslations: Record<string, string> = {
+  air: "Filtro de Ar",
+  air_filter: "Filtro de Ar",
+  airfilter: "Filtro de Ar",
+  ar: "Filtro de Ar",
+  filtro_de_ar: "Filtro de Ar",
+  oil: "Filtro de Óleo",
+  oil_filter: "Filtro de Óleo",
+  oilfilter: "Filtro de Óleo",
+  oleo: "Filtro de Óleo",
+  filtro_de_oleo: "Filtro de Óleo",
+  fuel: "Filtro de Combustível",
+  fuel_filter: "Filtro de Combustível",
+  fuelfilter: "Filtro de Combustível",
+  combustivel: "Filtro de Combustível",
+  filtro_de_combustivel: "Filtro de Combustível",
+  cabin: "Filtro de Cabine",
+  cabin_filter: "Filtro de Cabine",
+  cabinfilter: "Filtro de Cabine",
+  cabin_air: "Filtro de Cabine",
+  pollen: "Filtro de Cabine",
+  pollen_filter: "Filtro de Cabine",
+  cabine: "Filtro de Cabine",
+  filtro_de_cabine: "Filtro de Cabine",
+  ac: "Filtro de Ar-Condicionado",
+  ac_filter: "Filtro de Ar-Condicionado",
+  air_conditioning: "Filtro de Ar-Condicionado",
+  ar_condicionado: "Filtro de Ar-Condicionado",
+  transmission: "Filtro de Câmbio",
+  transmission_filter: "Filtro de Câmbio",
+  cambio: "Filtro de Câmbio",
+  filtro_de_cambio: "Filtro de Câmbio",
+  hydraulic: "Filtro Hidráulico",
+  hydraulic_filter: "Filtro Hidráulico",
+  hidraulico: "Filtro Hidráulico",
+  filtro_hidraulico: "Filtro Hidráulico",
+  water: "Filtro de Água",
+  water_filter: "Filtro de Água",
+  agua: "Filtro de Água",
+  filtro_de_agua: "Filtro de Água",
+  dryer: "Filtro Secador",
+  air_dryer: "Filtro Secador",
+  secador: "Filtro Secador",
+};
+
+const getFilterTypeLabel = (type: unknown) => {
+  if (!type) return "";
+  const raw = String(type).trim();
+  if (!raw) return "";
+
+  const key = raw
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+  return filterTypeTranslations[key] ?? raw;
+};
+
 export default function VehicleDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
@@ -555,7 +615,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       case "battery": return `${item.brand} - ${item.type}`;
       case "oil": return `${item.brand} - ${item.oilType}`;
       case "defects": return item.description;
-      case "filters": return `${item.type} - ${item.brand}`;
+      case "filters": return [getFilterTypeLabel(item.type), item.brand].filter(Boolean).join(" - ") || "Filtro";
       case "revision": return `Revisão ${item.type} - ${item.kmAtRevision}km`;
       case "tires_records": return `${item.brand} - ${item.model} (${item.position})`;
       case "alignment": return `Alinhamento - ${item.kmAtAlignment}km`;
