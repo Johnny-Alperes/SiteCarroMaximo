@@ -201,33 +201,37 @@ interface IpvaItem {
 }
 
 const filterTypeTranslations: Record<string, string> = {
-  air: "Filtro de Ar",
-  air_filter: "Filtro de Ar",
-  airfilter: "Filtro de Ar",
-  ar: "Filtro de Ar",
-  filtro_de_ar: "Filtro de Ar",
-  oil: "Filtro de Óleo",
-  oil_filter: "Filtro de Óleo",
-  oilfilter: "Filtro de Óleo",
-  oleo: "Filtro de Óleo",
-  filtro_de_oleo: "Filtro de Óleo",
-  fuel: "Filtro de Combustível",
-  fuel_filter: "Filtro de Combustível",
-  fuelfilter: "Filtro de Combustível",
-  combustivel: "Filtro de Combustível",
-  filtro_de_combustivel: "Filtro de Combustível",
-  cabin: "Filtro de Cabine",
-  cabin_filter: "Filtro de Cabine",
-  cabinfilter: "Filtro de Cabine",
-  cabin_air: "Filtro de Cabine",
-  pollen: "Filtro de Cabine",
-  pollen_filter: "Filtro de Cabine",
-  cabine: "Filtro de Cabine",
-  filtro_de_cabine: "Filtro de Cabine",
-  ac: "Filtro de Ar-Condicionado",
-  ac_filter: "Filtro de Ar-Condicionado",
-  air_conditioning: "Filtro de Ar-Condicionado",
-  ar_condicionado: "Filtro de Ar-Condicionado",
+  oil: "Óleo Motor",
+  oleo: "Óleo Motor",
+  oleo_motor: "Óleo Motor",
+  air: "Ar Motor",
+  ar: "Ar Motor",
+  ar_motor: "Ar Motor",
+  air_filter: "Ar Motor",
+  airfilter: "Ar Motor",
+  filtro_de_ar: "Ar Motor",
+  fuel: "Combustível",
+  combustivel: "Combustível",
+  fuel_filter: "Combustível",
+  fuelfilter: "Combustível",
+  filtro_de_combustivel: "Combustível",
+  cabin: "Ar Cabine",
+  cabine: "Ar Cabine",
+  ar_cabine: "Ar Cabine",
+  cabin_filter: "Ar Cabine",
+  cabinfilter: "Ar Cabine",
+  cabin_air: "Ar Cabine",
+  pollen: "Ar Cabine",
+  pollen_filter: "Ar Cabine",
+  filtro_de_cabine: "Ar Cabine",
+  ac: "Ar Cabine",
+  ac_filter: "Ar Cabine",
+  air_conditioning: "Ar Cabine",
+  ar_condicionado: "Ar Cabine",
+  oil_filter: "Filtro Óleo",
+  oilfilter: "Filtro Óleo",
+  filtro_de_oleo: "Filtro Óleo",
+  filtro_oleo: "Filtro Óleo",
   transmission: "Filtro de Câmbio",
   transmission_filter: "Filtro de Câmbio",
   cambio: "Filtro de Câmbio",
@@ -258,6 +262,14 @@ const getFilterTypeLabel = (type: unknown) => {
     .replace(/^_+|_+$/g, "");
 
   return filterTypeTranslations[key] ?? raw;
+};
+
+const getFilterLabels = (type: unknown) => {
+  if (type === null || type === undefined) return [];
+  return String(type)
+    .split(",")
+    .map((part) => getFilterTypeLabel(part.trim()))
+    .filter(Boolean);
 };
 
 export default function VehicleDetailsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -615,7 +627,10 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       case "battery": return `${item.brand} - ${item.type}`;
       case "oil": return `${item.brand} - ${item.oilType}`;
       case "defects": return item.description;
-      case "filters": return [getFilterTypeLabel(item.type), item.brand].filter(Boolean).join(" - ") || "Filtro";
+      case "filters": {
+        const labels = getFilterLabels(item.type);
+        return [labels.length > 0 ? labels.join(" + ") : "Filtro", item.brand].filter(Boolean).join(" - ");
+      }
       case "revision": return `Revisão ${item.type} - ${item.kmAtRevision}km`;
       case "tires_records": return `${item.brand} - ${item.model} (${item.position})`;
       case "alignment": return `Alinhamento - ${item.kmAtAlignment}km`;
