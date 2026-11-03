@@ -283,6 +283,22 @@ const recordLifespanTabs = [
   "calibration",
 ];
 
+const tabsWithPrice = [
+  "maintenance",
+  "fuel",
+  "battery",
+  "oil",
+  "filters",
+  "revision",
+  "tires_records",
+  "alignment",
+  "ac",
+  "wash",
+  "licensing",
+  "fines",
+  "ipva",
+];
+
 const recordLifespanNextLabels: Record<string, string> = {
   oil: "trocado em",
   filters: "trocado em",
@@ -767,20 +783,49 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const totalFuelCost = fuelings.reduce((acc, f) => acc + (Number(f.totalPrice) || 0), 0);
   const totalCost = totalMaintenanceCost + totalFuelCost;
 
-  const lastActivity = () => {
-    const allDates = [
-      ...maintenances.map(m => m.date),
-      ...fuelings.map(f => f.date),
-      ...batteries.map(b => b.date),
-      ...oils.map(o => o.lastDate),
-    ].filter(Boolean);
-    
-    if (allDates.length === 0) return "Nenhuma atividade";
-    const sorted = allDates.sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
-    return sorted[0];
+  const getLastActivity = () => {
+    const collections: { tabId: string; records: unknown[] }[] = [
+      { tabId: "maintenance", records: maintenances },
+      { tabId: "fuel", records: fuelings },
+      { tabId: "battery", records: batteries },
+      { tabId: "oil", records: oils },
+      { tabId: "defects", records: defects },
+      { tabId: "filters", records: filters },
+      { tabId: "revision", records: revisions },
+      { tabId: "tires_records", records: tires },
+      { tabId: "alignment", records: alignments },
+      { tabId: "ac", records: acRecords },
+      { tabId: "wash", records: washRecords },
+      { tabId: "travel", records: travels },
+      { tabId: "calibration", records: calibrations },
+      { tabId: "licensing", records: licensings },
+      { tabId: "fines", records: fines },
+      { tabId: "ipva", records: ipvas },
+    ];
+
+    let latest: { tabId: string; date: Date; dateText: string; price: number | null } | null = null;
+
+    for (const { tabId, records } of collections) {
+      for (const record of records) {
+        const parsed = parseDateValue(getTabRecordDate(record, tabId));
+        if (!parsed) continue;
+        if (latest && parsed.getTime() <= latest.date.getTime()) continue;
+
+        latest = {
+          tabId,
+          date: parsed,
+          dateText: getItemDate(record, tabId),
+          price: tabsWithPrice.includes(tabId) ? getItemPrice(record, tabId) : null,
+        };
+      }
+    }
+
+    return latest;
   };
 
   const activeData = getActiveData();
+  const lastActivity = getLastActivity();
+  const lastActivityTab = lastActivity ? tabs.find((tab) => tab.id === lastActivity.tabId) : null;
 
   if (loading) {
     return (
@@ -896,10 +941,19 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               </div>
               <p className="text-sm text-slate-400">Última Atividade</p>
               <h3 className="text-2xl font-bold text-white">
-                {lastActivity()}
+                {lastActivity ? lastActivity.dateText : "Nenhuma atividade"}
               </h3>
               <p className="text-xs text-slate-400 mt-1">
-                Clique na aba para ver detalhes
+                {lastActivity
+                  ? `${lastActivityTab?.label ?? "Registro"} • ${
+                      lastActivity.price !== null
+                        ? lastActivity.price.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })
+                        : "Sem valor registrado"
+                    }`
+                  : "Clique na aba para ver detalhes"}
               </p>
             </Card>
           </div>
