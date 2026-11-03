@@ -272,6 +272,28 @@ const getFilterLabels = (type: unknown) => {
     .filter(Boolean);
 };
 
+const recordLifespanTabs = [
+  "oil",
+  "filters",
+  "revision",
+  "tires_records",
+  "alignment",
+  "ac",
+  "wash",
+  "calibration",
+];
+
+const recordLifespanNextLabels: Record<string, string> = {
+  oil: "trocado em",
+  filters: "trocado em",
+  tires_records: "trocado em",
+  revision: "próxima revisão em",
+  alignment: "próximo alinhamento em",
+  ac: "próxima manutenção em",
+  wash: "próxima lavagem em",
+  calibration: "próxima calibragem em",
+};
+
 export default function VehicleDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
@@ -620,6 +642,36 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     };
   };
 
+  const getTabRecordDate = (item: any, tabId: string) => {
+    switch (tabId) {
+      case "oil": return item.lastDate;
+      case "ac": return item.lastServiceDate;
+      default: return item.date;
+    }
+  };
+
+  const getRecordLifespan = (item: any, tabId: string, records: any[]) => {
+    const start = parseDateValue(getTabRecordDate(item, tabId));
+    if (!start) return null;
+
+    let nextRecord: Date | null = null;
+    for (const other of records) {
+      if (other.id === item.id) continue;
+      const otherDate = parseDateValue(getTabRecordDate(other, tabId));
+      if (!otherDate || otherDate.getTime() <= start.getTime()) continue;
+      if (!nextRecord || otherDate.getTime() < nextRecord.getTime()) {
+        nextRecord = otherDate;
+      }
+    }
+
+    return {
+      text: getElapsedTime(start, nextRecord ?? new Date()),
+      isCurrent: !nextRecord,
+      startOn: getItemDate(item, tabId),
+      nextOn: nextRecord ? getItemDate({ date: nextRecord }, "maintenance") : null,
+    };
+  };
+
   const getItemName = (item: any, tabId: string) => {
     switch (tabId) {
       case "maintenance": return item.name;
@@ -727,6 +779,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     const sorted = allDates.sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
     return sorted[0];
   };
+
+  const activeData = getActiveData();
 
   if (loading) {
     return (
@@ -899,9 +953,12 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               </div>
               
               <div className="divide-y divide-slate-800">
-                {getActiveData().map((item: any) => {
+                {activeData.map((item: any) => {
                   const batteryLifespan = activeTab === "battery" ? getBatteryLifespan(item) : null;
                   const fuelLifespan = activeTab === "fuel" ? getFuelingLifespan(item) : null;
+                  const recordLifespan = recordLifespanTabs.includes(activeTab)
+                    ? getRecordLifespan(item, activeTab, activeData)
+                    : null;
 
                   return (
                     <div key={item.id} className="p-6 flex items-center justify-between hover:bg-slate-800/50 transition-colors">
@@ -951,6 +1008,23 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                                     : `durou ${formatDays(fuelLifespan.days)}`}
                               </span>
                             )}
+                            {recordLifespan && (
+                              <span
+                                className={cn(
+                                  "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold",
+                                  recordLifespan.isCurrent
+                                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                                    : "border-amber-500/20 bg-amber-500/10 text-amber-400"
+                                )}
+                                title={
+                                  recordLifespan.isCurrent
+                                    ? `Tempo de uso desde ${recordLifespan.startOn}`
+                                    : `${recordLifespanNextLabels[activeTab] ?? "próximo registro em"} ${recordLifespan.nextOn}`
+                                }
+                              >
+                                {recordLifespan.text} de uso
+                              </span>
+                            )}
                             <p className="font-bold text-white">
                               {getItemName(item, activeTab)}
                             </p>
@@ -960,6 +1034,11 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                             {batteryLifespan?.replacedOn && (
                               <span className="text-amber-400/80">
                                 {" "}• substituída em {batteryLifespan.replacedOn}
+                              </span>
+                            )}
+                            {recordLifespan?.nextOn && (
+                              <span className="text-amber-400/80">
+                                {" "}• {recordLifespanNextLabels[activeTab] ?? "próximo registro em"} {recordLifespan.nextOn}
                               </span>
                             )}
                           </p>
@@ -972,7 +1051,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                   );
                 })}
 
-                {getActiveData().length === 0 && (
+                {activeData.length === 0 && (
                   <div className="p-12 text-center">
                     <div className="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto mb-4">
                       {getTabIcon(activeTab)}
