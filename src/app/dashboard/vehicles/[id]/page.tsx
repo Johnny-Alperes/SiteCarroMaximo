@@ -39,10 +39,12 @@ import {
   Trash2,
   Edit,
   Plus,
-  ChevronRight
+  ChevronRight,
+  Search
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/Input";
 
 interface Vehicle {
   id: string;
@@ -202,6 +204,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const { id } = use(params);
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [activeTab, setActiveTab] = useState("maintenance");
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   
   const [maintenances, setMaintenances] = useState<MaintenanceItem[]>([]);
@@ -377,7 +380,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       default: data = []; break;
     }
 
-    return [...data].sort((a, b) => {
+    const sorted = [...data].sort((a, b) => {
       const dateA = getItemDate(a, activeTab);
       const dateB = getItemDate(b, activeTab);
 
@@ -408,6 +411,15 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
       return getTime(dateB) - getTime(dateA); // Do mais recente para o mais antigo
     });
+
+    if (activeTab === "maintenance" && searchTerm.trim()) {
+      const term = searchTerm.trim().toLowerCase();
+      return sorted.filter((item) =>
+        String(getItemName(item, activeTab) ?? "").toLowerCase().includes(term)
+      );
+    }
+
+    return sorted;
   };
 
   const getTabIcon = (tabId: string) => {
@@ -430,6 +442,80 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       case 'ipva': return <FileText className="w-4 h-4" />;
       default: return <FileText className="w-4 h-4" />;
     }
+  };
+
+  const parseDateValue = (dateVal: any): Date | null => {
+    if (!dateVal || dateVal === "---") return null;
+    if (dateVal instanceof Date) {
+      return isNaN(dateVal.getTime()) ? null : dateVal;
+    }
+    if (typeof dateVal?.toDate === "function") {
+      const d = dateVal.toDate();
+      return isNaN(d.getTime()) ? null : d;
+    }
+    if (typeof dateVal === "object" && dateVal.seconds != null) {
+      return new Date(dateVal.seconds * 1000);
+    }
+    if (typeof dateVal === "string") {
+      const br = dateVal.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+      if (br) return new Date(Number(br[3]), Number(br[2]) - 1, Number(br[1]));
+      const iso = dateVal.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+    }
+    const parsed = new Date(dateVal);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  const getElapsedTime = (start: Date, end: Date) => {
+    const totalDays = Math.floor((end.getTime() - start.getTime()) / 86400000);
+    if (totalDays < 0) return "0 dias";
+
+    let years = end.getFullYear() - start.getFullYear();
+    let months = end.getMonth() - start.getMonth();
+    let days = end.getDate() - start.getDate();
+
+    if (days < 0) {
+      months -= 1;
+      const daysInPreviousMonth = new Date(end.getFullYear(), end.getMonth(), 0).getDate();
+      days += daysInPreviousMonth;
+    }
+    if (months < 0) {
+      years -= 1;
+      months += 12;
+    }
+
+    const plural = (value: number, singular: string, pluralForm: string) =>
+      `${value} ${value === 1 ? singular : pluralForm}`;
+
+    if (years > 0) {
+      const yearText = plural(years, "ano", "anos");
+      return months > 0 ? `${yearText} e ${plural(months, "mês", "meses")}` : yearText;
+    }
+    if (months > 0) {
+      const monthText = plural(months, "mês", "meses");
+      return days > 0 ? `${monthText} e ${plural(days, "dia", "dias")}` : monthText;
+    }
+    return plural(Math.max(days, 0), "dia", "dias");
+  };
+
+  const getBatteryLifespan = (item: any) => {
+    const start = parseDateValue(item.date);
+    if (!start) return { text: null, replacedOn: null };
+
+    let replacement: Date | null = null;
+    for (const other of batteries) {
+      if (other.id === item.id) continue;
+      const otherDate = parseDateValue(other.date);
+      if (!otherDate || otherDate.getTime() <= start.getTime()) continue;
+      if (!replacement || otherDate.getTime() < replacement.getTime()) {
+        replacement = otherDate;
+      }
+    }
+
+    return {
+      text: getElapsedTime(start, replacement ?? new Date()),
+      replacedOn: replacement ? getItemDate({ date: replacement }, "battery") : null,
+    };
   };
 
   const getItemName = (item: any, tabId: string) => {
@@ -665,7 +751,10 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    setSearchTerm("");
+                  }}
                   className={cn(
                     "flex flex-col items-center justify-center gap-1 p-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all text-center h-full",
                     activeTab === tab.id 
@@ -681,48 +770,106 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
             </div>
 
             <Card className="overflow-hidden border-slate-800 bg-slate-900">
-              <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+              <div className="p-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/50">
                 <h3 className="font-bold text-white">
                   Registros de {tabs.find(t => t.id === activeTab)?.label}
                 </h3>
-                <Button size="sm" variant="outline" className="text-slate-400 border-slate-700 hover:text-white hover:bg-slate-800">
-                  Ver Histórico Completo
-                </Button>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+                  {activeTab === "maintenance" && (
+                    <div className="w-full sm:w-64">
+                      <Input
+                        icon={<Search className="w-4 h-4" />}
+                        placeholder="Buscar serviço pelo nome..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="h-10 text-white border-slate-700 bg-slate-800/50 placeholder:text-slate-500"
+                        aria-label="Buscar serviço pelo nome"
+                      />
+                    </div>
+                  )}
+                  <Button size="sm" variant="outline" className="text-slate-400 border-slate-700 hover:text-white hover:bg-slate-800">
+                    Ver Histórico Completo
+                  </Button>
+                </div>
               </div>
               
               <div className="divide-y divide-slate-800">
-                {getActiveData().map((item: any) => (
-                  <div key={item.id} className="p-6 flex items-center justify-between hover:bg-slate-800/50 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 text-blue-400">
-                        {getTabIcon(activeTab)}
+                {getActiveData().map((item: any) => {
+                  const batteryLifespan = activeTab === "battery" ? getBatteryLifespan(item) : null;
+
+                  return (
+                    <div key={item.id} className="p-6 flex items-center justify-between hover:bg-slate-800/50 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 text-blue-400">
+                          {getTabIcon(activeTab)}
+                        </div>
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            {batteryLifespan?.text && (
+                              <span
+                                className={cn(
+                                  "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold",
+                                  batteryLifespan.replacedOn
+                                    ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
+                                    : "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                                )}
+                                title={
+                                  batteryLifespan.replacedOn
+                                    ? `Substituída em ${batteryLifespan.replacedOn}`
+                                    : `Tempo de uso desde ${getItemDate(item, activeTab)}`
+                                }
+                              >
+                                {batteryLifespan.text} de uso
+                              </span>
+                            )}
+                            <p className="font-bold text-white">
+                              {getItemName(item, activeTab)}
+                            </p>
+                          </div>
+                          <p className="text-xs text-slate-400">
+                            {getItemDate(item, activeTab)}
+                            {batteryLifespan?.replacedOn && (
+                              <span className="text-amber-400/80">
+                                {" "}• substituída em {batteryLifespan.replacedOn}
+                              </span>
+                            )}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-bold text-white">
-                          {getItemName(item, activeTab)}
-                        </p>
-                        <p className="text-xs text-slate-400">
-                          {getItemDate(item, activeTab)}
-                        </p>
-                      </div>
+                      <span className="font-bold text-emerald-400">
+                        {getItemPrice(item, activeTab).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                      </span>
                     </div>
-                    <span className="font-bold text-emerald-400">
-                      {getItemPrice(item, activeTab).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {getActiveData().length === 0 && (
                   <div className="p-12 text-center">
                     <div className="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto mb-4">
                       {getTabIcon(activeTab)}
                     </div>
-                    <p className="text-slate-400 text-sm italic">
-                      Nenhum registro de {tabs.find(t => t.id === activeTab)?.label?.toLowerCase()} encontrado para este veículo.
-                    </p>
-                    <p className="text-slate-500 text-xs mt-2">
-                      Adicione pelo aplicativo Carro Máximo para ver aqui
-                    </p>
+                    {activeTab === "maintenance" && searchTerm.trim() ? (
+                      <>
+                        <p className="text-slate-400 text-sm italic">
+                          Nenhum serviço encontrado para &quot;{searchTerm.trim()}&quot;.
+                        </p>
+                        <button
+                          onClick={() => setSearchTerm("")}
+                          className="text-blue-400 text-xs mt-2 hover:text-blue-300 transition-colors"
+                        >
+                          Limpar busca
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-slate-400 text-sm italic">
+                          Nenhum registro de {tabs.find(t => t.id === activeTab)?.label?.toLowerCase()} encontrado para este veículo.
+                        </p>
+                        <p className="text-slate-500 text-xs mt-2">
+                          Adicione pelo aplicativo Carro Máximo para ver aqui
+                        </p>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
