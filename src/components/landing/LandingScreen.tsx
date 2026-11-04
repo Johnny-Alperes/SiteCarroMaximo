@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Car, LogIn, Menu, X } from "lucide-react";
+import { Car, Menu, X } from "lucide-react";
 
 const backgroundImage =
   "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80";
@@ -11,46 +11,42 @@ export default function LandingScreen() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="relative flex h-[100dvh] w-full flex-col overflow-hidden bg-[#050505] font-mono text-white antialiased selection:bg-primary/30">
+    <div className="relative flex h-[100dvh] w-full flex-col overflow-hidden bg-zinc-950 font-mono text-white antialiased selection:bg-zinc-700">
       <div className="absolute inset-0">
         <div
           className="h-full w-full bg-cover bg-center"
           style={{ backgroundImage: `url(${backgroundImage})` }}
         />
       </div>
-      <div className="absolute inset-0 bg-[#050505]/80" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.25),transparent_60%)]" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]/60" />
+      <div className="absolute inset-0 bg-zinc-950/70" />
 
-      <header className="relative z-20 flex h-14 shrink-0 items-center justify-between border-b border-white/10 px-4 sm:px-6">
+      <header className="relative z-20 flex h-14 shrink-0 items-center justify-between border-b border-zinc-800 px-6">
         <Link href="/" className="flex items-center gap-3">
-          <Car className="h-4 w-4 text-primary" />
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/60 sm:text-xs">
+          <Car className="h-4 w-4 text-zinc-500" />
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">
             Carro Máximo
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-2 md:flex">
+        <nav className="hidden items-center gap-3 md:flex">
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 border border-white/15 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white/70 transition-colors hover:border-primary/50 hover:text-white"
+            className="text-xs uppercase tracking-widest text-zinc-300 transition-colors hover:text-white"
           >
-            <LogIn className="h-3.5 w-3.5" />
-            Entrar
+            Acessar
           </Link>
           <Link
-            href="/register"
-            className="inline-flex items-center gap-2 bg-primary px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-primary/90"
+            href="/login"
+            className="bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200"
           >
-            Começar
-            <ArrowRight className="h-3.5 w-3.5" />
+            Entrar
           </Link>
         </nav>
 
         <button
           type="button"
           onClick={() => setIsMenuOpen((open) => !open)}
-          className="text-white/60 transition-colors hover:text-white md:hidden"
+          className="text-zinc-500 transition-colors hover:text-white md:hidden"
           aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
         >
           {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -58,56 +54,53 @@ export default function LandingScreen() {
       </header>
 
       {isMenuOpen && (
-        <div className="relative z-20 space-y-2 border-b border-white/10 bg-[#050505]/95 px-4 py-4 backdrop-blur md:hidden">
+        <div className="relative z-20 space-y-3 border-b border-zinc-800 bg-zinc-950 px-6 py-4 md:hidden">
           <Link
             href="/login"
             onClick={() => setIsMenuOpen(false)}
-            className="flex w-full items-center justify-center gap-2 border border-white/15 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white/70"
+            className="block text-xs uppercase tracking-widest text-zinc-300"
           >
-            <LogIn className="h-3.5 w-3.5" />
-            Entrar
+            Acessar
           </Link>
           <Link
-            href="/register"
+            href="/login"
             onClick={() => setIsMenuOpen(false)}
-            className="flex w-full items-center justify-center gap-2 bg-primary px-4 py-2 text-xs font-bold uppercase tracking-widest text-white"
+            className="block w-full bg-white px-4 py-2 text-center text-xs font-bold uppercase tracking-widest text-zinc-950"
           >
-            Começar
-            <ArrowRight className="h-3.5 w-3.5" />
+            Entrar
           </Link>
         </div>
       )}
 
-      <main className="relative z-10 flex flex-1 items-center justify-center p-4 sm:p-6">
-        <div className="max-w-full space-y-5 text-center sm:space-y-6">
-          <span className="text-[10px] uppercase tracking-[0.3em] text-primary sm:text-xs">
+      <main className="relative z-10 flex flex-1 items-center justify-center p-6">
+        <div className="space-y-6 text-center">
+          <span className="text-xs uppercase tracking-[0.3em] text-zinc-300">
             Gestão Automotiva Inteligente
           </span>
 
-          <h1 className="text-[clamp(2.75rem,9vw,6rem)] font-black leading-[0.85] tracking-tighter text-white">
+          <h1 className="text-5xl font-black leading-[0.85] tracking-tighter text-white md:text-8xl">
             SEU
             <br />
-            <span className="text-gradient">VEÍCULO</span>
+            <span className="text-zinc-500">VEÍCULO</span>
             <br />
             NO CONTROLE
           </h1>
 
-          <p className="mx-auto max-w-lg text-sm leading-relaxed text-white/60 sm:text-base md:text-lg">
+          <p className="mx-auto max-w-lg text-base leading-relaxed text-zinc-300 md:text-lg">
             Manutenção, combustível, custos e alertas em um só lugar.
             Controle total do seu veículo em tempo real.
           </p>
 
-          <div className="flex flex-col justify-center gap-2 pt-1 sm:flex-row sm:gap-3">
+          <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row">
             <Link
               href="/register"
-              className="group inline-flex items-center justify-center gap-2 bg-primary px-8 py-3.5 text-sm font-bold uppercase tracking-widest text-white transition-colors hover:bg-primary/90 sm:py-4 sm:text-base"
+              className="bg-white px-8 py-4 text-base font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200"
             >
-              Começar agora
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              Cadastrar-se
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center gap-2 border border-white/20 px-8 py-3.5 text-sm font-bold uppercase tracking-widest text-white/70 transition-colors hover:border-primary/50 hover:text-white sm:py-4 sm:text-base"
+              className="border border-zinc-600 px-8 py-4 text-base font-bold uppercase tracking-widest text-zinc-300 transition-all hover:border-zinc-500 hover:text-white"
             >
               Acessar painel
             </Link>
@@ -115,9 +108,9 @@ export default function LandingScreen() {
         </div>
       </main>
 
-      <footer className="relative z-10 flex h-10 shrink-0 items-center justify-between border-t border-white/10 px-4 text-[8px] uppercase tracking-[0.15em] text-white/30 sm:h-12 sm:px-6 sm:text-[9px]">
-        <span>© 2026 — Carro Máximo</span>
-        <span className="text-primary/70">CM</span>
+      <footer className="relative z-10 flex h-12 items-center justify-between border-t border-zinc-800 px-6 text-[9px] uppercase tracking-[0.15em] text-zinc-700">
+        <span>&copy; 2026 — Carro Máximo</span>
+        <span>CM</span>
       </footer>
     </div>
   );
