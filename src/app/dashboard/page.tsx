@@ -202,10 +202,11 @@ export default function DashboardPage() {
                 </div>
 
                 <Link href={`/dashboard/vehicles/${vehicle.id}`}>
-                  <Button variant="outline" className="group/btn w-full justify-between">
-                    Ver detalhes
-                    <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                  </Button>
+                  <button className="group/btn relative flex w-full items-center justify-center gap-3 overflow-hidden border border-white bg-white px-6 py-4 text-sm font-bold uppercase tracking-widest text-zinc-950 transition-all duration-300 hover:bg-zinc-200 hover:text-zinc-950 hover:shadow-[0_0_28px_rgba(255,255,255,0.16)]">
+                    <span className="absolute inset-y-0 left-0 w-1 bg-zinc-950/20 transition-all duration-300 group-hover/btn:w-full group-hover/btn:bg-zinc-950/10" />
+                    <span className="relative">Gerenciamento do Veículo</span>
+                    <ChevronRight className="relative h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                  </button>
                 </Link>
               </Card>
             </motion.div>

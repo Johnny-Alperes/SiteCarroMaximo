@@ -540,11 +540,20 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       return getTime(dateB) - getTime(dateA); // Do mais recente para o mais antigo
     });
 
-    if (activeTab === "maintenance" && searchTerm.trim()) {
-      const term = searchTerm.trim().toLowerCase();
-      return sorted.filter((item) =>
-        String(getItemName(item, activeTab) ?? "").toLowerCase().includes(term)
-      );
+    if (searchTerm.trim()) {
+      const term = searchTerm
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      return sorted.filter((item) => {
+        const name = String(getItemName(item, activeTab) ?? "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+        const date = String(getItemDate(item, activeTab) ?? "").toLowerCase();
+        return name.includes(term) || date.includes(term);
+      });
     }
 
     return sorted;
