@@ -91,6 +91,7 @@ interface OilItem {
   lastDate: string;
   brand: string;
   oilType: string;
+  interval?: string;
   price: number;
   vehicleId: string;
 }
@@ -709,7 +710,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       case "maintenance": return item.name;
       case "fuel": return `${item.liters}L - ${item.pricePerLiter?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}/L`;
       case "battery": return `${item.brand} - ${item.type}`;
-      case "oil": return `${item.brand} - ${item.oilType}`;
+      case "oil": return item.interval ? `${item.brand} - ${item.oilType} (${item.interval})` : `${item.brand} - ${item.oilType}`;
       case "defects": return item.description;
       case "filters": {
         const labels = getFilterLabels(item.type);
@@ -894,8 +895,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       case "oil":
         return [
           { key: "lastDate", label: "Data da troca", type: "date", required: true, value: dateValue },
-          { key: "brand", label: "Marca", type: "text", required: true },
-          { key: "oilType", label: "Tipo do óleo", type: "select", required: true, options: ["5W-30", "10W-40", "15W-40", "20W-50"] },
+          { key: "brand", label: "Marca", type: "select", required: true, options: ["Shell", "Castrol", "Ipiranga", "Petronas", "Mobil", "Motul", "Texaco", "Liqui Moly", "Havoline", "TotalEnergies", "Outra"] },
+          { key: "oilType", label: "Tipo do óleo", type: "select", required: true, options: ["0W-20", "0W-30", "0W-40", "5W-20", "5W-30", "5W-40", "10W-30", "10W-40", "15W-40", "15W-50", "20W-50", "Sintético", "Semissintético", "Mineral"] },
+          { key: "interval", label: "Troca indicada", type: "select", required: true, options: ["5 mil km", "10 mil km", "Outro"] },
           priceField,
         ];
       case "defects":
