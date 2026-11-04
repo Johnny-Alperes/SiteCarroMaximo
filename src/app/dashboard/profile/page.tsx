@@ -98,7 +98,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Meu Perfil</h1>
+        <h1 className="text-3xl font-black uppercase tracking-tight">Meu Perfil</h1>
         <p className="text-foreground/60">Gerencie suas informações pessoais e segurança.</p>
       </div>
 
@@ -106,19 +106,19 @@ export default function ProfilePage() {
         {/* Sidebar / Stats */}
         <div className="space-y-6">
           <Card className="p-8 text-center">
-            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/20">
-              <User className="w-10 h-10 text-primary" />
+            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center border border-zinc-700 bg-zinc-900">
+              <User className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-xl font-bold">{user?.displayName || "Usuário"}</h2>
             <p className="text-sm text-foreground/40 mb-6">{user?.email}</p>
             <div className="pt-6 border-t border-border grid grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-foreground/40 font-bold uppercase">Veículos</p>
-                <p className="text-xl font-bold text-primary">{stats.vehicles}</p>
+                <p className="text-xl font-bold text-white">{stats.vehicles}</p>
               </div>
               <div>
                 <p className="text-xs text-foreground/40 font-bold uppercase">Gastos</p>
-                <p className="text-xl font-bold text-primary">R$ 12k</p>
+                <p className="text-xl font-bold text-white">R$ 12k</p>
               </div>
             </div>
           </Card>
@@ -137,7 +137,7 @@ export default function ProfilePage() {
         <div className="md:col-span-2 space-y-8">
           <Card className="p-8">
             <div className="flex items-center gap-2 mb-6">
-              <User className="w-5 h-5 text-primary" />
+              <User className="w-5 h-5 text-white" />
               <h3 className="text-lg font-bold">Informações Pessoais</h3>
             </div>
             <form onSubmit={handleUpdateProfile} className="space-y-6">
@@ -159,7 +159,7 @@ export default function ProfilePage() {
 
           <Card className="p-8">
             <div className="flex items-center gap-2 mb-6">
-              <Shield className="w-5 h-5 text-primary" />
+              <Shield className="w-5 h-5 text-white" />
               <h3 className="text-lg font-bold">Segurança</h3>
             </div>
             <form onSubmit={handleUpdatePassword} className="space-y-6">

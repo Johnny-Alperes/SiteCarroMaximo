@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/Button";
 import { Plus, Car as CarIcon, ChevronRight, Fuel, Calendar } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import QuickActions from "@/components/dashboard/QuickActions";
 
 interface Vehicle {
   id: string;
@@ -29,7 +28,7 @@ export default function DashboardPage() {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserName(user.displayName || "Motorista");
-        
+
         const q = query(collection(db, `users/${user.uid}/vehicles`));
         const unsubscribeFirestore = onSnapshot(q, (snapshot) => {
           const vehiclesData = snapshot.docs.map(doc => ({
@@ -51,42 +50,50 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-10 w-10 animate-spin border border-zinc-700 border-b-white" />
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Olá, {userName}! 👋</h1>
-          <p className="text-foreground/60">Gerencie sua frota e acompanhe seus gastos.</p>
+          <h1 className="text-3xl font-black uppercase tracking-tight text-white">
+            Olá, {userName}
+          </h1>
+          <p className="mt-1 text-sm text-zinc-400">
+            Gerencie sua frota e acompanhe seus gastos.
+          </p>
         </div>
         <Link href="/dashboard/vehicles/new">
-          <Button className="h-12 px-6 rounded-2xl">
-            <Plus className="w-5 h-5" />
+          <Button className="h-11 px-6">
+            <Plus className="w-4 h-4" />
             Adicionar Veículo
           </Button>
         </Link>
       </div>
 
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold">Meus Veículos</h2>
-        <span className="text-xs font-bold bg-primary/10 text-primary px-3 py-1 rounded-full">
-          {vehicles.length} {vehicles.length === 1 ? 'Veículo' : 'Veículos'}
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-lg font-bold uppercase tracking-widest text-zinc-300">
+          Meus Veículos
+        </h2>
+        <span className="border border-zinc-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+          {vehicles.length} {vehicles.length === 1 ? "Veículo" : "Veículos"}
         </span>
       </div>
 
       {vehicles.length === 0 ? (
-        <Card className="p-12 text-center flex flex-col items-center justify-center border-dashed">
-          <div className="bg-primary/10 p-4 rounded-full mb-4">
-            <CarIcon className="w-8 h-8 text-primary" />
+        <Card className="flex flex-col items-center justify-center border-dashed p-12 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center border border-zinc-700 bg-zinc-900">
+            <CarIcon className="h-7 w-7 text-zinc-400" />
           </div>
-          <h3 className="text-xl font-bold mb-2">Nenhum veículo cadastrado</h3>
-          <p className="text-foreground/60 mb-6 max-w-sm">
-            Comece adicionando seu primeiro veículo para acompanhar manutenções, 
+          <h3 className="mb-2 text-xl font-black uppercase tracking-tight">
+            Nenhum veículo cadastrado
+          </h3>
+          <p className="mb-6 max-w-sm text-sm text-zinc-400">
+            Comece adicionando seu primeiro veículo para acompanhar manutenções,
             abastecimentos e gastos totais.
           </p>
           <Link href="/dashboard/vehicles/new">
@@ -94,7 +101,7 @@ export default function DashboardPage() {
           </Link>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {vehicles.map((vehicle, index) => (
             <motion.div
               key={vehicle.id}
@@ -103,26 +110,30 @@ export default function DashboardPage() {
               transition={{ delay: index * 0.1 }}
             >
               <Card className="group overflow-hidden">
-                <div className="flex items-start justify-between mb-6">
-                  <div className="bg-primary/10 p-3 rounded-2xl group-hover:bg-primary group-hover:text-white transition-all">
-                    <CarIcon className="w-6 h-6" />
+                <div className="mb-6 flex items-start justify-between">
+                  <div className="border border-zinc-700 bg-zinc-900 p-3 text-zinc-400 transition-colors group-hover:border-zinc-500 group-hover:text-white">
+                    <CarIcon className="h-6 w-6" />
                   </div>
                   <div className="text-right">
-                    <span className="text-xs font-bold uppercase tracking-widest text-foreground/40">Placa</span>
-                    <p className="font-mono font-bold text-sm bg-white/5 px-2 py-1 rounded border border-border">
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500">
+                      Placa
+                    </span>
+                    <p className="mt-1 border border-zinc-700 bg-zinc-900 px-2 py-1 font-mono text-sm font-bold text-zinc-200">
                       {vehicle.plate}
                     </p>
                   </div>
                 </div>
 
-                <h3 className="text-2xl font-bold mb-4">{vehicle.model}</h3>
+                <h3 className="mb-4 text-2xl font-black uppercase tracking-tight text-white">
+                  {vehicle.model}
+                </h3>
 
-                <div className="flex items-center gap-4 text-sm text-foreground/60 mb-6">
+                <div className="mb-6 flex items-center gap-4 text-sm text-zinc-400">
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4" />
                     {vehicle.year}
                   </div>
-                  <div className="w-1 h-1 bg-border rounded-full"></div>
+                  <div className="h-1 w-1 rounded-full bg-zinc-700" />
                   <div className="flex items-center gap-1.5">
                     <Fuel className="w-4 h-4" />
                     {vehicle.fuelType}
@@ -130,9 +141,9 @@ export default function DashboardPage() {
                 </div>
 
                 <Link href={`/dashboard/vehicles/${vehicle.id}`}>
-                  <Button variant="outline" className="w-full justify-between group/btn">
+                  <Button variant="outline" className="group/btn w-full justify-between">
                     Ver detalhes
-                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                    <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                   </Button>
                 </Link>
               </Card>

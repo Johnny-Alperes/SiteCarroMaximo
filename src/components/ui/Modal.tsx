@@ -34,7 +34,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
           />
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 pointer-events-none">
             <motion.div
@@ -42,17 +42,17 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className={cn(
-                "w-full max-w-lg bg-card border border-border rounded-[2.5rem] shadow-2xl p-8 relative pointer-events-auto",
+                "w-full max-w-lg bg-zinc-950 border border-zinc-800 shadow-2xl p-8 relative pointer-events-auto",
                 className
               )}
             >
               <div className="flex items-center justify-between mb-6">
-                {title && <h3 className="text-2xl font-bold">{title}</h3>}
+                {title && <h3 className="text-xl font-black uppercase tracking-tight">{title}</h3>}
                 <button
                   onClick={onClose}
-                  className="p-2 rounded-full hover:bg-white/5 transition-colors"
+                  className="p-2 text-zinc-500 transition-colors hover:text-white"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
               {children}

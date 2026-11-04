@@ -829,17 +829,17 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center bg-zinc-950">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center animate-pulse">
+          <div className="flex h-12 w-12 animate-pulse items-center justify-center bg-zinc-800">
             <CarIcon className="w-6 h-6 text-white" />
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '0s' }} />
-            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '0.15s' }} />
-            <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '0.3s' }} />
+            <div className="w-2 h-2 rounded-full bg-zinc-500 animate-bounce" style={{ animationDelay: '0s' }} />
+            <div className="w-2 h-2 rounded-full bg-zinc-500 animate-bounce" style={{ animationDelay: '0.15s' }} />
+            <div className="w-2 h-2 rounded-full bg-zinc-500 animate-bounce" style={{ animationDelay: '0.3s' }} />
           </div>
-          <p className="text-sm text-slate-400">Carregando dados do veículo...</p>
+          <p className="text-sm text-zinc-400">Carregando dados do veículo...</p>
         </div>
       </div>
     );
@@ -847,11 +847,11 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
   if (!vehicle) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center bg-zinc-950">
         <div className="text-center">
-          <CarIcon className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+          <CarIcon className="w-16 h-16 text-zinc-600 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-white mb-2">Veículo não encontrado</h2>
-          <p className="text-slate-400 mb-6">O veículo que você está procurando não existe ou foi removido.</p>
+          <p className="text-zinc-400 mb-6">O veículo que você está procurando não existe ou foi removido.</p>
           <Link href="/dashboard">
             <Button>Voltar para Garagem</Button>
           </Link>
@@ -861,12 +861,12 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   }
 
   return (
-    <div className="space-y-8 pb-20 bg-slate-950 min-h-screen">
+    <div className="space-y-8 pb-20 bg-zinc-950 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <Link 
           href="/dashboard" 
-          className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-blue-400 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
           Voltar para Garagem
@@ -875,7 +875,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           variant="outline" 
           size="sm" 
           onClick={() => router.push(`/dashboard/vehicles/new?edit=${id}`)}
-          className="gap-2 text-white border-slate-700 hover:bg-slate-800"
+          className="gap-2 text-white border-zinc-700 hover:bg-zinc-800"
         >
           <Edit className="w-4 h-4" />
           Editar Veículo
@@ -885,28 +885,28 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Info Sidebar */}
         <div className="w-full lg:w-1/3 space-y-6">
-          <Card className="p-8 sticky top-28 bg-slate-900/50 backdrop-blur-sm border-slate-800">
+          <Card className="p-8 sticky top-28 bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
             <div className="flex items-center gap-4 mb-6">
-              <div className="bg-gradient-to-br from-blue-500 to-indigo-500 p-4 rounded-3xl shadow-lg shadow-blue-500/20">
+              <div className="border border-zinc-700 bg-zinc-900 p-4">
                 <CarIcon className="text-white w-8 h-8" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-white">{vehicle.model}</h1>
-                <p className="text-slate-400 font-mono text-sm tracking-widest">{vehicle.plate}</p>
+                <h1 className="text-3xl font-black uppercase tracking-tight text-white">{vehicle.model}</h1>
+                <p className="text-zinc-400 font-mono text-sm tracking-widest">{vehicle.plate}</p>
               </div>
             </div>
 
-            <div className="space-y-4 pt-6 border-t border-slate-800">
+            <div className="space-y-4 pt-6 border-t border-zinc-800">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Ano / Modelo</span>
+                <span className="text-sm text-zinc-400">Ano / Modelo</span>
                 <span className="font-bold text-white">{vehicle.year}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Combustível</span>
+                <span className="text-sm text-zinc-400">Combustível</span>
                 <span className="font-bold text-white">{vehicle.fuelType}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Cor</span>
+                <span className="text-sm text-zinc-400">Cor</span>
                 <span className="font-bold text-white">{vehicle.color}</span>
               </div>
             </div>
@@ -917,33 +917,33 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         <div className="flex-1 space-y-8">
           {/* Stats Overview */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Card className="p-6 bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20">
+            <Card className="p-6 bg-zinc-900/40 border-zinc-800">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400">
+                <div className="p-2 bg-zinc-800 rounded-none text-zinc-300">
                   <DollarSign className="w-5 h-5" />
                 </div>
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
+                <TrendingUp className="w-4 h-4 text-zinc-400" />
               </div>
-              <p className="text-sm text-slate-400">Gasto Total</p>
+              <p className="text-sm text-zinc-400">Gasto Total</p>
               <h3 className="text-2xl font-bold text-white">
                 {totalCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </h3>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-zinc-400 mt-1">
                 {maintenances.length} serviços + {fuelings.length} abastecimentos
               </p>
             </Card>
             
-            <Card className="p-6 bg-gradient-to-br from-indigo-500/10 to-indigo-600/10 border-indigo-500/20">
+            <Card className="p-6 bg-zinc-900/40 border-zinc-800">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400">
+                <div className="p-2 bg-zinc-800 rounded-none text-zinc-300">
                   <Calendar className="w-5 h-5" />
                 </div>
               </div>
-              <p className="text-sm text-slate-400">Última Atividade</p>
+              <p className="text-sm text-zinc-400">Última Atividade</p>
               <h3 className="text-2xl font-bold text-white">
                 {lastActivity ? lastActivity.dateText : "Nenhuma atividade"}
               </h3>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-zinc-400 mt-1">
                 {lastActivity
                   ? `${lastActivityTab?.label ?? "Registro"} • ${
                       lastActivity.price !== null
@@ -969,10 +969,10 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                     setSearchTerm("");
                   }}
                   className={cn(
-                    "flex flex-col items-center justify-center gap-1 p-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all text-center h-full",
+                    "flex flex-col items-center justify-center gap-1 p-2 rounded-none text-[10px] sm:text-xs font-bold transition-all text-center h-full",
                     activeTab === tab.id 
-                      ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md shadow-blue-500/20" 
-                      : "bg-slate-900 border border-slate-700 text-slate-400 hover:border-blue-500 hover:text-white"
+                      ? "bg-white text-zinc-950 shadow-none" 
+                      : "bg-zinc-900 border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
                   )}
                   title={tab.label}
                 >
@@ -982,8 +982,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               ))}
             </div>
 
-            <Card className="overflow-hidden border-slate-800 bg-slate-900">
-              <div className="p-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/50">
+            <Card className="overflow-hidden border-zinc-800 bg-zinc-900">
+              <div className="p-6 border-b border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-zinc-900/50">
                 <h3 className="font-bold text-white">
                   Registros de {tabs.find(t => t.id === activeTab)?.label}
                 </h3>
@@ -995,18 +995,18 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                         placeholder="Buscar serviço pelo nome..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="h-10 text-white border-slate-700 bg-slate-800/50 placeholder:text-slate-500"
+                        className="h-10 text-white border-zinc-700 bg-zinc-800/50 placeholder:text-zinc-500"
                         aria-label="Buscar serviço pelo nome"
                       />
                     </div>
                   )}
-                  <Button size="sm" variant="outline" className="text-slate-400 border-slate-700 hover:text-white hover:bg-slate-800">
+                  <Button size="sm" variant="outline" className="text-zinc-400 border-zinc-700 hover:text-white hover:bg-zinc-800">
                     Ver Histórico Completo
                   </Button>
                 </div>
               </div>
               
-              <div className="divide-y divide-slate-800">
+              <div className="divide-y divide-zinc-800">
                 {activeData.map((item: any) => {
                   const batteryLifespan = activeTab === "battery" ? getBatteryLifespan(item) : null;
                   const fuelLifespan = activeTab === "fuel" ? getFuelingLifespan(item) : null;
@@ -1015,9 +1015,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                     : null;
 
                   return (
-                    <div key={item.id} className="p-6 flex items-center justify-between hover:bg-slate-800/50 transition-colors">
+                    <div key={item.id} className="p-6 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
                       <div className="flex items-center gap-4">
-                        <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 text-blue-400">
+                        <div className="p-3 rounded-none bg-zinc-800 text-zinc-300">
                           {getTabIcon(activeTab)}
                         </div>
                         <div>
@@ -1027,8 +1027,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                                 className={cn(
                                   "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold",
                                   batteryLifespan.replacedOn
-                                    ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
-                                    : "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                                    ? "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
+                                    : "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
                                 )}
                                 title={
                                   batteryLifespan.replacedOn
@@ -1044,8 +1044,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                                 className={cn(
                                   "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold",
                                   fuelLifespan.isCurrent
-                                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
-                                    : "border-blue-500/20 bg-blue-500/10 text-blue-400"
+                                    ? "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
+                                    : "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
                                 )}
                                 title={
                                   fuelLifespan.isCurrent
@@ -1067,8 +1067,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                                 className={cn(
                                   "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold",
                                   recordLifespan.isCurrent
-                                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
-                                    : "border-amber-500/20 bg-amber-500/10 text-amber-400"
+                                    ? "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
+                                    : "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
                                 )}
                                 title={
                                   recordLifespan.isCurrent
@@ -1083,22 +1083,22 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                               {getItemName(item, activeTab)}
                             </p>
                           </div>
-                          <p className="text-xs text-slate-400">
+                          <p className="text-xs text-zinc-400">
                             {getItemDate(item, activeTab)}
                             {batteryLifespan?.replacedOn && (
-                              <span className="text-amber-400/80">
+                              <span className="text-zinc-400/80">
                                 {" "}• substituída em {batteryLifespan.replacedOn}
                               </span>
                             )}
                             {recordLifespan?.nextOn && (
-                              <span className="text-amber-400/80">
+                              <span className="text-zinc-400/80">
                                 {" "}• {recordLifespanNextLabels[activeTab] ?? "próximo registro em"} {recordLifespan.nextOn}
                               </span>
                             )}
                           </p>
                         </div>
                       </div>
-                      <span className="font-bold text-emerald-400">
+                      <span className="font-bold text-zinc-100">
                         {getItemPrice(item, activeTab).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                       </span>
                     </div>
@@ -1107,27 +1107,27 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
                 {activeData.length === 0 && (
                   <div className="p-12 text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 rounded-none bg-zinc-800 flex items-center justify-center mx-auto mb-4">
                       {getTabIcon(activeTab)}
                     </div>
                     {activeTab === "maintenance" && searchTerm.trim() ? (
                       <>
-                        <p className="text-slate-400 text-sm italic">
+                        <p className="text-zinc-400 text-sm italic">
                           Nenhum serviço encontrado para &quot;{searchTerm.trim()}&quot;.
                         </p>
                         <button
                           onClick={() => setSearchTerm("")}
-                          className="text-blue-400 text-xs mt-2 hover:text-blue-300 transition-colors"
+                          className="text-zinc-400 text-xs mt-2 hover:text-zinc-300 transition-colors"
                         >
                           Limpar busca
                         </button>
                       </>
                     ) : (
                       <>
-                        <p className="text-slate-400 text-sm italic">
+                        <p className="text-zinc-400 text-sm italic">
                           Nenhum registro de {tabs.find(t => t.id === activeTab)?.label?.toLowerCase()} encontrado para este veículo.
                         </p>
-                        <p className="text-slate-500 text-xs mt-2">
+                        <p className="text-zinc-500 text-xs mt-2">
                           Adicione pelo aplicativo Carro Máximo para ver aqui
                         </p>
                       </>

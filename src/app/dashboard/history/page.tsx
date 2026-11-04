@@ -246,19 +246,19 @@ function HistoryContent() {
             <ChevronLeft className="w-4 h-4" />
             Voltar para o Dashboard
           </Link>
-          <h1 className="text-3xl font-bold">Histórico de {categoryFilter ? categoryNames[categoryFilter] : "Atividades"}</h1>
+          <h1 className="text-3xl font-black uppercase tracking-tight">Histórico de {categoryFilter ? categoryNames[categoryFilter] : "Atividades"}</h1>
           <p className="text-foreground/60">Visualize todos os registros salvos em sua conta.</p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative w-full md:w-96">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/40" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
             <input 
               type="text" 
               placeholder="Pesquisar por nome ou veículo..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-card border border-border rounded-2xl py-3 pl-12 pr-4 outline-none focus:border-primary/50 transition-all"
+              className="w-full border border-zinc-700 bg-zinc-900 py-3 pl-12 pr-4 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600 focus:border-zinc-500"
             />
           </div>
         </div>
@@ -267,12 +267,12 @@ function HistoryContent() {
       {loading ? (
         <div className="grid grid-cols-1 gap-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-24 bg-card/50 border border-border rounded-3xl animate-pulse"></div>
+            <div key={i} className="h-24 animate-pulse border border-zinc-800 bg-zinc-900/40"></div>
           ))}
         </div>
       ) : filteredRecords.length === 0 ? (
         <Card className="p-20 text-center flex flex-col items-center justify-center border-dashed">
-          <div className="bg-primary/10 p-4 rounded-full mb-4">
+          <div className="mb-4 border border-zinc-700 bg-zinc-900 p-4">
             <Filter className="w-8 h-8 text-primary" />
           </div>
           <h3 className="text-xl font-bold mb-2">Nenhum registro encontrado</h3>
@@ -295,7 +295,7 @@ function HistoryContent() {
                   <Card className="p-4 hover:border-primary/30 transition-all group">
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="p-3 bg-primary/10 rounded-2xl group-hover:bg-primary group-hover:text-white transition-all shrink-0">
+                        <div className="shrink-0 border border-zinc-700 bg-zinc-900 p-3 transition-all group-hover:bg-white group-hover:text-zinc-950">
                           <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
                         <div className="min-w-0 flex-1">

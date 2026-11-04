@@ -12,20 +12,20 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full space-y-1.5">
         {label && (
-          <label className="text-sm font-semibold ml-1 text-foreground/70">
+          <label className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
             {label}
           </label>
         )}
         <div className="relative group">
           {icon && (
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40 group-focus-within:text-primary transition-colors">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 transition-colors group-focus-within:text-white">
               {icon}
             </div>
           )}
           <input
             ref={ref}
             className={cn(
-              "flex h-12 w-full rounded-2xl border border-border bg-background/50 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary/50 transition-all disabled:cursor-not-allowed disabled:opacity-50",
+              "flex h-12 w-full rounded-none border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm text-zinc-100 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20 focus-visible:border-zinc-500 transition-all disabled:cursor-not-allowed disabled:opacity-50",
               icon && "pl-11",
               error && "border-red-500 focus-visible:ring-red-500/10 focus-visible:border-red-500",
               className

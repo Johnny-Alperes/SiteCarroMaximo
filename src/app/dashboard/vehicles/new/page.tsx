@@ -64,7 +64,7 @@ export default function NewVehiclePage() {
       </Link>
 
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Novo Veículo</h1>
+        <h1 className="text-3xl font-black uppercase tracking-tight">Novo Veículo</h1>
       </div>
 
       <Card className="p-8">
@@ -87,9 +87,9 @@ export default function NewVehiclePage() {
             />
 
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold ml-1 text-foreground/70">Ano</label>
+              <label className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Ano</label>
               <select
-                className="flex h-12 w-full rounded-2xl border border-border bg-background/50 px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary/50 transition-all"
+                className="flex h-12 w-full rounded-none border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm text-zinc-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20 focus-visible:border-zinc-500 transition-all"
                 value={formData.year}
                 onChange={(e) => setFormData({ ...formData, year: e.target.value })}
               >
@@ -100,9 +100,9 @@ export default function NewVehiclePage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold ml-1 text-foreground/70">Cor</label>
+              <label className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Cor</label>
               <select
-                className="flex h-12 w-full rounded-2xl border border-border bg-background/50 px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary/50 transition-all"
+                className="flex h-12 w-full rounded-none border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm text-zinc-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20 focus-visible:border-zinc-500 transition-all"
                 value={formData.color}
                 onChange={(e) => setFormData({ ...formData, color: e.target.value })}
               >
@@ -121,9 +121,9 @@ export default function NewVehiclePage() {
             />
 
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold ml-1 text-foreground/70">Combustível</label>
+              <label className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Combustível</label>
               <select
-                className="flex h-12 w-full rounded-2xl border border-border bg-background/50 px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary/50 transition-all"
+                className="flex h-12 w-full rounded-none border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm text-zinc-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20 focus-visible:border-zinc-500 transition-all"
                 value={formData.fuelType}
                 onChange={(e) => setFormData({ ...formData, fuelType: e.target.value })}
               >

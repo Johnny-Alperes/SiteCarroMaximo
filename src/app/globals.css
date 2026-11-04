@@ -4,19 +4,19 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   
-  --color-primary: #6366f1;
-  --color-primary-foreground: #ffffff;
+  --color-primary: #fafafa;
+  --color-primary-foreground: #09090b;
   
-  --color-secondary: #10b981;
-  --color-secondary-foreground: #ffffff;
+  --color-secondary: #a1a1aa;
+  --color-secondary-foreground: #09090b;
   
-  --color-accent: #f59e0b;
-  --color-accent-foreground: #ffffff;
+  --color-accent: #27272a;
+  --color-accent-foreground: #fafafa;
   
-  --color-card: #0a0a0a;
-  --color-card-foreground: #ededed;
+  --color-card: #09090b;
+  --color-card-foreground: #fafafa;
   
-  --color-border: #1f1f1f;
+  --color-border: #27272a;
   
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
@@ -34,11 +34,11 @@
 }
 
 .dark {
-  --background: #050505;
+  --background: #09090b;
   --foreground: #fafafa;
-  --card: #0a0a0a;
+  --card: #09090b;
   --card-foreground: #fafafa;
-  --border: #1f1f1f;
+  --border: #27272a;
 }
 
 @layer base {
@@ -57,10 +57,10 @@
   }
   
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-linear-to-r from-primary via-indigo-400 to-secondary;
+    @apply bg-clip-text text-transparent bg-linear-to-r from-white via-zinc-300 to-zinc-500;
   }
 
   .premium-shadow {
-    box-shadow: 0 0 40px -10px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 0 40px -10px rgba(255, 255, 255, 0.12);
   }
 }

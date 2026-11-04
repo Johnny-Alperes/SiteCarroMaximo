@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import { Car, LogOut, User, Bell } from "lucide-react";
-import Link from "next/link";
+import { Car, LogOut, User } from "lucide-react";
 import Cookies from "js-cookie";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
@@ -30,61 +30,69 @@ export default function Header() {
 
   return (
     <>
-      <header className="h-20 bg-card/50 backdrop-blur-xl border-b border-border sticky top-0 z-40 px-6">
-        <div className="container mx-auto h-full flex items-center justify-between">
+      <header className="sticky top-0 z-40 h-14 shrink-0 border-b border-zinc-800 bg-zinc-950 px-6">
+        <div className="mx-auto flex h-full max-w-[1500px] items-center justify-between gap-6">
           <div className="flex items-center gap-8">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <div className="bg-primary p-1.5 rounded-lg">
-                <Car className="text-white w-5 h-5" />
-              </div>
-              <span className="text-xl font-bold tracking-tight hidden sm:block">
+            <Link href="/dashboard" className="flex items-center gap-3">
+              <Car className="h-4 w-4 text-zinc-500" />
+              <span className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400 sm:block">
                 Carro Máximo
               </span>
             </Link>
-            
-            <nav className="hidden md:flex items-center gap-6">
-              <Link href="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">Veículos</Link>
-              <Link href="/dashboard/profile" className="text-sm font-medium hover:text-primary transition-colors">Perfil</Link>
+
+            <nav className="hidden items-center gap-6 md:flex">
+              <Link
+                href="/dashboard"
+                className="text-xs uppercase tracking-widest text-zinc-400 transition-colors hover:text-white"
+              >
+                Veículos
+              </Link>
+              <Link
+                href="/dashboard/history"
+                className="text-xs uppercase tracking-widest text-zinc-400 transition-colors hover:text-white"
+              >
+                Histórico
+              </Link>
+              <Link
+                href="/dashboard/profile"
+                className="text-xs uppercase tracking-widest text-zinc-400 transition-colors hover:text-white"
+              >
+                Perfil
+              </Link>
             </nav>
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="p-2 rounded-full hover:bg-white/5 transition-colors relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-background"></span>
-            </button>
-            
-            <div className="h-8 w-[1px] bg-border mx-2"></div>
-            
-            <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold">{user?.displayName || "Usuário"}</p>
-                <p className="text-[10px] text-foreground/40">{user?.email}</p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center overflow-hidden">
-                {user?.photoURL ? (
-                  <Image 
-                    src={user.photoURL} 
-                    alt={user.displayName || "Perfil"} 
-                    width={40} 
-                    height={40}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="w-5 h-5 text-primary" />
-                )}
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setIsLogoutModalOpen(true)}
-                className="text-foreground/40 hover:text-red-500"
-                title="Sair"
-                aria-label="Sair"
-              >
-                <LogOut className="w-5 h-5" />
-              </Button>
+            <div className="hidden text-right sm:block">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-300">
+                {user?.displayName || "Usuário"}
+              </p>
+              <p className="text-[9px] text-zinc-600">{user?.email}</p>
             </div>
+
+            <div className="flex h-9 w-9 items-center justify-center overflow-hidden border border-zinc-700 bg-zinc-900">
+              {user?.photoURL ? (
+                <Image
+                  src={user.photoURL}
+                  alt={user.displayName || "Perfil"}
+                  width={36}
+                  height={36}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <User className="h-4 w-4 text-zinc-400" />
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsLogoutModalOpen(true)}
+              className="text-zinc-500 transition-colors hover:text-white"
+              title="Sair"
+              aria-label="Sair"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </header>
@@ -95,7 +103,7 @@ export default function Header() {
         title="Sair da conta?"
       >
         <div className="space-y-6">
-          <p className="text-foreground/60">
+          <p className="text-sm text-zinc-400">
             Tem certeza de que deseja realmente sair da sua conta?
           </p>
           <div className="flex justify-end gap-3">
