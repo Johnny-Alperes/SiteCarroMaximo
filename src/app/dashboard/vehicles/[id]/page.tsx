@@ -873,8 +873,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     setServiceProgress(0);
 
     const progressTimer = window.setInterval(() => {
-      setServiceProgress((current) => current >= 80 ? current : current + 10);
-    }, 80);
+      setServiceProgress((current) => current >= 80 ? current : current + 2);
+    }, 140);
 
     try {
       const docRef = await addDoc(collection(db, `users/${user.uid}/maintenance`), {
@@ -898,8 +898,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           setRegisterSuccess(false);
           setRegisterError("");
           setServiceProgress(0);
-        }, 1200);
-      }, 350);
+        }, 1800);
+      }, 1000);
     } catch (error) {
       console.error("Erro ao cadastrar serviço:", error);
       window.clearInterval(progressTimer);
@@ -1316,30 +1316,21 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         }}
         title="Cadastrar Item"
       >
-        {registerSuccess ? (
-          <div className="space-y-6">
+        <form onSubmit={handleRegisterService} className="space-y-4">
+          {registerBarVisible && (
             <div className="border border-emerald-900/70 bg-emerald-500/10 p-4">
               <div className="mb-3 flex items-center gap-3 text-emerald-300">
                 <CheckCircle2 className="h-5 w-5 shrink-0" />
-                <p className="text-sm font-bold uppercase tracking-widest">Cadastrado com sucesso!</p>
+                <p className="text-sm font-bold uppercase tracking-widest">
+                  {registerSuccess ? "Cadastrado com sucesso!" : "Cadastrando..."}
+                </p>
               </div>
-              <div className="h-2 border border-emerald-900/70 bg-zinc-900 transition-opacity duration-500">
-                <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${serviceProgress}%` }} />
+              <div className="h-2 border border-emerald-900/70 bg-zinc-900 transition-opacity duration-700">
+                <div className="h-full bg-emerald-500 transition-all duration-700" style={{ width: `${serviceProgress}%` }} />
               </div>
               <p className="mt-2 text-right text-xs text-emerald-300">{serviceProgress}%</p>
             </div>
-          </div>
-        ) : (
-          <form onSubmit={handleRegisterService} className="space-y-4">
-            {registerBarVisible && (
-              <div className="border border-zinc-800 bg-zinc-900/50 p-4">
-                <p className="mb-2 text-xs font-bold uppercase tracking-widest text-zinc-400">Cadastrando...</p>
-                <div className="h-2 border border-zinc-700 bg-zinc-950">
-                  <div className="h-full bg-white transition-all duration-300" style={{ width: `${serviceProgress}%` }} />
-                </div>
-                <p className="mt-2 text-right text-xs text-zinc-400">{serviceProgress}%</p>
-              </div>
-            )}
+          )}
             <Input
               label="Nome do serviço"
               placeholder="Ex.: Troca de óleo"
@@ -1381,7 +1372,6 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               </Button>
             </div>
           </form>
-        )}
       </Modal>
 
       <Modal
