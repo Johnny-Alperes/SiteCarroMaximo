@@ -1027,8 +1027,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                                 className={cn(
                                   "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold",
                                   batteryLifespan.replacedOn
-                                    ? "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
-                                    : "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
+                                    ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
+                                    : "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
                                 )}
                                 title={
                                   batteryLifespan.replacedOn
@@ -1044,8 +1044,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                                 className={cn(
                                   "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold",
                                   fuelLifespan.isCurrent
-                                    ? "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
-                                    : "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
+                                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                                    : "border-blue-500/20 bg-blue-500/10 text-blue-400"
                                 )}
                                 title={
                                   fuelLifespan.isCurrent
@@ -1067,8 +1067,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                                 className={cn(
                                   "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold",
                                   recordLifespan.isCurrent
-                                    ? "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
-                                    : "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
+                                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                                    : "border-amber-500/20 bg-amber-500/10 text-amber-400"
                                 )}
                                 title={
                                   recordLifespan.isCurrent
@@ -1086,12 +1086,12 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                           <p className="text-xs text-zinc-400">
                             {getItemDate(item, activeTab)}
                             {batteryLifespan?.replacedOn && (
-                              <span className="text-zinc-400/80">
+                              <span className="text-amber-400/80">
                                 {" "}• substituída em {batteryLifespan.replacedOn}
                               </span>
                             )}
                             {recordLifespan?.nextOn && (
-                              <span className="text-zinc-400/80">
+                              <span className="text-amber-400/80">
                                 {" "}• {recordLifespanNextLabels[activeTab] ?? "próximo registro em"} {recordLifespan.nextOn}
                               </span>
                             )}
