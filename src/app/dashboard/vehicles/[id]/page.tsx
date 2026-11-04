@@ -326,9 +326,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const [deleteBarVisible, setDeleteBarVisible] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-  const [serviceName, setServiceName] = useState("");
-  const [serviceDate, setServiceDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [servicePrice, setServicePrice] = useState("");
+  const [formData, setFormData] = useState<Record<string, string>>({});
   const [isSavingService, setIsSavingService] = useState(false);
   const [serviceProgress, setServiceProgress] = useState(0);
   const [registerSuccess, setRegisterSuccess] = useState(false);
@@ -874,13 +872,164 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
   const parseCurrencyInput = (value: string) => Number(value.replace(/[^\d]/g, "") || 0) / 100;
 
+  const getRegisterFields = (tabId: string) => {
+    const dateValue = formData.date || new Date().toISOString().slice(0, 10);
+    const priceField = { key: "price", label: "Valor (R$)", type: "currency", required: true };
+
+    switch (tabId) {
+      case "fuel":
+        return [
+          { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          { key: "liters", label: "Quantidade (L)", type: "number", required: true },
+          { key: "pricePerLiter", label: "Preço por litro (R$)", type: "currency", required: true },
+          { key: "kmAtFueling", label: "Km do abastecimento", type: "number", required: true },
+        ];
+      case "battery":
+        return [
+          { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          { key: "brand", label: "Marca", type: "text", required: true },
+          { key: "type", label: "Amperagem", type: "select", required: true, options: ["50 amperes", "60 amperes"] },
+          priceField,
+        ];
+      case "oil":
+        return [
+          { key: "lastDate", label: "Data da troca", type: "date", required: true, value: dateValue },
+          { key: "brand", label: "Marca", type: "text", required: true },
+          { key: "oilType", label: "Tipo do óleo", type: "select", required: true, options: ["5W-30", "10W-40", "15W-40", "20W-50"] },
+          priceField,
+        ];
+      case "defects":
+        return [
+          { key: "description", label: "Descrição do defeito", type: "text", required: true },
+          { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          { key: "severity", label: "Gravidade", type: "select", required: true, options: ["Baixa", "Média", "Alta"] },
+          { key: "resolved", label: "Resolvido?", type: "select", required: true, options: ["Não", "Sim"] },
+        ];
+      case "filters":
+        return [
+          { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          { key: "type", label: "Tipo do filtro", type: "select", required: true, options: ["Óleo Motor", "Ar Motor", "Combustível", "Ar Cabine", "Filtro Óleo", "Filtro de Câmbio", "Filtro Hidráulico", "Filtro de Água", "Filtro Secador"] },
+          { key: "brand", label: "Marca", type: "text", required: true },
+          priceField,
+        ];
+      case "revision":
+        return [
+          { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          { key: "type", label: "Tipo da revisão", type: "text", required: true },
+          { key: "kmAtRevision", label: "Km da revisão", type: "number", required: true },
+          priceField,
+        ];
+      case "tires_records":
+        return [
+          { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          { key: "brand", label: "Marca", type: "text", required: true },
+          { key: "model", label: "Modelo", type: "text", required: true },
+          { key: "position", label: "Posição", type: "select", required: true, options: ["Dianteiro esquerdo", "Dianteiro direito", "Traseiro esquerdo", "Traseiro direito", "Estepe"] },
+          priceField,
+        ];
+      case "alignment":
+        return [
+          { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          { key: "kmAtAlignment", label: "Km do alinhamento", type: "number", required: true },
+          priceField,
+        ];
+      case "ac":
+        return [
+          { key: "lastServiceDate", label: "Última manutenção", type: "date", required: true, value: dateValue },
+          { key: "nextServiceDate", label: "Próxima manutenção", type: "date", required: true },
+          priceField,
+        ];
+      case "wash":
+        return [
+          { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          { key: "type", label: "Tipo da lavagem", type: "select", required: true, options: ["Simples", "Completa", "Higienização"] },
+          { key: "location", label: "Local", type: "text", required: true },
+          priceField,
+        ];
+      case "travel":
+        return [
+          { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          { key: "origin", label: "Origem", type: "text", required: true },
+          { key: "destination", label: "Destino", type: "text", required: true },
+          { key: "distance", label: "Distância (km)", type: "number", required: true },
+        ];
+      case "calibration":
+        return [
+          { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          { key: "frontLeft", label: "Pressão dianteiro esquerdo", type: "number", required: true },
+          { key: "frontRight", label: "Pressão dianteiro direito", type: "number", required: true },
+          { key: "rearLeft", label: "Pressão traseiro esquerdo", type: "number", required: true },
+          { key: "rearRight", label: "Pressão traseiro direito", type: "number", required: true },
+        ];
+      case "licensing":
+        return [
+          { key: "year", label: "Ano", type: "text", required: true },
+          { key: "value", label: "Valor (R$)", type: "currency", required: true },
+          { key: "dueDate", label: "Vencimento", type: "date", required: true, value: dateValue },
+          { key: "paid", label: "Pago?", type: "select", required: true, options: ["Não", "Sim"] },
+        ];
+      case "fines":
+        return [
+          { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          { key: "description", label: "Descrição da multa", type: "text", required: true },
+          { key: "value", label: "Valor (R$)", type: "currency", required: true },
+          { key: "points", label: "Pontos na CNH", type: "number", required: true },
+          { key: "paid", label: "Pago?", type: "select", required: true, options: ["Não", "Sim"] },
+        ];
+      case "ipva":
+        return [
+          { key: "year", label: "Ano", type: "text", required: true },
+          { key: "value", label: "Valor (R$)", type: "currency", required: true },
+          { key: "dueDate", label: "Vencimento", type: "date", required: true, value: dateValue },
+          { key: "paid", label: "Pago?", type: "select", required: true, options: ["Não", "Sim"] },
+        ];
+      default:
+        return [
+          { key: "name", label: "Nome do serviço", type: "text", required: true },
+          { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          priceField,
+        ];
+    }
+  };
+
+  const parseNumberInput = (value: string) => Number(value.replace(",", "."));
+
+  const buildRecordPayload = (tabId: string) => {
+    const payload: Record<string, unknown> = { vehicleId: id, createdAt: new Date().toISOString() };
+    for (const field of getRegisterFields(tabId)) {
+      const rawValue = formData[field.key] ?? field.value ?? "";
+      if (field.type === "currency") payload[field.key] = parseCurrencyInput(rawValue);
+      else if (field.type === "number") payload[field.key] = parseNumberInput(rawValue);
+      else if (field.key === "resolved" || field.key === "paid") payload[field.key] = rawValue === "Sim";
+      else payload[field.key] = rawValue;
+    }
+    if (tabId === "fuel") {
+      const liters = parseNumberInput(formData.liters || "");
+      const pricePerLiter = parseCurrencyInput(formData.pricePerLiter || "");
+      payload.totalPrice = liters * pricePerLiter;
+    }
+    return payload;
+  };
+
+  const validateRecordPayload = (tabId: string, payload: Record<string, unknown>) => {
+    for (const field of getRegisterFields(tabId)) {
+      if (!field.required) continue;
+      const value = payload[field.key];
+      if (value === "" || value === undefined || value === null || (typeof value === "number" && Number.isNaN(value))) {
+        return `Preencha ${field.label.toLowerCase()}.`;
+      }
+    }
+    return "";
+  };
+
   const handleRegisterService = async (e: React.FormEvent) => {
     e.preventDefault();
     const user = auth.currentUser;
-    const name = serviceName.trim();
-    const price = parseCurrencyInput(servicePrice);
-    if (!user || !name || !serviceDate || Number.isNaN(price) || price < 0) {
-      setRegisterError("Preencha nome, data e valor corretamente.");
+    const tabId = activeTab;
+    const payload = buildRecordPayload(tabId);
+    const validationError = validateRecordPayload(tabId, payload);
+    if (!user || validationError) {
+      setRegisterError(user ? validationError : "Sessão expirada. Faça login novamente.");
       return;
     }
 
@@ -895,21 +1044,30 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     }, 140);
 
     try {
-      const docRef = await addDoc(collection(db, `users/${user.uid}/maintenance`), {
-        name,
-        date: serviceDate,
-        price,
-        vehicleId: id,
-        createdAt: new Date().toISOString(),
-      });
+      const docRef = await addDoc(collection(db, `users/${user.uid}/${tabId}`), payload);
       window.clearInterval(progressTimer);
       setServiceProgress(100);
       window.setTimeout(() => {
-        setMaintenances((current) => [{ id: docRef.id, name, date: serviceDate, price, vehicleId: id }, ...current]);
+        const newRecord = { id: docRef.id, ...payload } as any;
+        if (tabId === "maintenance") setMaintenances((current) => [newRecord, ...current]);
+        else if (tabId === "fuel") setFuelings((current) => [newRecord, ...current]);
+        else if (tabId === "battery") setBatteries((current) => [newRecord, ...current]);
+        else if (tabId === "oil") setOils((current) => [newRecord, ...current]);
+        else if (tabId === "defects") setDefects((current) => [newRecord, ...current]);
+        else if (tabId === "filters") setFilters((current) => [newRecord, ...current]);
+        else if (tabId === "revision") setRevisions((current) => [newRecord, ...current]);
+        else if (tabId === "tires_records") setTires((current) => [newRecord, ...current]);
+        else if (tabId === "alignment") setAlignments((current) => [newRecord, ...current]);
+        else if (tabId === "ac") setAcRecords((current) => [newRecord, ...current]);
+        else if (tabId === "wash") setWashRecords((current) => [newRecord, ...current]);
+        else if (tabId === "travel") setTravels((current) => [newRecord, ...current]);
+        else if (tabId === "calibration") setCalibrations((current) => [newRecord, ...current]);
+        else if (tabId === "licensing") setLicensings((current) => [newRecord, ...current]);
+        else if (tabId === "fines") setFines((current) => [newRecord, ...current]);
+        else if (tabId === "ipva") setIpvas((current) => [newRecord, ...current]);
+
         setRegisterSuccess(true);
-        setActiveTab("maintenance");
-        setServiceName("");
-        setServicePrice("");
+        setFormData({});
         window.setTimeout(() => {
           setRegisterBarVisible(false);
           setIsRegisterModalOpen(false);
@@ -919,7 +1077,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         }, 1800);
       }, 1000);
     } catch (error) {
-      console.error("Erro ao cadastrar serviço:", error);
+      console.error("Erro ao cadastrar item:", error);
       window.clearInterval(progressTimer);
       setRegisterBarVisible(false);
       setServiceProgress(0);
@@ -1155,7 +1313,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                         setRegisterError("");
                         setServiceProgress(0);
                         setRegisterBarVisible(false);
-                        setServiceDate(new Date().toISOString().slice(0, 10));
+                        setFormData({});
                       }}
                       className="group relative flex items-center gap-2 overflow-hidden border border-white bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all duration-300 hover:bg-zinc-200 hover:text-zinc-950 hover:shadow-[0_0_22px_rgba(255,255,255,0.16)]"
                     >
@@ -1323,55 +1481,71 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
       <Modal
         isOpen={isRegisterModalOpen}
-        onClose={() => {
-          if (!isSavingService) {
-            setIsRegisterModalOpen(false);
-            setRegisterSuccess(false);
-            setRegisterError("");
-            setRegisterBarVisible(false);
-            setServiceProgress(0);
-          }
-        }}
-        title="Cadastrar Item"
-      >
-        <form onSubmit={handleRegisterService} className="space-y-4">
-          {registerBarVisible && (
-            <div className="border border-emerald-900/70 bg-emerald-500/10 p-4">
-              <div className="mb-3 flex items-center gap-3 text-emerald-300">
-                <CheckCircle2 className="h-5 w-5 shrink-0" />
-                <p className="text-sm font-bold uppercase tracking-widest">
-                  {registerSuccess ? "Cadastrado com sucesso!" : "Cadastrando..."}
-                </p>
+          onClose={() => {
+            if (!isSavingService) {
+              setIsRegisterModalOpen(false);
+              setRegisterSuccess(false);
+              setRegisterError("");
+              setRegisterBarVisible(false);
+              setServiceProgress(0);
+            }
+          }}
+          title={`Cadastrar - ${tabs.find(t => t.id === activeTab)?.label ?? "Item"}`}
+        >
+          <form onSubmit={handleRegisterService} className="space-y-4">
+            {registerBarVisible && (
+              <div className="border border-emerald-900/70 bg-emerald-500/10 p-4">
+                <div className="mb-3 flex items-center gap-3 text-emerald-300">
+                  <CheckCircle2 className="h-5 w-5 shrink-0" />
+                  <p className="text-sm font-bold uppercase tracking-widest">
+                    {registerSuccess ? "Cadastrado com sucesso!" : "Cadastrando..."}
+                  </p>
+                </div>
+                <div className="h-2 border border-emerald-900/70 bg-zinc-900 transition-opacity duration-700">
+                  <div className="h-full bg-emerald-500 transition-all duration-700" style={{ width: `${serviceProgress}%` }} />
+                </div>
+                <p className="mt-2 text-right text-xs text-emerald-300">{serviceProgress}%</p>
               </div>
-              <div className="h-2 border border-emerald-900/70 bg-zinc-900 transition-opacity duration-700">
-                <div className="h-full bg-emerald-500 transition-all duration-700" style={{ width: `${serviceProgress}%` }} />
-              </div>
-              <p className="mt-2 text-right text-xs text-emerald-300">{serviceProgress}%</p>
+            )}
+            <div className="space-y-4">
+              {getRegisterFields(activeTab).map((field) => {
+                const fieldValue = formData[field.key] ?? field.value ?? "";
+                if (field.type === "select") {
+                  return (
+                    <div key={field.key} className="space-y-1.5">
+                      <label className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">{field.label} *</label>
+                      <select
+                        required={field.required}
+                        value={fieldValue}
+                        onChange={(e) => setFormData((current) => ({ ...current, [field.key]: e.target.value }))}
+                        className="flex h-12 w-full rounded-none border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm text-zinc-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20 focus-visible:border-zinc-500 transition-all"
+                      >
+                        <option value="" disabled>Selecione...</option>
+                        {field.options?.map((option) => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                }
+                return (
+                  <Input
+                    key={field.key}
+                    label={`${field.label} *`}
+                    type={field.type === "date" ? "date" : field.type === "number" ? "number" : "text"}
+                    inputMode={field.type === "currency" || field.type === "number" ? "decimal" : undefined}
+                    placeholder={field.type === "currency" ? "0,00" : `Digite ${field.label.toLowerCase()}`}
+                    value={fieldValue}
+                    onChange={(e) => {
+                      const nextValue = field.type === "currency" ? formatCurrencyInput(e.target.value) : e.target.value;
+                      setFormData((current) => ({ ...current, [field.key]: nextValue }));
+                    }}
+                    icon={field.type === "currency" ? <DollarSign className="h-4 w-4" /> : undefined}
+                    required={field.required}
+                  />
+                );
+              })}
             </div>
-          )}
-            <Input
-              label="Nome do serviço"
-              placeholder="Ex.: Troca de óleo"
-              value={serviceName}
-              onChange={(e) => setServiceName(e.target.value)}
-              required
-            />
-            <Input
-              label="Data"
-              type="date"
-              value={serviceDate}
-              onChange={(e) => setServiceDate(e.target.value)}
-              required
-            />
-            <Input
-              label="Valor (R$)"
-              placeholder="0,00"
-              inputMode="decimal"
-              value={servicePrice}
-              onChange={(e) => setServicePrice(formatCurrencyInput(e.target.value))}
-              icon={<DollarSign className="h-4 w-4" />}
-              required
-            />
             {registerError && (
               <p className="border border-red-900/60 bg-red-950/30 p-3 text-xs text-red-300">{registerError}</p>
             )}
