@@ -1304,24 +1304,22 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                       />
                     </div>
                   )}
-                  {activeTab === "maintenance" && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsRegisterModalOpen(true);
-                        setRegisterSuccess(false);
-                        setRegisterError("");
-                        setServiceProgress(0);
-                        setRegisterBarVisible(false);
-                        setFormData({});
-                      }}
-                      className="group relative flex shrink-0 items-center gap-2 overflow-hidden border border-white bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all duration-300 hover:bg-zinc-200 hover:text-zinc-950 hover:shadow-[0_0_22px_rgba(255,255,255,0.16)]"
-                    >
-                      <span className="absolute inset-y-0 left-0 w-1 bg-zinc-950/20 transition-all duration-300 group-hover:w-full group-hover:bg-zinc-950/10" />
-                      <Plus className="relative h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
-                      <span className="relative">Cadastrar Item</span>
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsRegisterModalOpen(true);
+                      setRegisterSuccess(false);
+                      setRegisterError("");
+                      setServiceProgress(0);
+                      setRegisterBarVisible(false);
+                      setFormData({});
+                    }}
+                    className="group relative flex shrink-0 items-center gap-2 overflow-hidden border border-white bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all duration-300 hover:bg-zinc-200 hover:text-zinc-950 hover:shadow-[0_0_22px_rgba(255,255,255,0.16)]"
+                  >
+                    <span className="absolute inset-y-0 left-0 w-1 bg-zinc-950/20 transition-all duration-300 group-hover:w-full group-hover:bg-zinc-950/10" />
+                    <Plus className="relative h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
+                    <span className="relative">Cadastrar Item</span>
+                  </button>
                   <Button size="sm" variant="outline" className="text-zinc-400 border-zinc-700 hover:text-white hover:bg-zinc-800">
                     Ver Histórico Completo
                   </Button>
