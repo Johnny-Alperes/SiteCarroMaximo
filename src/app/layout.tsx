@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, Inter } from "next/font/google";
+import { Outfit, Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import "./globals.css";
@@ -12,6 +12,12 @@ const outfit = Outfit({
 
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const jetbrains = JetBrains_Mono({
+  variable: "--font-jetbrains",
   subsets: ["latin"],
   display: "swap",
 });
@@ -29,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${outfit.variable} ${inter.variable} min-h-screen bg-background font-sans selection:bg-primary/30`}>
+      <body className={`${outfit.variable} ${inter.variable} ${jetbrains.variable} min-h-screen bg-background font-sans selection:bg-primary/30`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
