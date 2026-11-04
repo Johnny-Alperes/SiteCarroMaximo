@@ -3,11 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
-import Features from "@/components/Features";
-import Testimonials from "@/components/Testimonials";
-import Footer from "@/components/Footer";
+import LandingScreen from "@/components/landing/LandingScreen";
 
 export default function Home() {
   const router = useRouter();
@@ -19,24 +15,14 @@ export default function Home() {
     }
   }, [router]);
 
-  return (
-    <main className="relative flex flex-col min-h-screen overflow-x-hidden">
-      <Navbar />
-      
-      <div id="hero" className="flex-1">
-        <Hero />
-      </div>
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
-      <Features />
-      
-      <Testimonials />
-      
-      <Footer />
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
 
-      {/* Grid Background Effect */}
-      <div className="fixed inset-0 -z-10 h-full w-full bg-background bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]">
-        <div className="absolute inset-0 bg-radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(99,102,241,0.15),transparent)"></div>
-      </div>
-    </main>
-  );
+  return <LandingScreen />;
 }
