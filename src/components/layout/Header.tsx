@@ -21,7 +21,8 @@ export default function Header() {
       await signOut(auth);
       Cookies.remove("session");
       setIsLogoutModalOpen(false);
-      router.push("/login");
+      router.push("/");
+      router.refresh();
     } catch (error) {
       console.error("Erro ao deslogar:", error);
     }
