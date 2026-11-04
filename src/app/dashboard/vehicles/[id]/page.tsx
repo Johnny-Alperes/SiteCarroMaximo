@@ -1021,7 +1021,10 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                           {getTabIcon(activeTab)}
                         </div>
                         <div>
-                          <div className="flex flex-wrap items-center gap-2">
+                          <p className="font-bold text-white">
+                            {getItemName(item, activeTab)}
+                          </p>
+                          <div className="mt-1 flex flex-wrap items-center gap-2">
                             {batteryLifespan?.text && (
                               <span
                                 className={cn(
@@ -1079,11 +1082,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                                 {recordLifespan.text} de uso
                               </span>
                             )}
-                            <p className="font-bold text-white">
-                              {getItemName(item, activeTab)}
-                            </p>
                           </div>
-                          <p className="text-xs text-zinc-400">
+                          <p className="mt-1 text-xs text-zinc-400">
                             {getItemDate(item, activeTab)}
                             {batteryLifespan?.replacedOn && (
                               <span className="text-amber-400/80">
