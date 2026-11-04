@@ -8,7 +8,8 @@ import {
   collection, 
   getDocs,
   query,
-  orderBy
+  orderBy,
+  deleteDoc
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
@@ -45,6 +46,7 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/Input";
+import { Modal } from "@/components/ui/Modal";
 
 interface Vehicle {
   id: string;
@@ -316,6 +318,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const [activeTab, setActiveTab] = useState("maintenance");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<{ item: any; tab: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   
   const [maintenances, setMaintenances] = useState<MaintenanceItem[]>([]);
   const [fuelings, setFuelings] = useState<FuelItem[]>([]);
@@ -779,6 +784,54 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     }
   };
 
+  const removeRecordFromState = (tabId: string, recordId: string) => {
+    const filterById = <T extends { id: string }>(records: T[]) =>
+      records.filter((record) => record.id !== recordId);
+
+    switch (tabId) {
+      case "maintenance": setMaintenances(prev => filterById(prev)); break;
+      case "fuel": setFuelings(prev => filterById(prev)); break;
+      case "battery": setBatteries(prev => filterById(prev)); break;
+      case "oil": setOils(prev => filterById(prev)); break;
+      case "defects": setDefects(prev => filterById(prev)); break;
+      case "filters": setFilters(prev => filterById(prev)); break;
+      case "revision": setRevisions(prev => filterById(prev)); break;
+      case "tires_records": setTires(prev => filterById(prev)); break;
+      case "alignment": setAlignments(prev => filterById(prev)); break;
+      case "ac": setAcRecords(prev => filterById(prev)); break;
+      case "wash": setWashRecords(prev => filterById(prev)); break;
+      case "travel": setTravels(prev => filterById(prev)); break;
+      case "calibration": setCalibrations(prev => filterById(prev)); break;
+      case "licensing": setLicensings(prev => filterById(prev)); break;
+      case "fines": setFines(prev => filterById(prev)); break;
+      case "ipva": setIpvas(prev => filterById(prev)); break;
+    }
+  };
+
+  const handleDeleteRecord = async () => {
+    if (!deleteTarget) return;
+
+    const user = auth.currentUser;
+    if (!user) {
+      setDeleteError("Sessão expirada. Faça login novamente.");
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteError("");
+
+    try {
+      await deleteDoc(doc(db, `users/${user.uid}/${deleteTarget.tab}`, deleteTarget.item.id));
+      removeRecordFromState(deleteTarget.tab, deleteTarget.item.id);
+      setDeleteTarget(null);
+    } catch (error) {
+      console.error("Erro ao excluir registro:", error);
+      setDeleteError("Não foi possível excluir o item. Tente novamente.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const totalMaintenanceCost = maintenances.reduce((acc, m) => acc + (Number(m.price) || 0), 0);
   const totalFuelCost = fuelings.reduce((acc, f) => acc + (Number(f.totalPrice) || 0), 0);
   const totalCost = totalMaintenanceCost + totalFuelCost;
@@ -1098,9 +1151,23 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                           </p>
                         </div>
                       </div>
-                      <span className="font-bold text-zinc-100">
-                        {getItemPrice(item, activeTab).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                      </span>
+                      <div className="flex shrink-0 items-center gap-3">
+                        <span className="font-bold text-zinc-100">
+                          {getItemPrice(item, activeTab).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDeleteError("");
+                            setDeleteTarget({ item, tab: activeTab });
+                          }}
+                          className="p-2 text-zinc-500 transition-colors hover:text-red-400"
+                          title="Excluir registro"
+                          aria-label={`Excluir ${getItemName(item, activeTab)}`}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
@@ -1139,6 +1206,58 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={Boolean(deleteTarget)}
+        onClose={() => {
+          if (!isDeleting) {
+            setDeleteTarget(null);
+            setDeleteError("");
+          }
+        }}
+        title="Excluir registro"
+      >
+        <div className="space-y-6">
+          <div className="flex items-start gap-3 border border-red-900/60 bg-red-950/30 p-4">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
+            <div>
+              <p className="text-sm text-zinc-300">Você está prestes a excluir:</p>
+              <p className="mt-1 font-bold text-white">
+                {deleteTarget ? getItemName(deleteTarget.item, deleteTarget.tab) : ""}
+              </p>
+              <p className="mt-2 text-xs text-zinc-400">
+                Esta exclusão é permanente e não poderá ser desfeita.
+              </p>
+            </div>
+          </div>
+
+          {deleteError && (
+            <p className="border border-red-900/60 bg-red-950/30 p-3 text-xs text-red-300">
+              {deleteError}
+            </p>
+          )}
+
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDeleteTarget(null);
+                setDeleteError("");
+              }}
+              disabled={isDeleting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleDeleteRecord}
+              isLoading={isDeleting}
+            >
+              Excluir
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
