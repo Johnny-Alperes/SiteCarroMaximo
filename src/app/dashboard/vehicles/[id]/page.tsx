@@ -1074,10 +1074,13 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                           {getTabIcon(activeTab)}
                         </div>
                         <div>
-                          <p className="font-bold text-white">
-                            {getItemName(item, activeTab)}
-                          </p>
-                          <div className="flex flex-wrap items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <p className="font-bold text-white">
+                              {getItemName(item, activeTab)}
+                            </p>
+                            {(batteryLifespan?.text || fuelLifespan || recordLifespan) && (
+                              <span className="text-zinc-500">-</span>
+                            )}
                             {batteryLifespan?.text && (
                               <span
                                 className={cn(
