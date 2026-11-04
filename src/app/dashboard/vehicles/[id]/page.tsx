@@ -322,6 +322,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<{ item: any; tab: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteProgress, setDeleteProgress] = useState(0);
   const [deleteError, setDeleteError] = useState("");
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [serviceName, setServiceName] = useState("");
@@ -830,13 +831,26 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
     setIsDeleting(true);
     setDeleteError("");
+    setDeleteProgress(0);
+
+    const deleteTimer = window.setInterval(() => {
+      setDeleteProgress((current) => current >= 80 ? current : current + 2);
+    }, 140);
 
     try {
-      await deleteDoc(doc(db, `users/${user.uid}/${deleteTarget.tab}`, deleteTarget.item.id));
-      removeRecordFromState(deleteTarget.tab, deleteTarget.item.id);
-      setDeleteTarget(null);
+      const target = deleteTarget;
+      await deleteDoc(doc(db, `users/${user.uid}/${target.tab}`, target.item.id));
+      window.clearInterval(deleteTimer);
+      setDeleteProgress(100);
+      window.setTimeout(() => {
+        removeRecordFromState(target.tab, target.item.id);
+        setDeleteTarget(null);
+        setDeleteProgress(0);
+      }, 1000);
     } catch (error) {
       console.error("Erro ao excluir registro:", error);
+      window.clearInterval(deleteTimer);
+      setDeleteProgress(0);
       setDeleteError("Não foi possível excluir o item. Tente novamente.");
     } finally {
       setIsDeleting(false);
@@ -1376,12 +1390,13 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
       <Modal
         isOpen={Boolean(deleteTarget)}
-        onClose={() => {
-          if (!isDeleting) {
-            setDeleteTarget(null);
-            setDeleteError("");
-          }
-        }}
+          onClose={() => {
+            if (!isDeleting) {
+              setDeleteTarget(null);
+              setDeleteError("");
+              setDeleteProgress(0);
+            }
+          }}
         title="Excluir registro"
       >
         <div className="space-y-6">
@@ -1405,8 +1420,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                 <p className="text-sm font-bold uppercase tracking-widest">Excluindo...</p>
               </div>
               <div className="h-2 border border-red-900/70 bg-zinc-900">
-                <div className="h-full animate-pulse bg-red-500 transition-all duration-500" style={{ width: "80%" }} />
+                <div className="h-full bg-red-500 transition-all duration-700" style={{ width: `${deleteProgress}%` }} />
               </div>
+              <p className="mt-2 text-right text-xs text-red-300">{deleteProgress}%</p>
             </div>
           )}
 
