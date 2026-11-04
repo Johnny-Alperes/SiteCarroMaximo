@@ -1077,7 +1077,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                           <p className="font-bold text-white">
                             {getItemName(item, activeTab)}
                           </p>
-                          <div className="mt-1 flex flex-wrap items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             {batteryLifespan?.text && (
                               <span
                                 className={cn(
