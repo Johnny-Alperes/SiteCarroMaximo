@@ -1139,9 +1139,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                         setRegisterBarVisible(false);
                         setServiceDate(new Date().toISOString().slice(0, 10));
                       }}
-                      className="group relative flex items-center gap-2 overflow-hidden border border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-100 transition-all duration-300 hover:border-white/50 hover:bg-zinc-800 hover:text-white hover:shadow-[0_0_22px_rgba(255,255,255,0.08)]"
+                      className="group relative flex items-center gap-2 overflow-hidden border border-white bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all duration-300 hover:bg-zinc-200 hover:text-zinc-950 hover:shadow-[0_0_22px_rgba(255,255,255,0.16)]"
                     >
-                      <span className="absolute inset-y-0 left-0 w-1 bg-white/80 transition-all duration-300 group-hover:w-full group-hover:bg-white/10" />
+                      <span className="absolute inset-y-0 left-0 w-1 bg-zinc-950/20 transition-all duration-300 group-hover:w-full group-hover:bg-zinc-950/10" />
                       <Plus className="relative h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
                       <span className="relative">Cadastrar Item</span>
                     </button>
@@ -1397,6 +1397,18 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               </p>
             </div>
           </div>
+
+          {isDeleting && (
+            <div className="border border-red-900/70 bg-red-500/10 p-4">
+              <div className="mb-3 flex items-center gap-3 text-red-300">
+                <Trash2 className="h-5 w-5 shrink-0" />
+                <p className="text-sm font-bold uppercase tracking-widest">Excluindo...</p>
+              </div>
+              <div className="h-2 border border-red-900/70 bg-zinc-900">
+                <div className="h-full animate-pulse bg-red-500 transition-all duration-500" style={{ width: "80%" }} />
+              </div>
+            </div>
+          )}
 
           {deleteError && (
             <p className="border border-red-900/60 bg-red-950/30 p-3 text-xs text-red-300">
