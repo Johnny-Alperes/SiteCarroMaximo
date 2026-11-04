@@ -935,9 +935,10 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         ];
       case "ac":
         return [
-          { key: "lastServiceDate", label: "Última manutenção", type: "date", required: true, value: dateValue },
-          { key: "nextServiceDate", label: "Próxima manutenção", type: "date", required: true },
+          { key: "lastServiceDate", label: "Data da manutenção", type: "date", required: true, value: dateValue },
+          { key: "type", label: "Tipo de serviço", type: "select", required: true, options: ["Troca do gás", "Higienização", "Troca do filtro", "Manutenção preventiva", "Reparação de vazamento", "Limpeza do evaporador", "Troca do compressor", "Outros"] },
           priceField,
+          { key: "observations", label: "Observações", type: "text", required: false },
         ];
       case "wash":
         return [
