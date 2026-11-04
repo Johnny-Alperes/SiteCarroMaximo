@@ -834,8 +834,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     setDeleteProgress(0);
 
     const deleteTimer = window.setInterval(() => {
-      setDeleteProgress((current) => current >= 80 ? current : current + 2);
-    }, 140);
+      setDeleteProgress((current) => current >= 80 ? current : current + 1);
+    }, 320);
 
     try {
       const target = deleteTarget;
