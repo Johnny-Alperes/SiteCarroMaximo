@@ -78,7 +78,7 @@ export default function LandingScreen() {
             Gestão Automotiva Inteligente
           </span>
 
-          <h1 className="text-5xl font-black leading-[0.85] tracking-tighter text-white md:text-8xl">
+          <h1 className="text-4xl font-black leading-[0.85] tracking-tighter text-white md:text-7xl">
             SEU
             <br />
             <span className="text-zinc-500">VEÍCULO</span>
