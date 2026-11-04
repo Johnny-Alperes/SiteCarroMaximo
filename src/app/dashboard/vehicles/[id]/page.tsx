@@ -70,6 +70,7 @@ interface MaintenanceItem {
 interface FuelItem {
   id: string;
   date: string;
+  station?: string;
   liters: number;
   pricePerLiter: number;
   totalPrice: number;
@@ -708,7 +709,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const getItemName = (item: any, tabId: string) => {
     switch (tabId) {
       case "maintenance": return item.name;
-      case "fuel": return `${item.liters}L - ${item.pricePerLiter?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}/L`;
+      case "fuel": return item.station ? `${item.station} - ${item.liters}L` : `${item.liters}L - ${item.pricePerLiter?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}/L`;
       case "battery": return `${item.brand} - ${item.type}`;
       case "oil": return item.interval ? `${item.brand} - ${item.oilType} (${item.interval})` : `${item.brand} - ${item.oilType}`;
       case "defects": return item.description;
@@ -881,6 +882,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       case "fuel":
         return [
           { key: "date", label: "Data", type: "date", required: true, value: dateValue },
+          { key: "station", label: "Posto de combustível", type: "select", required: true, options: ["Petrobras", "Shell", "Ipiranga", "Ultrabax", "Ale", "Raízen", "Vibra", "Atra", "Sette", "Avental", "Outro"] },
           { key: "liters", label: "Quantidade (L)", type: "number", required: true },
           { key: "pricePerLiter", label: "Preço por litro (R$)", type: "currency", required: true },
           { key: "kmAtFueling", label: "Km do abastecimento", type: "number", required: true },
