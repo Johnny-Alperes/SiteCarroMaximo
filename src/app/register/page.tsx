@@ -59,10 +59,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute top-1/4 -right-20 w-96 h-96 bg-primary/20 rounded-full blur-[120px]"></div>
-      <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-secondary/20 rounded-full blur-[120px]"></div>
-
+    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-zinc-950 p-6 font-mono text-zinc-100">
       {/* Home Button */}
       <motion.div 
         initial={{ opacity: 0, x: -20 }}
@@ -70,9 +67,9 @@ export default function RegisterPage() {
         className="absolute top-8 left-8 z-20"
       >
         <Link href="/">
-          <Button variant="ghost" className="gap-2 rounded-full px-4 border border-border/40 bg-card/30 backdrop-blur-md hover:bg-card/50 transition-all">
+          <Button variant="ghost" className="gap-2 border border-zinc-800 bg-zinc-900/40 px-4 text-[10px] uppercase tracking-widest text-zinc-300 hover:bg-zinc-900">
             <Home className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold">Voltar para Home</span>
+            <span>Voltar para Home</span>
           </Button>
         </Link>
       </motion.div>
@@ -84,20 +81,20 @@ export default function RegisterPage() {
       >
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="bg-primary p-2 rounded-xl">
-              <Car className="text-white w-6 h-6" />
+            <div className="border border-zinc-700 bg-zinc-900 p-2">
+              <Car className="h-5 w-5 text-zinc-400" />
             </div>
-            <span className="text-2xl font-bold tracking-tight text-gradient">
+            <span className="text-lg font-black uppercase tracking-[0.2em] text-white">
               Carro Máximo
             </span>
           </Link>
-          <h1 className="text-3xl font-bold mb-2">Crie sua conta</h1>
-          <p className="text-foreground/60">Comece a gerenciar seus veículos agora mesmo</p>
+          <h1 className="text-3xl font-black uppercase tracking-tight text-white">Crie sua conta</h1>
+          <p className="text-sm text-zinc-400">Comece a gerenciar seus veículos agora mesmo</p>
         </div>
 
-        <div className="bg-card/50 backdrop-blur-xl border border-border p-8 rounded-3xl premium-shadow">
+        <div className="border border-zinc-800 bg-zinc-900/40 p-8">
           {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-500 text-sm">
+            <div className="mb-6 flex items-center gap-3 border border-red-800 bg-red-900/30 p-3 text-xs uppercase tracking-wider text-red-300">
               <AlertCircle className="w-5 h-5 shrink-0" />
               {error}
             </div>
@@ -145,7 +142,7 @@ export default function RegisterPage() {
 
             <Button 
               type="submit" 
-              className="w-full py-4 text-lg" 
+              className="w-full py-4 text-sm" 
               isLoading={isLoading}
             >
               Criar Conta
@@ -154,8 +151,8 @@ export default function RegisterPage() {
           </form>
         </div>
 
-        <p className="text-center mt-8 text-foreground/60">
-          Já tem uma conta? <Link href="/login" className="text-primary font-bold hover:underline">Entrar</Link>
+        <p className="mt-8 text-center text-sm text-zinc-500">
+          Já tem uma conta? <Link href="/login" className="font-bold uppercase tracking-widest text-white hover:underline">Entrar</Link>
         </p>
       </motion.div>
     </main>
