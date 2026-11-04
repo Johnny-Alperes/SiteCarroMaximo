@@ -17,6 +17,13 @@ import {
   Mail,
   Menu,
   X,
+  MapPin,
+  Phone,
+  CalendarDays,
+  Code2,
+  Smartphone,
+  Building2,
+  ArrowUpRight,
 } from "lucide-react";
 
 const backgroundImage =
@@ -39,6 +46,7 @@ export default function LandingScreen() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showAbout, setShowAbout] = useState(false);
 
   const toggleLogin = () => {
     setError("");
@@ -85,6 +93,72 @@ export default function LandingScreen() {
       setIsLoading(false);
     }
   };
+
+  const renderAboutModal = () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div
+        className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm"
+        onClick={() => setShowAbout(false)}
+      />
+      <div className="relative z-10 max-h-[90dvh] w-full max-w-2xl overflow-y-auto border border-zinc-800 bg-zinc-950 p-6 shadow-2xl md:p-8" role="dialog" aria-modal="true" aria-label="Sobre a NPX Soluções Tecnológicas">
+        <div className="mb-6 flex items-start justify-between gap-6">
+          <div>
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Sobre nós</p>
+            <h2 className="text-2xl font-black uppercase tracking-tight text-white md:text-3xl">NPX Soluções Tecnológicas</h2>
+            <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+              Tecnologia para colocar ideias em movimento, com produtos digitais modernos, rápidos e preparados para crescer.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowAbout(false)}
+            className="border border-zinc-700 p-2 text-zinc-500 transition-colors hover:border-zinc-400 hover:text-white"
+            aria-label="Fechar sobre nós"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="border border-zinc-800 bg-zinc-900/40 p-4">
+            <div className="mb-3 flex items-center gap-2 text-white"><Building2 className="h-4 w-4 text-zinc-400" /><h3 className="text-xs font-bold uppercase tracking-widest">A empresa</h3></div>
+            <p className="text-sm leading-relaxed text-zinc-400">A <strong className="text-zinc-200">NPX Soluções Tecnológicas</strong> foi fundada em <strong className="text-zinc-200">2024</strong> pelo <strong className="text-zinc-200">Johnny Alperes</strong>, com a missão de transformar desafios em produtos digitais simples, eficientes e com alto impacto.</p>
+          </div>
+          <div className="border border-zinc-800 bg-zinc-900/40 p-4">
+            <div className="mb-3 flex items-center gap-2 text-white"><MapPin className="h-4 w-4 text-zinc-400" /><h3 className="text-xs font-bold uppercase tracking-widest">Sede</h3></div>
+            <p className="text-sm leading-relaxed text-zinc-400">Estamos sediados em <strong className="text-zinc-200">João Pessoa – PB</strong>, atendendo clientes de todo o Brasil com comunicação direta, suporte próximo e uma visão moderna de tecnologia.</p>
+          </div>
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div className="border border-zinc-800 bg-zinc-900/40 p-4">
+            <div className="mb-3 flex items-center gap-2 text-white"><Smartphone className="h-4 w-4 text-zinc-400" /><h3 className="text-xs font-bold uppercase tracking-widest">Mobile e web</h3></div>
+            <p className="text-sm leading-relaxed text-zinc-400">Desenvolvemos <strong className="text-zinc-200">aplicações mobile e web</strong>, sistemas internos, páginas institucionais, e-commerce, automações e plataformas sob medida — do planejamento ao lançamento.</p>
+          </div>
+          <div className="border border-zinc-800 bg-zinc-900/40 p-4">
+            <div className="mb-3 flex items-center gap-2 text-white"><Code2 className="h-4 w-4 text-zinc-400" /><h3 className="text-xs font-bold uppercase tracking-widest">Como trabalhamos</h3></div>
+            <p className="text-sm leading-relaxed text-zinc-400">Valorizamos design, performance, segurança e experiência do usuário. Criamos produtos que unem estética, funcionalidade e escalabilidade para o seu negócio crescer.</p>
+          </div>
+        </div>
+
+        <div className="mt-6 border border-zinc-800 bg-zinc-900/40 p-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Fale com a NPX</p>
+              <p className="text-sm leading-relaxed text-zinc-300">Vamos tirar sua ideia do papel? Receba um atendimento direto e sem burocracia.</p>
+              <a href="tel:+5583998691921" className="mt-3 inline-flex items-center gap-2 border border-white bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-colors hover:bg-zinc-200">
+                <Phone className="h-3.5 w-3.5" /> (83) 99869-1921 <ArrowUpRight className="h-3.5 w-3.5" />
+              </a>
+            </div>
+            <div className="flex items-center gap-2 text-zinc-400">
+              <CalendarDays className="h-4 w-4" />
+              <span className="text-xs uppercase tracking-widest">Fundada em 2024</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   const renderLoginFields = () => (
     <div className="space-y-3">
@@ -166,6 +240,8 @@ export default function LandingScreen() {
   );
 
   return (
+    <>
+      {showAbout && renderAboutModal()}
     <div className="relative flex h-[100dvh] w-full flex-col overflow-hidden bg-zinc-950 font-mono text-white antialiased selection:bg-zinc-700">
       <div className="absolute inset-0">
         <div
@@ -269,10 +345,10 @@ export default function LandingScreen() {
             </Link>
             <button
               type="button"
-              onClick={toggleLogin}
+              onClick={() => setShowAbout(true)}
               className="border border-zinc-600 px-8 py-4 text-base font-bold uppercase tracking-widest text-zinc-300 transition-all hover:border-zinc-500 hover:text-white"
             >
-              Acessar painel
+              Sobre nós
             </button>
           </div>
         </div>
@@ -282,5 +358,6 @@ export default function LandingScreen() {
         <span>&copy; 2026 — Carro Máximo</span>
       </footer>
     </div>
+    </>
   );
 }
