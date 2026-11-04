@@ -331,6 +331,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const [serviceProgress, setServiceProgress] = useState(0);
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [registerError, setRegisterError] = useState("");
+  const [registerBarVisible, setRegisterBarVisible] = useState(false);
   
   const [maintenances, setMaintenances] = useState<MaintenanceItem[]>([]);
   const [fuelings, setFuelings] = useState<FuelItem[]>([]);
@@ -846,11 +847,20 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const totalFuelCost = fuelings.reduce((acc, f) => acc + (Number(f.totalPrice) || 0), 0);
   const totalCost = totalMaintenanceCost + totalFuelCost;
 
+  const formatCurrencyInput = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 12);
+    if (!digits) return "";
+    const amount = (Number(digits) / 100).toFixed(2).replace(".", ",");
+    return `R$ ${amount}`;
+  };
+
+  const parseCurrencyInput = (value: string) => Number(value.replace(/[^\d]/g, "") || 0) / 100;
+
   const handleRegisterService = async (e: React.FormEvent) => {
     e.preventDefault();
     const user = auth.currentUser;
     const name = serviceName.trim();
-    const price = Number(servicePrice.replace(/\./g, "").replace(",", "."));
+    const price = parseCurrencyInput(servicePrice);
     if (!user || !name || !serviceDate || Number.isNaN(price) || price < 0) {
       setRegisterError("Preencha nome, data e valor corretamente.");
       return;
@@ -859,11 +869,12 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     setIsSavingService(true);
     setRegisterSuccess(false);
     setRegisterError("");
+    setRegisterBarVisible(true);
     setServiceProgress(0);
 
     const progressTimer = window.setInterval(() => {
       setServiceProgress((current) => current >= 80 ? current : current + 10);
-    }, 100);
+    }, 80);
 
     try {
       const docRef = await addDoc(collection(db, `users/${user.uid}/maintenance`), {
@@ -875,14 +886,24 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       });
       window.clearInterval(progressTimer);
       setServiceProgress(100);
-      setMaintenances((current) => [{ id: docRef.id, name, date: serviceDate, price, vehicleId: id }, ...current]);
-      setRegisterSuccess(true);
-      setActiveTab("maintenance");
-      setServiceName("");
-      setServicePrice("");
+      window.setTimeout(() => {
+        setMaintenances((current) => [{ id: docRef.id, name, date: serviceDate, price, vehicleId: id }, ...current]);
+        setRegisterSuccess(true);
+        setActiveTab("maintenance");
+        setServiceName("");
+        setServicePrice("");
+        window.setTimeout(() => {
+          setRegisterBarVisible(false);
+          setIsRegisterModalOpen(false);
+          setRegisterSuccess(false);
+          setRegisterError("");
+          setServiceProgress(0);
+        }, 1200);
+      }, 350);
     } catch (error) {
       console.error("Erro ao cadastrar serviço:", error);
       window.clearInterval(progressTimer);
+      setRegisterBarVisible(false);
       setServiceProgress(0);
       setRegisterError("Não foi possível cadastrar. Tente novamente.");
     } finally {
@@ -1108,20 +1129,22 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                     </div>
                   )}
                   {activeTab === "maintenance" && (
-                    <Button
-                      size="sm"
+                    <button
+                      type="button"
                       onClick={() => {
                         setIsRegisterModalOpen(true);
                         setRegisterSuccess(false);
                         setRegisterError("");
                         setServiceProgress(0);
+                        setRegisterBarVisible(false);
                         setServiceDate(new Date().toISOString().slice(0, 10));
                       }}
-                      className="gap-2"
+                      className="group relative flex items-center gap-2 overflow-hidden border border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-100 transition-all duration-300 hover:border-white/50 hover:bg-zinc-800 hover:text-white hover:shadow-[0_0_22px_rgba(255,255,255,0.08)]"
                     >
-                      <Plus className="h-4 w-4" />
-                      Cadastrar Item
-                    </Button>
+                      <span className="absolute inset-y-0 left-0 w-1 bg-white/80 transition-all duration-300 group-hover:w-full group-hover:bg-white/10" />
+                      <Plus className="relative h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
+                      <span className="relative">Cadastrar Item</span>
+                    </button>
                   )}
                   <Button size="sm" variant="outline" className="text-zinc-400 border-zinc-700 hover:text-white hover:bg-zinc-800">
                     Ver Histórico Completo
@@ -1287,6 +1310,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
             setIsRegisterModalOpen(false);
             setRegisterSuccess(false);
             setRegisterError("");
+            setRegisterBarVisible(false);
             setServiceProgress(0);
           }
         }}
@@ -1299,24 +1323,15 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                 <CheckCircle2 className="h-5 w-5 shrink-0" />
                 <p className="text-sm font-bold uppercase tracking-widest">Cadastrado com sucesso!</p>
               </div>
-              <div className="h-2 border border-emerald-900/70 bg-zinc-900">
+              <div className="h-2 border border-emerald-900/70 bg-zinc-900 transition-opacity duration-500">
                 <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${serviceProgress}%` }} />
               </div>
               <p className="mt-2 text-right text-xs text-emerald-300">{serviceProgress}%</p>
             </div>
-            <div className="flex justify-end">
-              <Button onClick={() => {
-                setIsRegisterModalOpen(false);
-                setRegisterSuccess(false);
-                setServiceProgress(0);
-              }}>
-                Concluir
-              </Button>
-            </div>
           </div>
         ) : (
           <form onSubmit={handleRegisterService} className="space-y-4">
-            {isSavingService && (
+            {registerBarVisible && (
               <div className="border border-zinc-800 bg-zinc-900/50 p-4">
                 <p className="mb-2 text-xs font-bold uppercase tracking-widest text-zinc-400">Cadastrando...</p>
                 <div className="h-2 border border-zinc-700 bg-zinc-950">
@@ -1344,7 +1359,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               placeholder="0,00"
               inputMode="decimal"
               value={servicePrice}
-              onChange={(e) => setServicePrice(e.target.value)}
+              onChange={(e) => setServicePrice(formatCurrencyInput(e.target.value))}
               icon={<DollarSign className="h-4 w-4" />}
               required
             />
