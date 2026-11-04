@@ -323,6 +323,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const [deleteTarget, setDeleteTarget] = useState<{ item: any; tab: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteProgress, setDeleteProgress] = useState(0);
+  const [deleteBarVisible, setDeleteBarVisible] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [serviceName, setServiceName] = useState("");
@@ -831,6 +832,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
     setIsDeleting(true);
     setDeleteError("");
+    setDeleteBarVisible(true);
     setDeleteProgress(0);
 
     const deleteTimer = window.setInterval(() => {
@@ -845,11 +847,13 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       window.setTimeout(() => {
         removeRecordFromState(target.tab, target.item.id);
         setDeleteTarget(null);
+        setDeleteBarVisible(false);
         setDeleteProgress(0);
-      }, 1000);
+      }, 1600);
     } catch (error) {
       console.error("Erro ao excluir registro:", error);
       window.clearInterval(deleteTimer);
+      setDeleteBarVisible(false);
       setDeleteProgress(0);
       setDeleteError("Não foi possível excluir o item. Tente novamente.");
     } finally {
@@ -1394,6 +1398,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
             if (!isDeleting) {
               setDeleteTarget(null);
               setDeleteError("");
+              setDeleteBarVisible(false);
               setDeleteProgress(0);
             }
           }}
@@ -1413,7 +1418,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
             </div>
           </div>
 
-          {isDeleting && (
+          {deleteBarVisible && (
             <div className="border border-red-900/70 bg-red-500/10 p-4">
               <div className="mb-3 flex items-center gap-3 text-red-300">
                 <Trash2 className="h-5 w-5 shrink-0" />
