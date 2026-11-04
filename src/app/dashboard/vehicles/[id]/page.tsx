@@ -9,7 +9,8 @@ import {
   getDocs,
   query,
   orderBy,
-  deleteDoc
+  deleteDoc,
+  addDoc
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
@@ -38,6 +39,7 @@ import {
   CreditCard,
   Ban,
   Trash2,
+  CheckCircle2,
   Edit,
   Plus,
   ChevronRight,
@@ -321,6 +323,14 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const [deleteTarget, setDeleteTarget] = useState<{ item: any; tab: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [serviceName, setServiceName] = useState("");
+  const [serviceDate, setServiceDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [servicePrice, setServicePrice] = useState("");
+  const [isSavingService, setIsSavingService] = useState(false);
+  const [serviceProgress, setServiceProgress] = useState(0);
+  const [registerSuccess, setRegisterSuccess] = useState(false);
+  const [registerError, setRegisterError] = useState("");
   
   const [maintenances, setMaintenances] = useState<MaintenanceItem[]>([]);
   const [fuelings, setFuelings] = useState<FuelItem[]>([]);
@@ -836,6 +846,50 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const totalFuelCost = fuelings.reduce((acc, f) => acc + (Number(f.totalPrice) || 0), 0);
   const totalCost = totalMaintenanceCost + totalFuelCost;
 
+  const handleRegisterService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+    const name = serviceName.trim();
+    const price = Number(servicePrice.replace(/\./g, "").replace(",", "."));
+    if (!user || !name || !serviceDate || Number.isNaN(price) || price < 0) {
+      setRegisterError("Preencha nome, data e valor corretamente.");
+      return;
+    }
+
+    setIsSavingService(true);
+    setRegisterSuccess(false);
+    setRegisterError("");
+    setServiceProgress(0);
+
+    const progressTimer = window.setInterval(() => {
+      setServiceProgress((current) => current >= 80 ? current : current + 10);
+    }, 100);
+
+    try {
+      const docRef = await addDoc(collection(db, `users/${user.uid}/maintenance`), {
+        name,
+        date: serviceDate,
+        price,
+        vehicleId: id,
+        createdAt: new Date().toISOString(),
+      });
+      window.clearInterval(progressTimer);
+      setServiceProgress(100);
+      setMaintenances((current) => [{ id: docRef.id, name, date: serviceDate, price, vehicleId: id }, ...current]);
+      setRegisterSuccess(true);
+      setActiveTab("maintenance");
+      setServiceName("");
+      setServicePrice("");
+    } catch (error) {
+      console.error("Erro ao cadastrar serviço:", error);
+      window.clearInterval(progressTimer);
+      setServiceProgress(0);
+      setRegisterError("Não foi possível cadastrar. Tente novamente.");
+    } finally {
+      setIsSavingService(false);
+    }
+  };
+
   const getLastActivity = () => {
     const collections: { tabId: string; records: unknown[] }[] = [
       { tabId: "maintenance", records: maintenances },
@@ -1053,6 +1107,22 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                       />
                     </div>
                   )}
+                  {activeTab === "maintenance" && (
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setIsRegisterModalOpen(true);
+                        setRegisterSuccess(false);
+                        setRegisterError("");
+                        setServiceProgress(0);
+                        setServiceDate(new Date().toISOString().slice(0, 10));
+                      }}
+                      className="gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Cadastrar Item
+                    </Button>
+                  )}
                   <Button size="sm" variant="outline" className="text-zinc-400 border-zinc-700 hover:text-white hover:bg-zinc-800">
                     Ver Histórico Completo
                   </Button>
@@ -1209,6 +1279,95 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={isRegisterModalOpen}
+        onClose={() => {
+          if (!isSavingService) {
+            setIsRegisterModalOpen(false);
+            setRegisterSuccess(false);
+            setRegisterError("");
+            setServiceProgress(0);
+          }
+        }}
+        title="Cadastrar Item"
+      >
+        {registerSuccess ? (
+          <div className="space-y-6">
+            <div className="border border-emerald-900/70 bg-emerald-500/10 p-4">
+              <div className="mb-3 flex items-center gap-3 text-emerald-300">
+                <CheckCircle2 className="h-5 w-5 shrink-0" />
+                <p className="text-sm font-bold uppercase tracking-widest">Cadastrado com sucesso!</p>
+              </div>
+              <div className="h-2 border border-emerald-900/70 bg-zinc-900">
+                <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${serviceProgress}%` }} />
+              </div>
+              <p className="mt-2 text-right text-xs text-emerald-300">{serviceProgress}%</p>
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={() => {
+                setIsRegisterModalOpen(false);
+                setRegisterSuccess(false);
+                setServiceProgress(0);
+              }}>
+                Concluir
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleRegisterService} className="space-y-4">
+            {isSavingService && (
+              <div className="border border-zinc-800 bg-zinc-900/50 p-4">
+                <p className="mb-2 text-xs font-bold uppercase tracking-widest text-zinc-400">Cadastrando...</p>
+                <div className="h-2 border border-zinc-700 bg-zinc-950">
+                  <div className="h-full bg-white transition-all duration-300" style={{ width: `${serviceProgress}%` }} />
+                </div>
+                <p className="mt-2 text-right text-xs text-zinc-400">{serviceProgress}%</p>
+              </div>
+            )}
+            <Input
+              label="Nome do serviço"
+              placeholder="Ex.: Troca de óleo"
+              value={serviceName}
+              onChange={(e) => setServiceName(e.target.value)}
+              required
+            />
+            <Input
+              label="Data"
+              type="date"
+              value={serviceDate}
+              onChange={(e) => setServiceDate(e.target.value)}
+              required
+            />
+            <Input
+              label="Valor (R$)"
+              placeholder="0,00"
+              inputMode="decimal"
+              value={servicePrice}
+              onChange={(e) => setServicePrice(e.target.value)}
+              icon={<DollarSign className="h-4 w-4" />}
+              required
+            />
+            {registerError && (
+              <p className="border border-red-900/60 bg-red-950/30 p-3 text-xs text-red-300">{registerError}</p>
+            )}
+            <div className="flex justify-end gap-3 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsRegisterModalOpen(false)}
+                disabled={isSavingService}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" isLoading={isSavingService} className="gap-2">
+                <Plus className="h-4 w-4" />
+                Cadastrar Item
+              </Button>
+            </div>
+          </form>
+        )}
+      </Modal>
 
       <Modal
         isOpen={Boolean(deleteTarget)}
