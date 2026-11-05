@@ -215,7 +215,7 @@ export default function LandingScreen() {
         type="button"
         onClick={handleGoogleLogin}
         disabled={isLoading}
-        className="flex w-full items-center justify-center gap-2 border border-white bg-white py-2.5 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200 hover:text-zinc-950 hover:border-zinc-300 disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 border border-white bg-white py-2.5 text-xs font-bold tracking-widest text-zinc-950 transition-all hover:bg-zinc-200 hover:text-zinc-950 hover:border-zinc-300 disabled:opacity-50"
       >
         {googleIcon}
         Conectar com Google
