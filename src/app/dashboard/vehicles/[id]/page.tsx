@@ -1230,35 +1230,35 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
       <div className="space-y-8">
           {/* Stats Overview */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Card className="modern-hover group p-6 bg-zinc-900/40 border-zinc-800">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-zinc-800 rounded-none text-zinc-300 transition-all duration-300 group-hover:bg-white group-hover:text-zinc-950 group-hover:-rotate-6 group-hover:scale-110">
-                  <DollarSign className="w-5 h-5" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Card className="modern-hover group p-4 bg-zinc-900/40 border-zinc-800">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-1.5 bg-zinc-800 rounded-none text-zinc-300 transition-all duration-300 group-hover:bg-white group-hover:text-zinc-950 group-hover:-rotate-6 group-hover:scale-110">
+                  <DollarSign className="w-4 h-4" />
                 </div>
-                <TrendingUp className="w-4 h-4 text-zinc-400 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white" />
+                <TrendingUp className="w-3.5 h-3.5 text-zinc-400 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white" />
               </div>
-              <p className="text-sm text-zinc-400 transition-colors duration-300 group-hover:text-zinc-300">Gasto Total</p>
-              <h3 className="text-2xl font-bold text-white transition-transform duration-300 group-hover:translate-x-0.5">
+              <p className="text-xs text-zinc-400 transition-colors duration-300 group-hover:text-zinc-300">Gasto Total</p>
+              <h3 className="text-xl font-bold text-white transition-transform duration-300 group-hover:translate-x-0.5">
                 {totalCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </h3>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="text-[11px] text-zinc-400 mt-0.5">
                 {maintenances.length} serviços + {fuelings.length} abastecimentos
               </p>
             </Card>
             
-            <Card className="modern-hover group p-6 bg-zinc-900/40 border-zinc-800">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-zinc-800 rounded-none text-zinc-300 transition-all duration-300 group-hover:bg-white group-hover:text-zinc-950 group-hover:rotate-6 group-hover:scale-110">
-                  <Calendar className="w-5 h-5" />
+            <Card className="modern-hover group p-4 bg-zinc-900/40 border-zinc-800">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-1.5 bg-zinc-800 rounded-none text-zinc-300 transition-all duration-300 group-hover:bg-white group-hover:text-zinc-950 group-hover:rotate-6 group-hover:scale-110">
+                  <Calendar className="w-4 h-4" />
                 </div>
                 <TrendingUp className="hidden" />
               </div>
-              <p className="text-sm text-zinc-400 transition-colors duration-300 group-hover:text-zinc-300">Última Atividade</p>
-              <h3 className="text-2xl font-bold text-white transition-transform duration-300 group-hover:translate-x-0.5">
+              <p className="text-xs text-zinc-400 transition-colors duration-300 group-hover:text-zinc-300">Última Atividade</p>
+              <h3 className="text-xl font-bold text-white transition-transform duration-300 group-hover:translate-x-0.5">
                 {lastActivity ? lastActivity.dateText : "Nenhuma atividade"}
               </h3>
-              <p className="text-xs text-zinc-400 mt-1">
+              <p className="text-[11px] text-zinc-400 mt-0.5">
                 {lastActivity
                   ? `${lastActivityTab?.label ?? "Registro"} • ${
                       lastActivity.price !== null
