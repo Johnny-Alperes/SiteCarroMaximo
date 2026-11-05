@@ -1200,39 +1200,35 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         </Button>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Info Sidebar */}
-        <div className="w-full lg:w-1/3 space-y-6">
-          <Card className="p-8 sticky top-28 bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="border border-zinc-700 bg-zinc-900 p-4">
-                <CarIcon className="text-white w-8 h-8" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-black uppercase tracking-tight text-white">{vehicle.model}</h1>
-                <p className="text-zinc-400 font-mono text-sm tracking-widest">{vehicle.plate}</p>
-              </div>
+      <Card className="p-6 md:p-8 bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="border border-zinc-700 bg-zinc-900 p-4">
+              <CarIcon className="text-white w-8 h-8" />
             </div>
-
-            <div className="space-y-4 pt-6 border-t border-zinc-800">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-zinc-400">Ano / Modelo</span>
-                <span className="font-bold text-white">{vehicle.year}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-zinc-400">Combustível</span>
-                <span className="font-bold text-white">{vehicle.fuelType}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-zinc-400">Cor</span>
-                <span className="font-bold text-white">{vehicle.color}</span>
-              </div>
+            <div>
+              <h1 className="text-3xl font-black uppercase tracking-tight text-white">{vehicle.model}</h1>
+              <p className="text-zinc-400 font-mono text-sm tracking-widest">{vehicle.plate}</p>
             </div>
-          </Card>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:border-l md:border-zinc-800 md:pl-6">
+            <div>
+              <span className="text-xs uppercase tracking-widest text-zinc-500">Ano / Modelo</span>
+              <p className="mt-1 font-bold text-white">{vehicle.year}</p>
+            </div>
+            <div>
+              <span className="text-xs uppercase tracking-widest text-zinc-500">Combustível</span>
+              <p className="mt-1 font-bold text-white">{vehicle.fuelType}</p>
+            </div>
+            <div>
+              <span className="text-xs uppercase tracking-widest text-zinc-500">Cor</span>
+              <p className="mt-1 font-bold text-white">{vehicle.color}</p>
+            </div>
+          </div>
         </div>
+      </Card>
 
-        {/* Main Content */}
-        <div className="flex-1 space-y-8">
+      <div className="space-y-8">
           {/* Stats Overview */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Card className="p-6 bg-zinc-900/40 border-zinc-800">
@@ -1488,7 +1484,6 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               </div>
             </Card>
           </div>
-        </div>
       </div>
 
       <Modal
