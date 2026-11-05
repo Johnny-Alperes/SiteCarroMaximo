@@ -118,16 +118,16 @@ export default function DashboardPage() {
     "shadow-orange-500/40",
   ];
   const vehicleCardBgs = [
-    "bg-gradient-to-br from-violet-600/25 via-zinc-900 to-zinc-900",
-    "bg-gradient-to-br from-emerald-600/25 via-zinc-900 to-zinc-900",
-    "bg-gradient-to-br from-amber-500/25 via-zinc-900 to-zinc-900",
-    "bg-gradient-to-br from-cyan-500/25 via-zinc-900 to-zinc-900",
-    "bg-gradient-to-br from-rose-600/25 via-zinc-900 to-zinc-900",
-    "bg-gradient-to-br from-blue-600/25 via-zinc-900 to-zinc-900",
-    "bg-gradient-to-br from-pink-600/25 via-zinc-900 to-zinc-900",
-    "bg-gradient-to-br from-lime-600/25 via-zinc-900 to-zinc-900",
-    "bg-gradient-to-br from-purple-600/25 via-zinc-900 to-zinc-900",
-    "bg-gradient-to-br from-orange-600/25 via-zinc-900 to-zinc-900",
+    "bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-violet-500",
+    "bg-gradient-to-tr from-emerald-600 via-teal-500 to-emerald-500",
+    "bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-400",
+    "bg-gradient-to-tr from-cyan-500 via-sky-500 to-cyan-400",
+    "bg-gradient-to-tr from-rose-600 via-red-500 to-rose-500",
+    "bg-gradient-to-tr from-blue-600 via-indigo-500 to-blue-500",
+    "bg-gradient-to-tr from-pink-600 via-rose-500 to-pink-500",
+    "bg-gradient-to-tr from-lime-600 via-green-500 to-lime-500",
+    "bg-gradient-to-tr from-purple-600 via-violet-500 to-purple-500",
+    "bg-gradient-to-tr from-orange-600 via-amber-500 to-orange-500",
   ];
 
   if (loading) {
@@ -193,7 +193,7 @@ export default function DashboardPage() {
               transition={{ delay: index * 0.08 }}
               whileHover={{ y: -6 }}
             >
-              <Card className={`modern-hover group overflow-hidden rounded-2xl border-2 ${vehicleCardBgs[index % vehicleCardBgs.length]} text-white shadow-2xl ${vehicleShadows[index % vehicleShadows.length]}`}>
+              <Card className={`modern-hover group overflow-hidden rounded-2xl border-2 border-white/20 ${vehicleCardBgs[index % vehicleCardBgs.length]} text-white shadow-2xl ${vehicleShadows[index % vehicleShadows.length]}`}>
                 <div className={`h-2 bg-gradient-to-r ${vehicleGradients[index % vehicleGradients.length]}`} />
                 <div className={`h-1 bg-gradient-to-r opacity-60 ${vehicleGradients[index % vehicleGradients.length]} blur-[1px]`} />
                 <div className="p-5">
