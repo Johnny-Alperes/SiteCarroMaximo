@@ -1,9 +1,11 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { MessageCircle } from "lucide-react";
 
 export default function WhatsAppButton() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/dashboard")) return null;
   const phoneNumber = "5583991387121";
   const message = encodeURIComponent("Olá! Gostaria de saber mais sobre o Carro Máximo.");
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
