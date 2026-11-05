@@ -1326,13 +1326,13 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                       setRegisterBarVisible(false);
                       setFormData({});
                     }}
-                    className="group relative flex shrink-0 items-center gap-2 overflow-hidden border border-white bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all duration-300 hover:bg-zinc-200 hover:text-zinc-950 hover:shadow-[0_0_22px_rgba(255,255,255,0.16)]"
+                    className="group relative flex shrink-0 items-center gap-2 overflow-hidden border border-zinc-950 bg-zinc-950 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition-all duration-300 hover:bg-zinc-800 hover:text-white hover:shadow-[0_8px_22px_rgba(0,0,0,0.22)]"
                   >
-                    <span className="absolute inset-y-0 left-0 w-1 bg-zinc-950/20 transition-all duration-300 group-hover:w-full group-hover:bg-zinc-950/10" />
+                    <span className="absolute inset-y-0 left-0 w-1 bg-white/25 transition-all duration-300 group-hover:w-full group-hover:bg-white/10" />
                     <Plus className="relative h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
                     <span className="relative">Cadastrar Item</span>
                   </button>
-                  <Button size="sm" variant="outline" className="text-zinc-400 border-zinc-700 hover:text-white hover:bg-zinc-800">
+                  <Button size="sm" variant="outline" className="text-zinc-600 border-zinc-300 hover:text-zinc-950 hover:bg-zinc-100 hover:border-zinc-400">
                     Ver Histórico Completo
                   </Button>
                 </div>
@@ -1347,9 +1347,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                     : null;
 
                   return (
-                    <div key={item.id} className="modern-record group p-6 flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="modern-record-icon p-3 rounded-none bg-zinc-100 text-zinc-950">
+                    <div key={item.id} className="modern-record group px-4 py-2.5 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="modern-record-icon p-2 shrink-0 rounded-none bg-zinc-100 text-zinc-950">
                           {getTabIcon(activeTab)}
                         </div>
                         <div>
@@ -1418,7 +1418,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                               </span>
                             )}
                           </div>
-                          <p className="mt-1 text-xs text-zinc-500">
+                          <p className="mt-0.5 text-[11px] leading-tight text-zinc-500">
                             {getItemDate(item, activeTab)}
                             {batteryLifespan?.replacedOn && (
                               <span className="text-amber-400/80">
@@ -1433,8 +1433,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                           </p>
                         </div>
                       </div>
-                      <div className="flex shrink-0 items-center gap-3">
-                        <span className="font-bold text-zinc-950">
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="font-bold text-sm text-zinc-950 whitespace-nowrap">
                           {getItemPrice(item, activeTab).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                         </span>
                         <button
@@ -1443,7 +1443,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                             setDeleteError("");
                             setDeleteTarget({ item, tab: activeTab });
                           }}
-                          className="p-2 text-zinc-400 transition-colors hover:text-red-600"
+                          className="p-1.5 text-zinc-400 transition-colors hover:text-red-600"
                           title="Excluir registro"
                           aria-label={`Excluir ${getItemName(item, activeTab)}`}
                         >
