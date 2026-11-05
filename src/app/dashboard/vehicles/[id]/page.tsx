@@ -1341,6 +1341,16 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         <p className="text-center text-[10px] uppercase tracking-[0.25em] text-zinc-500">Gira sozinho • clique e arraste para chegar a qualquer sessão</p>
       </section>
 
+          <AnimatePresence initial={false}>
+            {!historyOpen && (
+              <motion.div
+                key="details"
+                initial={{ opacity: 0, height: 0, y: -12 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -12 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden space-y-6"
+              >
       <Card className="px-4 py-3 md:px-5 md:py-3.5 rounded-2xl bg-gradient-to-br from-violet-500/20 via-fuchsia-500/10 to-amber-400/20 backdrop-blur-sm border-violet-300/30 text-white">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
@@ -1413,8 +1423,10 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               </p>
             </Card>
           </div>
+      </div>
+              </motion.div>
+            )}
 
-          <AnimatePresence initial={false}>
             {historyOpen && (
               <motion.div
                 key="history"
@@ -1614,7 +1626,6 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               </motion.div>
             )}
           </AnimatePresence>
-      </div>
 
       <Modal
         isOpen={isRegisterModalOpen}
