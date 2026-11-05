@@ -93,43 +93,6 @@ export default function DashboardPage() {
     return () => unsubscribeAuth();
   }, []);
 
-  const vehicleGradients = [
-    "from-violet-600 to-fuchsia-500",
-    "from-emerald-600 to-teal-500",
-    "from-amber-500 to-orange-500",
-    "from-cyan-500 to-sky-500",
-    "from-rose-600 to-red-500",
-    "from-blue-600 to-indigo-500",
-    "from-pink-600 to-rose-500",
-    "from-lime-600 to-green-500",
-    "from-purple-600 to-violet-500",
-    "from-orange-600 to-amber-500",
-  ];
-  const vehicleShadows = [
-    "shadow-violet-500/40",
-    "shadow-emerald-500/40",
-    "shadow-amber-500/40",
-    "shadow-sky-500/40",
-    "shadow-rose-500/40",
-    "shadow-indigo-500/40",
-    "shadow-pink-500/40",
-    "shadow-lime-500/40",
-    "shadow-purple-500/40",
-    "shadow-orange-500/40",
-  ];
-  const vehicleCardBgs = [
-    "bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-violet-500",
-    "bg-gradient-to-tr from-emerald-600 via-teal-500 to-emerald-500",
-    "bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-400",
-    "bg-gradient-to-tr from-cyan-500 via-sky-500 to-cyan-400",
-    "bg-gradient-to-tr from-rose-600 via-red-500 to-rose-500",
-    "bg-gradient-to-tr from-blue-600 via-indigo-500 to-blue-500",
-    "bg-gradient-to-tr from-pink-600 via-rose-500 to-pink-500",
-    "bg-gradient-to-tr from-lime-600 via-green-500 to-lime-500",
-    "bg-gradient-to-tr from-purple-600 via-violet-500 to-purple-500",
-    "bg-gradient-to-tr from-orange-600 via-amber-500 to-orange-500",
-  ];
-
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -142,8 +105,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Garagem</p>
-          <h1 className="bg-gradient-to-r from-violet-300 via-fuchsia-200 to-amber-200 bg-clip-text text-3xl md:text-4xl font-black uppercase tracking-tight text-transparent">
+          <h1 className="text-3xl font-black uppercase tracking-tight text-white">
             Olá, {userName}
           </h1>
           <p className="mt-1 text-sm text-zinc-400">
@@ -151,7 +113,7 @@ export default function DashboardPage() {
           </p>
         </div>
         <Link href="/dashboard/vehicles/new">
-          <Button className="h-11 rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-violet-600 px-6 text-white shadow-lg shadow-violet-500/30 hover:brightness-110">
+          <Button className="h-11 px-6">
             <Plus className="w-4 h-4" />
             Adicionar Veículo
           </Button>
@@ -159,18 +121,18 @@ export default function DashboardPage() {
       </div>
 
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="bg-gradient-to-r from-violet-300 to-fuchsia-200 bg-clip-text text-lg font-bold uppercase tracking-widest text-transparent">
+        <h2 className="text-lg font-bold uppercase tracking-widest text-zinc-300">
           Meus Veículos
         </h2>
-        <span className="rounded-full border border-violet-300/30 bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-violet-200 backdrop-blur">
+        <span className="border border-zinc-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
           {vehicles.length} {vehicles.length === 1 ? "Veículo" : "Veículos"}
         </span>
       </div>
 
       {vehicles.length === 0 ? (
-        <Card className="modern-hover flex flex-col items-center justify-center rounded-2xl border-dashed border-violet-400/40 bg-gradient-to-br from-violet-500/10 via-fuchsia-500/10 to-amber-400/10 p-12 text-center text-white">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg shadow-fuchsia-500/30">
-            <CarIcon className="h-7 w-7 text-white" />
+        <Card className="flex flex-col items-center justify-center border-dashed p-12 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center border border-zinc-700 bg-zinc-900">
+            <CarIcon className="h-7 w-7 text-zinc-400" />
           </div>
           <h3 className="mb-2 text-xl font-black uppercase tracking-tight">
             Nenhum veículo cadastrado
@@ -180,99 +142,72 @@ export default function DashboardPage() {
             abastecimentos e gastos totais.
           </p>
           <Link href="/dashboard/vehicles/new">
-            <Button variant="outline" className="rounded-full border-white bg-white text-zinc-950 hover:bg-zinc-200 hover:text-zinc-950">Cadastrar meu primeiro carro</Button>
+            <Button variant="outline">Cadastrar meu primeiro carro</Button>
           </Link>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {vehicles.map((vehicle, index) => (
             <motion.div
               key={vehicle.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.08 }}
-              whileHover={{ y: -6 }}
+              transition={{ delay: index * 0.1 }}
             >
-              <Card className={`modern-hover group overflow-hidden rounded-2xl border-2 border-white/20 ${vehicleCardBgs[index % vehicleCardBgs.length]} text-white shadow-2xl ${vehicleShadows[index % vehicleShadows.length]}`}>
-                <div className={`h-2 bg-gradient-to-r ${vehicleGradients[index % vehicleGradients.length]}`} />
-                <div className={`h-1 bg-gradient-to-r opacity-60 ${vehicleGradients[index % vehicleGradients.length]} blur-[1px]`} />
-                <div className="p-5">
-                  <div className="mb-4 flex items-start justify-between">
-                    <div className={`rounded-2xl bg-gradient-to-br p-3 text-white shadow-xl ${vehicleGradients[index % vehicleGradients.length]} ${vehicleShadows[index % vehicleShadows.length]} transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110`}>
-                      <CarIcon className="h-6 w-6" />
-                    </div>
-                    <div className="flex flex-col items-end gap-1">
-                      <div className="text-right">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-300">
-                          Placa
-                        </span>
-                        <p className={`mt-1 rounded-lg border border-white/20 bg-zinc-800 px-2 py-1 font-mono text-sm font-bold text-white shadow ${vehicleShadows[index % vehicleShadows.length]}`}>
-                          {vehicle.plate}
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeleteError("");
-                          setDeleteBarVisible(false);
-                          setDeleteProgress(0);
-                          setVehicleToDelete(vehicle);
-                        }}
-                        className="rounded-full p-1.5 text-zinc-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
-                        title="Excluir veículo"
-                        aria-label={`Excluir ${vehicle.model}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
+              <Card className="group overflow-hidden">
+                <div className="mb-6 flex items-start justify-between">
+                  <div className="border border-zinc-700 bg-zinc-900 p-3 text-zinc-400 transition-colors group-hover:border-zinc-500 group-hover:text-white">
+                    <CarIcon className="h-6 w-6" />
                   </div>
-
-                  <h3 className="mb-3 text-2xl font-black uppercase tracking-tight text-white leading-tight">
-                    {vehicle.model}
-                  </h3>
-
-                  <div className="mb-5 flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-zinc-800/80 px-2.5 py-1 text-xs font-bold text-white">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {vehicle.year}
-                    </span>
-                    <span className={`inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r px-2.5 py-1 text-xs font-bold text-white shadow ${vehicleGradients[index % vehicleGradients.length]} ${vehicleShadows[index % vehicleShadows.length]}`}>
-                      <Fuel className="w-3.5 h-3.5" />
-                      {vehicle.fuelType}
-                    </span>
-                    {vehicle.color && (
-                      <span className={`inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r px-2.5 py-1 text-xs font-bold text-white shadow ${vehicleGradients[index % vehicleGradients.length]} ${vehicleShadows[index % vehicleShadows.length]}`}>
-                        {vehicle.color}
+                  <div className="flex flex-col items-end gap-2">
+                    <div className="text-right">
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500">
+                        Placa
                       </span>
-                    )}
+                      <p className="mt-1 border border-zinc-700 bg-zinc-900 px-2 py-1 font-mono text-sm font-bold text-zinc-200">
+                        {vehicle.plate}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeleteError("");
+                        setDeleteBarVisible(false);
+                        setDeleteProgress(0);
+                        setVehicleToDelete(vehicle);
+                      }}
+                      className="flex items-center gap-1.5 p-2 text-zinc-500 transition-colors hover:text-red-400"
+                      title="Excluir veículo"
+                      aria-label={`Excluir ${vehicle.model}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
-
-                  <motion.div whileTap={{ scale: 0.94 }}>
-                    <Link href={`/dashboard/vehicles/${vehicle.id}`} className="block">
-                      <motion.button
-                        whileHover={{ scale: 1.03, y: -2, rotate: -0.3 }}
-                        whileTap={{ scale: 0.9, rotate: 0.5, transition: { type: "spring", stiffness: 500, damping: 15 } }}
-                        onPointerDown={(e) => {
-                          const ripple = document.createElement("span");
-                          ripple.style.cssText = `position:absolute;left:${e.clientX - (e.currentTarget as HTMLButtonElement).getBoundingClientRect().left - 14}px;top:${e.clientY - (e.currentTarget as HTMLButtonElement).getBoundingClientRect().top - 14}px;width:28px;height:28px;border-radius:9999px;background:rgba(255,255,255,0.5);pointer-events:none;animation:ripple 0.6s ease-out forwards;`;
-                          (e.currentTarget as HTMLButtonElement).appendChild(ripple);
-                          window.setTimeout(() => ripple.remove(), 650);
-                        }}
-                        className={`group/btn relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r px-6 py-3.5 text-sm font-bold uppercase tracking-widest text-white shadow-lg transition-[filter] duration-300 hover:brightness-110 active:brightness-90 ${vehicleGradients[index % vehicleGradients.length]} ${vehicleShadows[index % vehicleShadows.length]}`}
-                      >
-                        <motion.span
-                          className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
-                          initial={{ x: "-120%" }}
-                          whileHover={{ x: "120%" }}
-                          transition={{ duration: 0.7 }}
-                        />
-                        <span className="absolute inset-y-0 left-0 w-1 bg-white/25 transition-all duration-300 group-hover/btn:w-full group-hover/btn:bg-white/10" />
-                        <span className="relative">Gerenciamento do Veículo</span>
-                        <ChevronRight className="relative h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                      </motion.button>
-                    </Link>
-                  </motion.div>
                 </div>
+
+                <h3 className="mb-4 text-2xl font-black uppercase tracking-tight text-white">
+                  {vehicle.model}
+                </h3>
+
+                <div className="mb-6 flex items-center gap-4 text-sm text-zinc-400">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4" />
+                    {vehicle.year}
+                  </div>
+                  <div className="h-1 w-1 rounded-full bg-zinc-700" />
+                  <div className="flex items-center gap-1.5">
+                    <Fuel className="w-4 h-4" />
+                    {vehicle.fuelType}
+                  </div>
+                </div>
+
+                <Link href={`/dashboard/vehicles/${vehicle.id}`}>
+                  <button className="group/btn relative flex w-full items-center justify-center gap-3 overflow-hidden border border-white bg-white px-6 py-4 text-sm font-bold uppercase tracking-widest text-zinc-950 transition-all duration-300 hover:bg-zinc-200 hover:text-zinc-950 hover:shadow-[0_0_28px_rgba(255,255,255,0.16)]">
+                    <span className="absolute inset-y-0 left-0 w-1 bg-zinc-950/20 transition-all duration-300 group-hover/btn:w-full group-hover/btn:bg-zinc-950/10" />
+                    <span className="relative">Gerenciamento do Veículo</span>
+                    <ChevronRight className="relative h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                  </button>
+                </Link>
               </Card>
             </motion.div>
           ))}
