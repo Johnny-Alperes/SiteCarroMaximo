@@ -1193,7 +1193,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           variant="outline" 
           size="sm" 
           onClick={() => router.push(`/dashboard/vehicles/new?edit=${id}`)}
-          className="gap-2 text-white border-zinc-700 hover:bg-zinc-800"
+          className="gap-2 bg-white text-zinc-950 border-white hover:bg-zinc-200 hover:text-zinc-950"
         >
           <Edit className="w-4 h-4" />
           Editar Veículo
