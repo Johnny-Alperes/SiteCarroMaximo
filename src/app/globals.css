@@ -205,4 +205,9 @@
   .carousel-march.paused {
     animation-play-state: paused;
   }
+
+  @keyframes ripple {
+    from { transform: scale(0); opacity: 0.7; }
+    to { transform: scale(4); opacity: 0; }
+  }
 }

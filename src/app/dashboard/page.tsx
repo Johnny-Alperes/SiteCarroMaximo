@@ -117,6 +117,18 @@ export default function DashboardPage() {
     "shadow-purple-500/40",
     "shadow-orange-500/40",
   ];
+  const vehicleCardBgs = [
+    "bg-gradient-to-br from-violet-600/25 via-zinc-900 to-zinc-900",
+    "bg-gradient-to-br from-emerald-600/25 via-zinc-900 to-zinc-900",
+    "bg-gradient-to-br from-amber-500/25 via-zinc-900 to-zinc-900",
+    "bg-gradient-to-br from-cyan-500/25 via-zinc-900 to-zinc-900",
+    "bg-gradient-to-br from-rose-600/25 via-zinc-900 to-zinc-900",
+    "bg-gradient-to-br from-blue-600/25 via-zinc-900 to-zinc-900",
+    "bg-gradient-to-br from-pink-600/25 via-zinc-900 to-zinc-900",
+    "bg-gradient-to-br from-lime-600/25 via-zinc-900 to-zinc-900",
+    "bg-gradient-to-br from-purple-600/25 via-zinc-900 to-zinc-900",
+    "bg-gradient-to-br from-orange-600/25 via-zinc-900 to-zinc-900",
+  ];
 
   if (loading) {
     return (
@@ -181,7 +193,7 @@ export default function DashboardPage() {
               transition={{ delay: index * 0.08 }}
               whileHover={{ y: -6 }}
             >
-              <Card className="modern-hover group overflow-hidden rounded-2xl border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-zinc-800 text-white">
+              <Card className={`modern-hover group overflow-hidden rounded-2xl border-2 ${vehicleCardBgs[index % vehicleCardBgs.length]} text-white shadow-2xl ${vehicleShadows[index % vehicleShadows.length]}`}>
                 <div className={`h-2 bg-gradient-to-r ${vehicleGradients[index % vehicleGradients.length]}`} />
                 <div className={`h-1 bg-gradient-to-r opacity-60 ${vehicleGradients[index % vehicleGradients.length]} blur-[1px]`} />
                 <div className="p-5">
@@ -191,10 +203,10 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex flex-col items-end gap-1">
                       <div className="text-right">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-300">
                           Placa
                         </span>
-                        <p className={`mt-1 rounded-lg border border-white/15 bg-zinc-800 px-2 py-1 font-mono text-sm font-bold text-white shadow ${vehicleShadows[index % vehicleShadows.length]}`}>
+                        <p className={`mt-1 rounded-lg border border-white/20 bg-zinc-800 px-2 py-1 font-mono text-sm font-bold text-white shadow ${vehicleShadows[index % vehicleShadows.length]}`}>
                           {vehicle.plate}
                         </p>
                       </div>
@@ -220,7 +232,7 @@ export default function DashboardPage() {
                   </h3>
 
                   <div className="mb-5 flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-zinc-800/80 px-2.5 py-1 text-xs font-bold text-zinc-100">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-zinc-800/80 px-2.5 py-1 text-xs font-bold text-white">
                       <Calendar className="w-3.5 h-3.5" />
                       {vehicle.year}
                     </span>
@@ -235,23 +247,31 @@ export default function DashboardPage() {
                     )}
                   </div>
 
-                  <Link href={`/dashboard/vehicles/${vehicle.id}`} className="block">
-                    <motion.button
-                      whileHover={{ scale: 1.02, y: -1 }}
-                      whileTap={{ scale: 0.94, transition: { type: "spring", stiffness: 400, damping: 18 } }}
-                      className={`group/btn relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r px-6 py-3.5 text-sm font-bold uppercase tracking-widest text-white shadow-lg transition-[filter] duration-300 hover:brightness-110 active:brightness-90 ${vehicleGradients[index % vehicleGradients.length]} ${vehicleShadows[index % vehicleShadows.length]}`}
-                    >
-                      <motion.span
-                        className="absolute inset-0 -z-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
-                        initial={{ x: "-120%" }}
-                        whileHover={{ x: "120%" }}
-                        transition={{ duration: 0.7 }}
-                      />
-                      <span className="absolute inset-y-0 left-0 w-1 bg-white/25 transition-all duration-300 group-hover/btn:w-full group-hover/btn:bg-white/10" />
-                      <span className="relative">Gerenciamento do Veículo</span>
-                      <ChevronRight className="relative h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                    </motion.button>
-                  </Link>
+                  <motion.div whileTap={{ scale: 0.94 }}>
+                    <Link href={`/dashboard/vehicles/${vehicle.id}`} className="block">
+                      <motion.button
+                        whileHover={{ scale: 1.03, y: -2, rotate: -0.3 }}
+                        whileTap={{ scale: 0.9, rotate: 0.5, transition: { type: "spring", stiffness: 500, damping: 15 } }}
+                        onPointerDown={(e) => {
+                          const ripple = document.createElement("span");
+                          ripple.style.cssText = `position:absolute;left:${e.clientX - (e.currentTarget as HTMLButtonElement).getBoundingClientRect().left - 14}px;top:${e.clientY - (e.currentTarget as HTMLButtonElement).getBoundingClientRect().top - 14}px;width:28px;height:28px;border-radius:9999px;background:rgba(255,255,255,0.5);pointer-events:none;animation:ripple 0.6s ease-out forwards;`;
+                          (e.currentTarget as HTMLButtonElement).appendChild(ripple);
+                          window.setTimeout(() => ripple.remove(), 650);
+                        }}
+                        className={`group/btn relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r px-6 py-3.5 text-sm font-bold uppercase tracking-widest text-white shadow-lg transition-[filter] duration-300 hover:brightness-110 active:brightness-90 ${vehicleGradients[index % vehicleGradients.length]} ${vehicleShadows[index % vehicleShadows.length]}`}
+                      >
+                        <motion.span
+                          className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
+                          initial={{ x: "-120%" }}
+                          whileHover={{ x: "120%" }}
+                          transition={{ duration: 0.7 }}
+                        />
+                        <span className="absolute inset-y-0 left-0 w-1 bg-white/25 transition-all duration-300 group-hover/btn:w-full group-hover/btn:bg-white/10" />
+                        <span className="relative">Gerenciamento do Veículo</span>
+                        <ChevronRight className="relative h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                      </motion.button>
+                    </Link>
+                  </motion.div>
                 </div>
               </Card>
             </motion.div>
