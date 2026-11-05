@@ -526,11 +526,20 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     const dx = e.clientX - dragStartRef.current.x;
     if (Math.abs(dx) > 4) wasDraggingRef.current = true;
     el.scrollLeft = dragStartRef.current.scrollLeft - dx;
+    const half = el.scrollWidth / 2;
+    if (el.scrollLeft >= half) el.scrollLeft -= half;
+    else if (el.scrollLeft <= 0) el.scrollLeft += half;
   };
 
   const onCarouselMouseUp = () => {
     dragStartRef.current = null;
     setIsDragging(false);
+    const el = carouselRef.current;
+    if (el) {
+      const half = el.scrollWidth / 2;
+      if (el.scrollLeft >= half) el.scrollLeft -= half;
+      else if (el.scrollLeft <= 0) el.scrollLeft += half;
+    }
     window.setTimeout(() => { wasDraggingRef.current = false; }, 0);
   };
 
