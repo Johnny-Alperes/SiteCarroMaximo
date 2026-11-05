@@ -94,16 +94,16 @@ export default function DashboardPage() {
   }, []);
 
   const vehicleAccents = [
-    { text: "text-violet-300", bg: "bg-violet-500/15 border-violet-300/30", gradient: "from-violet-600 to-fuchsia-500" },
-    { text: "text-emerald-300", bg: "bg-emerald-500/15 border-emerald-300/30", gradient: "from-emerald-600 to-teal-500" },
-    { text: "text-amber-300", bg: "bg-amber-500/15 border-amber-300/30", gradient: "from-amber-500 to-orange-500" },
-    { text: "text-sky-300", bg: "bg-sky-500/15 border-sky-300/30", gradient: "from-cyan-500 to-sky-500" },
-    { text: "text-rose-300", bg: "bg-rose-500/15 border-rose-300/30", gradient: "from-rose-600 to-red-500" },
-    { text: "text-indigo-300", bg: "bg-indigo-500/15 border-indigo-300/30", gradient: "from-blue-600 to-indigo-500" },
-    { text: "text-pink-300", bg: "bg-pink-500/15 border-pink-300/30", gradient: "from-pink-600 to-rose-500" },
-    { text: "text-lime-300", bg: "bg-lime-500/15 border-lime-300/30", gradient: "from-lime-600 to-green-500" },
-    { text: "text-purple-300", bg: "bg-purple-500/15 border-purple-300/30", gradient: "from-purple-600 to-violet-500" },
-    { text: "text-orange-300", bg: "bg-orange-500/15 border-orange-300/30", gradient: "from-orange-600 to-amber-500" },
+    { text: "text-white", bg: "bg-white/10 border-white/20", gradient: "from-violet-600 to-fuchsia-500" },
+    { text: "text-white", bg: "bg-white/10 border-white/20", gradient: "from-emerald-600 to-teal-500" },
+    { text: "text-white", bg: "bg-white/10 border-white/20", gradient: "from-amber-500 to-orange-500" },
+    { text: "text-white", bg: "bg-white/10 border-white/20", gradient: "from-cyan-500 to-sky-500" },
+    { text: "text-white", bg: "bg-white/10 border-white/20", gradient: "from-rose-600 to-red-500" },
+    { text: "text-white", bg: "bg-white/10 border-white/20", gradient: "from-blue-600 to-indigo-500" },
+    { text: "text-white", bg: "bg-white/10 border-white/20", gradient: "from-pink-600 to-rose-500" },
+    { text: "text-white", bg: "bg-white/10 border-white/20", gradient: "from-lime-600 to-green-500" },
+    { text: "text-white", bg: "bg-white/10 border-white/20", gradient: "from-purple-600 to-violet-500" },
+    { text: "text-white", bg: "bg-white/10 border-white/20", gradient: "from-orange-600 to-amber-500" },
   ];
 
   if (loading) {
@@ -119,7 +119,7 @@ export default function DashboardPage() {
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
           <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Garagem</p>
-          <h1 className="bg-gradient-to-r from-violet-300 via-fuchsia-200 to-amber-200 bg-clip-text text-3xl md:text-4xl font-black uppercase tracking-tight text-transparent">
+          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white">
             Olá, {userName}
           </h1>
           <p className="mt-1 text-sm text-zinc-400">
@@ -135,10 +135,10 @@ export default function DashboardPage() {
       </div>
 
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="bg-gradient-to-r from-violet-300 to-fuchsia-200 bg-clip-text text-lg font-bold uppercase tracking-widest text-transparent">
+        <h2 className="text-lg font-bold uppercase tracking-widest text-white">
           Meus Veículos
         </h2>
-        <span className="rounded-full border border-violet-300/30 bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-violet-200 backdrop-blur">
+        <span className="rounded-full border border-zinc-600 bg-zinc-800 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-zinc-200">
           {vehicles.length} {vehicles.length === 1 ? "Veículo" : "Veículos"}
         </span>
       </div>
