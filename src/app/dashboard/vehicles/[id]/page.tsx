@@ -338,9 +338,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const [historyOpen, setHistoryOpen] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
-  const [resumeAutoTimer, setResumeAutoTimer] = useState<number | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const dragStartRef = useRef<{ x: number; scroll: number } | null>(null);
+  const wasDraggingRef = useRef(false);
+  const dragStartRef = useRef<{ x: number; scrollLeft: number } | null>(null);
 
   const tabStyle: Record<string, { from: string; to: string; shadow: string; ring: string }> = {
     maintenance: { from: "from-violet-600", to: "to-fuchsia-500", shadow: "shadow-violet-500/40", ring: "ring-violet-300" },
@@ -512,41 +512,33 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     { id: "ipva", label: "IPVA", icon: <FileText className="w-5 h-5" /> },
   ];
 
-  useEffect(() => {
-    return () => {
-      if (resumeAutoTimer) window.clearTimeout(resumeAutoTimer);
-    };
-  }, [resumeAutoTimer]);
-
-  const pauseAuto = () => {
-    setIsAutoPlaying(false);
-    if (resumeAutoTimer) window.clearTimeout(resumeAutoTimer);
-    const t = window.setTimeout(() => setIsAutoPlaying(true), 6000);
-    setResumeAutoTimer(t);
-  };
-
   const onCarouselMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = carouselRef.current;
     if (!el) return;
-    el.setPointerCapture?.(e.nativeEvent.button);
-    dragStartRef.current = { x: e.clientX, scroll: el.scrollLeft };
+    dragStartRef.current = { x: e.clientX, scrollLeft: el.scrollLeft };
+    wasDraggingRef.current = false;
     setIsDragging(true);
-    pauseAuto();
   };
 
   const onCarouselMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = carouselRef.current;
-    if (!el || !dragStartRef.current || !isDragging) return;
-    el.scrollLeft = dragStartRef.current.scroll - (e.clientX - dragStartRef.current.x);
+    if (!el || !dragStartRef.current) return;
+    const dx = e.clientX - dragStartRef.current.x;
+    if (Math.abs(dx) > 4) wasDraggingRef.current = true;
+    el.scrollLeft = dragStartRef.current.scrollLeft - dx;
   };
 
   const onCarouselMouseUp = () => {
     dragStartRef.current = null;
     setIsDragging(false);
+    window.setTimeout(() => { wasDraggingRef.current = false; }, 0);
   };
 
   const toggleTab = (tabId: string) => {
-    pauseAuto();
+    if (wasDraggingRef.current) {
+      wasDraggingRef.current = false;
+      return;
+    }
     if (activeTab === tabId && historyOpen) {
       setHistoryOpen(false);
       return;
@@ -1282,8 +1274,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         </div>
         <div
           className="relative overflow-hidden"
-          onMouseEnter={() => { setIsAutoPlaying(false); if (resumeAutoTimer) window.clearTimeout(resumeAutoTimer); }}
-          onMouseLeave={() => { const t = window.setTimeout(() => setIsAutoPlaying(true), 3000); setResumeAutoTimer(t); }}
+          onMouseEnter={() => setIsAutoPlaying(false)}
+          onMouseLeave={() => setIsAutoPlaying(true)}
         >
           <div
             ref={carouselRef}
@@ -1291,31 +1283,24 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
             onMouseMove={onCarouselMouseMove}
             onMouseUp={onCarouselMouseUp}
             onMouseLeave={onCarouselMouseUp}
-            className="carousel-track cursor-grab overflow-x-auto active:cursor-grabbing"
+            className="carousel-track select-none cursor-grab overflow-x-auto active:cursor-grabbing"
           >
-            <motion.div
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.1}
-              dragMomentum={true}
-              onDragStart={pauseAuto}
+            <div
               className={cn("carousel-march flex w-max gap-3 pb-1 pt-1 pr-3", (!isAutoPlaying || isDragging) && "paused")}
             >
               {[...tabs, ...tabs].map((tab, idx) => {
                 const style = tabStyle[tab.id];
                 const isActive = activeTab === tab.id && historyOpen;
                 return (
-                  <motion.button
+                  <button
                     key={`${tab.id}-${idx}`}
                     type="button"
-                    whileHover={{ y: -4, scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
                     data-active={isActive}
-                    onClick={(e) => { e.stopPropagation(); toggleTab(tab.id); }}
+                    onClick={() => toggleTab(tab.id)}
                     aria-pressed={isActive}
-                    title={`${tab.label}${isActive ? " — clique novamente para ocultar" : ""}`}
+                    title={tab.label}
                     className={cn(
-                      "group relative min-w-[124px] shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br p-[1.5px] text-left text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950",
+                      "group relative min-w-[124px] shrink-0 cursor-pointer overflow-hidden rounded-2xl bg-gradient-to-br p-[1.5px] text-left text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 hover:-translate-y-1",
                       style.from, style.to
                     )}
                   >
@@ -1327,15 +1312,12 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                     )}>
                       <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-110">{tab.icon}</span>
                       <span className="leading-tight">{tab.label}</span>
-                      <span className="text-[9px] font-semibold normal-case tracking-normal text-white/80">
-                        {isActive ? "Ocultar" : "Ver histórico"}
-                      </span>
                     </span>
                     <span className={cn("pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-br from-white/30 to-transparent")} />
-                  </motion.button>
+                  </button>
                 );
               })}
-            </motion.div>
+            </div>
           </div>
         </div>
         <p className="text-center text-[10px] uppercase tracking-[0.25em] text-zinc-500">Gira sozinho • clique e arraste para chegar a qualquer sessão</p>
