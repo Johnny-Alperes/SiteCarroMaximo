@@ -181,4 +181,18 @@
   .modern-record-icon {
     transition: color 0.3s, background-color 0.3s, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
+
+  .carousel-track {
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carousel-track > * {
+    scroll-snap-align: start;
+  }
 }

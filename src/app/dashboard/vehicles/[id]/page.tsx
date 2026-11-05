@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { 
   doc, 
@@ -334,6 +335,29 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [registerError, setRegisterError] = useState("");
   const [registerBarVisible, setRegisterBarVisible] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [resumeAutoTimer, setResumeAutoTimer] = useState<number | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const tabStyle: Record<string, { from: string; to: string; shadow: string; ring: string }> = {
+    maintenance: { from: "from-violet-600", to: "to-fuchsia-500", shadow: "shadow-violet-500/40", ring: "ring-violet-300" },
+    fuel: { from: "from-emerald-600", to: "to-teal-500", shadow: "shadow-emerald-500/40", ring: "ring-emerald-300" },
+    battery: { from: "from-amber-500", to: "to-orange-500", shadow: "shadow-amber-500/40", ring: "ring-amber-300" },
+    oil: { from: "from-cyan-500", to: "to-sky-500", shadow: "shadow-sky-500/40", ring: "ring-sky-300" },
+    defects: { from: "from-rose-600", to: "to-red-500", shadow: "shadow-rose-500/40", ring: "ring-rose-300" },
+    filters: { from: "from-blue-600", to: "to-indigo-500", shadow: "shadow-indigo-500/40", ring: "ring-indigo-300" },
+    revision: { from: "from-pink-600", to: "to-rose-500", shadow: "shadow-pink-500/40", ring: "ring-pink-300" },
+    tires_records: { from: "from-slate-600", to: "to-zinc-500", shadow: "shadow-zinc-500/40", ring: "ring-zinc-300" },
+    alignment: { from: "from-lime-600", to: "to-green-500", shadow: "shadow-lime-500/40", ring: "ring-lime-300" },
+    ac: { from: "from-sky-500", to: "to-cyan-400", shadow: "shadow-cyan-500/40", ring: "ring-cyan-300" },
+    wash: { from: "from-teal-500", to: "to-emerald-400", shadow: "shadow-teal-500/40", ring: "ring-teal-300" },
+    travel: { from: "from-purple-600", to: "to-violet-500", shadow: "shadow-purple-500/40", ring: "ring-purple-300" },
+    calibration: { from: "from-orange-600", to: "to-amber-500", shadow: "shadow-orange-500/40", ring: "ring-orange-300" },
+    licensing: { from: "from-stone-600", to: "to-neutral-500", shadow: "shadow-stone-500/40", ring: "ring-stone-300" },
+    fines: { from: "from-red-700", to: "to-red-500", shadow: "shadow-red-600/40", ring: "ring-red-300" },
+    ipva: { from: "from-yellow-600", to: "to-amber-500", shadow: "shadow-yellow-500/40", ring: "ring-yellow-300" },
+  };
   
   const [maintenances, setMaintenances] = useState<MaintenanceItem[]>([]);
   const [fuelings, setFuelings] = useState<FuelItem[]>([]);
@@ -468,23 +492,62 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   }, [id]);
 
   const tabs = [
-    { id: "maintenance", label: "Serviços", icon: <Settings className="w-4 h-4" /> },
-    { id: "fuel", label: "Abastecimento", icon: <Fuel className="w-4 h-4" /> },
-    { id: "battery", label: "Bateria", icon: <Battery className="w-4 h-4" /> },
-    { id: "oil", label: "Óleo", icon: <Droplet className="w-4 h-4" /> },
-    { id: "defects", label: "Defeitos", icon: <AlertTriangle className="w-4 h-4" /> },
-    { id: "filters", label: "Filtros", icon: <Filter className="w-4 h-4" /> },
-    { id: "revision", label: "Revisões", icon: <ClipboardCheck className="w-4 h-4" /> },
-    { id: "tires_records", label: "Pneus", icon: <Disc className="w-4 h-4" /> },
-    { id: "alignment", label: "Alinhamentos", icon: <Compass className="w-4 h-4" /> },
-    { id: "ac", label: "Ar-Condicionado", icon: <Wind className="w-4 h-4" /> },
-    { id: "wash", label: "Lavagem", icon: <Waves className="w-4 h-4" /> },
-    { id: "travel", label: "Viagem", icon: <Map className="w-4 h-4" /> },
-    { id: "calibration", label: "Calibragem", icon: <Gauge className="w-4 h-4" /> },
-    { id: "licensing", label: "Licenciamento", icon: <CreditCard className="w-4 h-4" /> },
-    { id: "fines", label: "Multas", icon: <Ban className="w-4 h-4" /> },
-    { id: "ipva", label: "IPVA", icon: <FileText className="w-4 h-4" /> },
+    { id: "maintenance", label: "Serviços", icon: <Settings className="w-5 h-5" /> },
+    { id: "fuel", label: "Abastecimento", icon: <Fuel className="w-5 h-5" /> },
+    { id: "battery", label: "Bateria", icon: <Battery className="w-5 h-5" /> },
+    { id: "oil", label: "Óleo", icon: <Droplet className="w-5 h-5" /> },
+    { id: "defects", label: "Defeitos", icon: <AlertTriangle className="w-5 h-5" /> },
+    { id: "filters", label: "Filtros", icon: <Filter className="w-5 h-5" /> },
+    { id: "revision", label: "Revisões", icon: <ClipboardCheck className="w-5 h-5" /> },
+    { id: "tires_records", label: "Pneus", icon: <Disc className="w-5 h-5" /> },
+    { id: "alignment", label: "Alinhamentos", icon: <Compass className="w-5 h-5" /> },
+    { id: "ac", label: "Ar-Condicionado", icon: <Wind className="w-5 h-5" /> },
+    { id: "wash", label: "Lavagem", icon: <Waves className="w-5 h-5" /> },
+    { id: "travel", label: "Viagem", icon: <Map className="w-5 h-5" /> },
+    { id: "calibration", label: "Calibragem", icon: <Gauge className="w-5 h-5" /> },
+    { id: "licensing", label: "Licenciamento", icon: <CreditCard className="w-5 h-5" /> },
+    { id: "fines", label: "Multas", icon: <Ban className="w-5 h-5" /> },
+    { id: "ipva", label: "IPVA", icon: <FileText className="w-5 h-5" /> },
   ];
+
+  useEffect(() => {
+    if (!isAutoPlaying || historyOpen) return;
+    const timer = window.setInterval(() => {
+      const el = carouselRef.current;
+      if (!el || el.scrollWidth <= el.clientWidth) return;
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+      if (atEnd) {
+        el.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        el.scrollBy({ left: 180, behavior: "smooth" });
+      }
+    }, 2600);
+    return () => window.clearInterval(timer);
+  }, [isAutoPlaying, historyOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (resumeAutoTimer) window.clearTimeout(resumeAutoTimer);
+    };
+  }, [resumeAutoTimer]);
+
+  const pauseAuto = () => {
+    setIsAutoPlaying(false);
+    if (resumeAutoTimer) window.clearTimeout(resumeAutoTimer);
+    const t = window.setTimeout(() => setIsAutoPlaying(true), 6000);
+    setResumeAutoTimer(t);
+  };
+
+  const toggleTab = (tabId: string) => {
+    pauseAuto();
+    if (activeTab === tabId && historyOpen) {
+      setHistoryOpen(false);
+      return;
+    }
+    setActiveTab(tabId);
+    setSearchTerm("");
+    setHistoryOpen(true);
+  };
 
   const getActiveData = () => {
     let data: any[] = [];
@@ -1179,12 +1242,12 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   }
 
   return (
-    <div className="space-y-8 pb-20 bg-zinc-950 min-h-screen">
+    <div className="space-y-6 pb-20 bg-zinc-950 min-h-screen">
       {/* Header */}
       <div className="flex items-center justify-between">
         <Link 
           href="/dashboard" 
-          className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm text-white backdrop-blur transition-all hover:bg-white/20"
         >
           <ChevronLeft className="w-4 h-4" />
           Voltar para Garagem
@@ -1193,72 +1256,130 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           variant="outline" 
           size="sm" 
           onClick={() => router.push(`/dashboard/vehicles/new?edit=${id}`)}
-          className="gap-2 bg-white text-zinc-950 border-white hover:bg-zinc-200 hover:text-zinc-950"
+          className="gap-2 rounded-full bg-white text-zinc-950 border-white hover:bg-zinc-200 hover:text-zinc-950"
         >
           <Edit className="w-4 h-4" />
           Editar Veículo
         </Button>
       </div>
 
-      <Card className="px-4 py-3 md:px-5 md:py-3.5 bg-white backdrop-blur-sm border-zinc-200 text-zinc-950">
+      <section aria-label="Sessões" className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="bg-gradient-to-r from-violet-300 via-fuchsia-200 to-amber-200 bg-clip-text text-sm font-black uppercase tracking-[0.25em] text-transparent">
+            Sessões
+          </h2>
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur">
+            <span className={cn("h-1.5 w-1.5 rounded-full", isAutoPlaying ? "animate-pulse bg-emerald-400" : "bg-zinc-400")} />
+            {isAutoPlaying ? "Automático" : "Manual"}
+          </span>
+        </div>
+        <motion.div
+          ref={carouselRef}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.08}
+          onMouseEnter={() => { setIsAutoPlaying(false); if (resumeAutoTimer) window.clearTimeout(resumeAutoTimer); }}
+          onMouseLeave={() => { const t = window.setTimeout(() => setIsAutoPlaying(true), 3000); setResumeAutoTimer(t); }}
+          onDragStart={pauseAuto}
+          className="carousel-track flex gap-3 overflow-x-auto pb-3 pt-1 pr-2 cursor-grab active:cursor-grabbing"
+        >
+          {tabs.map((tab) => {
+            const style = tabStyle[tab.id];
+            const isActive = activeTab === tab.id && historyOpen;
+            return (
+              <motion.button
+                key={tab.id}
+                type="button"
+                whileHover={{ y: -4, scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                data-active={isActive}
+                onClick={() => toggleTab(tab.id)}
+                aria-pressed={isActive}
+                title={`${tab.label}${isActive ? " — clique novamente para ocultar" : ""}`}
+                className={cn(
+                  "group relative min-w-[124px] shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br p-[1.5px] text-left text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950",
+                  style.from, style.to
+                )}
+              >
+                <span className={cn(
+                  "relative flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-[calc(1rem-1px)] px-3 py-4 text-center text-[11px] font-bold uppercase tracking-wide backdrop-blur transition-all",
+                  isActive
+                    ? "bg-white/20 ring-2 ring-white/80 shadow-[0_14px_30px_-10px_rgba(255,255,255,0.5)]"
+                    : "bg-black/25 group-hover:bg-black/10"
+                )}>
+                  <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-110">{tab.icon}</span>
+                  <span className="leading-tight">{tab.label}</span>
+                  <span className="text-[9px] font-semibold normal-case tracking-normal text-white/80">
+                    {isActive ? "Ocultar" : "Ver histórico"}
+                  </span>
+                </span>
+                <span className={cn("pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-br from-white/30 to-transparent")} />
+              </motion.button>
+            );
+          })}
+        </motion.div>
+        <p className="text-center text-[10px] uppercase tracking-[0.25em] text-zinc-500">Arraste para o lado ou toque em uma sessão</p>
+      </section>
+
+      <Card className="px-4 py-3 md:px-5 md:py-3.5 rounded-2xl bg-gradient-to-br from-violet-500/20 via-fuchsia-500/10 to-amber-400/20 backdrop-blur-sm border-violet-300/30 text-white">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
-            <div className="border border-zinc-300 bg-zinc-100 p-2">
-              <CarIcon className="text-zinc-950 w-5 h-5" />
+            <div className="rounded-2xl border border-white/30 bg-gradient-to-br from-violet-500 to-fuchsia-500 p-2 shadow-lg shadow-fuchsia-500/30">
+              <CarIcon className="text-white w-5 h-5" />
             </div>
             <div className="flex flex-wrap items-baseline gap-x-3">
-              <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight text-zinc-950 leading-none">{vehicle.model}</h1>
-              <p className="text-zinc-500 font-mono text-xs tracking-widest">{vehicle.plate}</p>
+              <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white leading-none">{vehicle.model}</h1>
+              <p className="text-zinc-300 font-mono text-xs tracking-widest">{vehicle.plate}</p>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3 md:border-l md:border-zinc-200 md:pl-5">
+          <div className="grid grid-cols-3 gap-3 md:border-l md:border-white/20 md:pl-5">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500">Ano</span>
-              <p className="font-bold text-zinc-950 text-sm">{vehicle.year}</p>
+              <span className="text-[10px] uppercase tracking-widest text-zinc-300">Ano</span>
+              <p className="font-bold text-white text-sm">{vehicle.year}</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500">Combustível</span>
-              <p className="font-bold text-zinc-950 text-sm">{vehicle.fuelType}</p>
+              <span className="text-[10px] uppercase tracking-widest text-zinc-300">Combustível</span>
+              <p className="font-bold text-white text-sm">{vehicle.fuelType}</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-500">Cor</span>
-              <p className="font-bold text-zinc-950 text-sm">{vehicle.color}</p>
+              <span className="text-[10px] uppercase tracking-widest text-zinc-300">Cor</span>
+              <p className="font-bold text-white text-sm">{vehicle.color}</p>
             </div>
           </div>
         </div>
       </Card>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
           {/* Stats Overview */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Card className="modern-hover group p-4 bg-white border-zinc-200 text-zinc-950">
+            <Card className="modern-hover group p-4 rounded-2xl bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-cyan-400/20 border-emerald-300/30 text-white">
               <div className="flex items-center justify-between mb-2">
-                <div className="p-1.5 bg-zinc-100 rounded-none text-zinc-950 transition-all duration-300 group-hover:bg-zinc-950 group-hover:text-white group-hover:-rotate-6 group-hover:scale-110">
+                <div className="p-1.5 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-lg shadow-emerald-500/40 transition-all duration-300 group-hover:-rotate-6 group-hover:scale-110">
                   <DollarSign className="w-4 h-4" />
                 </div>
-                <TrendingUp className="w-3.5 h-3.5 text-zinc-600 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-zinc-950" />
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-300 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white" />
               </div>
-              <p className="text-xs text-zinc-500 transition-colors duration-300 group-hover:text-zinc-700">Gasto Total</p>
-              <h3 className="text-xl font-bold text-zinc-950 transition-transform duration-300 group-hover:translate-x-0.5">
+              <p className="text-xs text-emerald-100 transition-colors duration-300 group-hover:text-white">Gasto Total</p>
+              <h3 className="text-xl font-bold text-white transition-transform duration-300 group-hover:translate-x-0.5">
                 {totalCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </h3>
-              <p className="text-[11px] text-zinc-500 mt-0.5">
+              <p className="text-[11px] text-zinc-300 mt-0.5">
                 {maintenances.length} serviços + {fuelings.length} abastecimentos
               </p>
             </Card>
             
-            <Card className="modern-hover group p-4 bg-white border-zinc-200 text-zinc-950">
+            <Card className="modern-hover group p-4 rounded-2xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-pink-500/20 border-amber-300/30 text-white">
               <div className="flex items-center justify-between mb-2">
-                <div className="p-1.5 bg-zinc-100 rounded-none text-zinc-950 transition-all duration-300 group-hover:bg-zinc-950 group-hover:text-white group-hover:rotate-6 group-hover:scale-110">
+                <div className="p-1.5 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-orange-500/40 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110">
                   <Calendar className="w-4 h-4" />
                 </div>
                 <TrendingUp className="hidden" />
               </div>
-              <p className="text-xs text-zinc-500 transition-colors duration-300 group-hover:text-zinc-700">Última Atividade</p>
-              <h3 className="text-xl font-bold text-zinc-950 transition-transform duration-300 group-hover:translate-x-0.5">
+              <p className="text-xs text-amber-100 transition-colors duration-300 group-hover:text-white">Última Atividade</p>
+              <h3 className="text-xl font-bold text-white transition-transform duration-300 group-hover:translate-x-0.5">
                 {lastActivity ? lastActivity.dateText : "Nenhuma atividade"}
               </h3>
-              <p className="text-[11px] text-zinc-500 mt-0.5">
+              <p className="text-[11px] text-zinc-300 mt-0.5">
                 {lastActivity
                   ? `${lastActivityTab?.label ?? "Registro"} • ${
                       lastActivity.price !== null
@@ -1268,38 +1389,25 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                           })
                         : "Sem valor registrado"
                     }`
-                  : "Clique na aba para ver detalhes"}
+                  : "Toque em uma sessão para ver detalhes"}
               </p>
             </Card>
           </div>
 
-          {/* Tabs Section */}
+          <AnimatePresence initial={false}>
+            {historyOpen && (
+              <motion.div
+                key="history"
+                initial={{ opacity: 0, height: 0, y: -12 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -12 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden"
+              >
+          {/* History Section */}
           <div className="space-y-6">
-            <div className="grid grid-cols-4 md:grid-cols-8 gap-2 pb-4">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  data-active={activeTab === tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setSearchTerm("");
-                  }}
-                  className={cn(
-                    "modern-tab flex flex-col items-center justify-center gap-1 p-2 rounded-none text-[10px] sm:text-xs font-bold transition-all text-center h-full",
-                    activeTab === tab.id 
-                      ? "bg-white text-zinc-950 shadow-[0_0_22px_rgba(255,255,255,0.18)] scale-[1.03]" 
-                      : "bg-zinc-900 border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
-                  )}
-                  title={tab.label}
-                >
-                  <div className="shrink-0 relative z-10">{tab.icon}</div>
-                  <span className="truncate w-full leading-tight relative z-10">{tab.label}</span>
-                </button>
-              ))}
-            </div>
-
-            <Card hoverable={false} className="modern-hover overflow-hidden border-zinc-200 bg-white text-zinc-950">
-              <div className="p-6 border-b border-zinc-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-zinc-50">
+            <Card hoverable={false} className="modern-hover overflow-hidden rounded-2xl border-violet-400/40 bg-gradient-to-br from-white via-violet-50 to-cyan-50 text-zinc-950">
+              <div className="p-4 border-b border-zinc-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/50">
                 <h3 className="font-bold text-zinc-950">
                   Registros de {tabs.find(t => t.id === activeTab)?.label}
                 </h3>
@@ -1311,7 +1419,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                         placeholder="Buscar serviço pelo nome..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="h-10 text-zinc-950 border-zinc-300 bg-white placeholder:text-zinc-400"
+                        className="h-10 rounded-xl text-zinc-950 border-zinc-300 bg-white placeholder:text-zinc-400"
                         aria-label="Buscar serviço pelo nome"
                       />
                     </div>
@@ -1326,9 +1434,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                       setRegisterBarVisible(false);
                       setFormData({});
                     }}
-                    className="group relative flex shrink-0 items-center gap-2 overflow-hidden border border-zinc-950 bg-zinc-950 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition-all duration-300 hover:bg-zinc-800 hover:text-white hover:shadow-[0_8px_22px_rgba(0,0,0,0.22)]"
+                    className="group relative flex shrink-0 items-center gap-2 overflow-hidden rounded-xl border border-violet-600 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-violet-600 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/40 hover:brightness-110"
                   >
-                    <span className="absolute inset-y-0 left-0 w-1 bg-white/25 transition-all duration-300 group-hover:w-full group-hover:bg-white/10" />
+                    <span className="absolute inset-y-0 left-0 w-1 bg-white/30 transition-all duration-300 group-hover:w-full group-hover:bg-white/10" />
                     <Plus className="relative h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
                     <span className="relative">Cadastrar Item</span>
                   </button>
@@ -1346,7 +1454,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                   return (
                     <div key={item.id} className="modern-record group px-4 py-2.5 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="modern-record-icon p-2 shrink-0 rounded-none bg-zinc-100 text-zinc-950">
+                        <div className={cn("modern-record-icon p-2 shrink-0 rounded-xl bg-gradient-to-br text-white shadow-md", tabStyle[activeTab].from, tabStyle[activeTab].to, tabStyle[activeTab].shadow)}>
                           {getTabIcon(activeTab)}
                         </div>
                         <div>
@@ -1452,8 +1560,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                 })}
 
                 {activeData.length === 0 && (
-                  <div className="p-12 text-center">
-                    <div className="w-16 h-16 rounded-none bg-zinc-100 text-zinc-950 flex items-center justify-center mx-auto mb-4">
+                  <div className="p-8 text-center">
+                    <div className={cn("w-12 h-12 rounded-2xl bg-gradient-to-br text-white flex items-center justify-center mx-auto mb-3 shadow-lg", tabStyle[activeTab].from, tabStyle[activeTab].to, tabStyle[activeTab].shadow)}>
                       {getTabIcon(activeTab)}
                     </div>
                     {activeTab === "maintenance" && searchTerm.trim() ? (
@@ -1483,6 +1591,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               </div>
             </Card>
           </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
       </div>
 
       <Modal
