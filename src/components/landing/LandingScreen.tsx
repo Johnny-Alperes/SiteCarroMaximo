@@ -103,7 +103,7 @@ export default function LandingScreen() {
         className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm"
         onClick={() => setShowAbout(false)}
       />
-      <div className="relative z-10 w-full max-w-2xl border border-zinc-200 bg-white p-5 text-zinc-950 shadow-2xl md:p-6" role="dialog" aria-modal="true" aria-label="Sobre a NPX Soluções Tecnológicas">
+      <div className="relative z-10 w-full max-w-2xl rounded-2xl border border-zinc-200 bg-white p-5 text-zinc-950 shadow-2xl md:p-6" role="dialog" aria-modal="true" aria-label="Sobre a NPX Soluções Tecnológicas">
         <div className="mb-4 flex items-start justify-between gap-6">
           <div>
             <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Sobre nós</p>
