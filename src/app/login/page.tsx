@@ -118,6 +118,7 @@ export default function LoginPage() {
               </div>
               <Input 
                 type="password"
+                showPasswordToggle
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

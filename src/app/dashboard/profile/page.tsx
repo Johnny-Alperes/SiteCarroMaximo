@@ -166,6 +166,7 @@ export default function ProfilePage() {
               <Input 
                 label="Nova Senha"
                 type="password"
+                showPasswordToggle
                 placeholder="Mínimo 6 caracteres"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

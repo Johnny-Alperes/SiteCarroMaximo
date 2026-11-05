@@ -123,6 +123,7 @@ export default function RegisterPage() {
             <Input 
               label="Senha"
               type="password"
+              showPasswordToggle
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -133,6 +134,7 @@ export default function RegisterPage() {
             <Input 
               label="Confirmar Senha"
               type="password"
+              showPasswordToggle
               placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

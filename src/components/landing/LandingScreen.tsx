@@ -24,6 +24,8 @@ import {
   Smartphone,
   Building2,
   ArrowUpRight,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 const backgroundImage =
@@ -44,6 +46,7 @@ export default function LandingScreen() {
   const [showLogin, setShowLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showAbout, setShowAbout] = useState(false);
@@ -184,13 +187,23 @@ export default function LandingScreen() {
         <div className="relative">
           <Lock className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full border border-zinc-700 bg-zinc-900 px-2.5 py-2.5 pl-8 text-xs text-zinc-300 outline-none transition-colors placeholder:text-zinc-600 focus:border-zinc-500"
+            aria-label="Senha"
+            className="w-full border border-zinc-700 bg-zinc-900 px-2.5 py-2.5 pl-8 pr-9 text-xs text-zinc-300 outline-none transition-colors placeholder:text-zinc-600 focus:border-zinc-500"
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+            title={showPassword ? "Ocultar senha" : "Mostrar senha"}
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-none p-1 text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-white"
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
         </div>
 
         <button
