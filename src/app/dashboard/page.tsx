@@ -105,6 +105,18 @@ export default function DashboardPage() {
     "from-purple-600 to-violet-500",
     "from-orange-600 to-amber-500",
   ];
+  const vehicleShadows = [
+    "shadow-violet-500/40",
+    "shadow-emerald-500/40",
+    "shadow-amber-500/40",
+    "shadow-sky-500/40",
+    "shadow-rose-500/40",
+    "shadow-indigo-500/40",
+    "shadow-pink-500/40",
+    "shadow-lime-500/40",
+    "shadow-purple-500/40",
+    "shadow-orange-500/40",
+  ];
 
   if (loading) {
     return (
@@ -169,11 +181,12 @@ export default function DashboardPage() {
               transition={{ delay: index * 0.08 }}
               whileHover={{ y: -6 }}
             >
-              <Card className="modern-hover group overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-zinc-800 border-zinc-700/60 text-white">
+              <Card className="modern-hover group overflow-hidden rounded-2xl border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-zinc-800 text-white">
                 <div className={`h-2 bg-gradient-to-r ${vehicleGradients[index % vehicleGradients.length]}`} />
+                <div className={`h-1 bg-gradient-to-r opacity-60 ${vehicleGradients[index % vehicleGradients.length]} blur-[1px]`} />
                 <div className="p-5">
                   <div className="mb-4 flex items-start justify-between">
-                    <div className={`rounded-2xl bg-gradient-to-br p-3 text-white shadow-lg ${vehicleGradients[index % vehicleGradients.length]} transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110`}>
+                    <div className={`rounded-2xl bg-gradient-to-br p-3 text-white shadow-xl ${vehicleGradients[index % vehicleGradients.length]} ${vehicleShadows[index % vehicleShadows.length]} transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110`}>
                       <CarIcon className="h-6 w-6" />
                     </div>
                     <div className="flex flex-col items-end gap-1">
@@ -181,7 +194,7 @@ export default function DashboardPage() {
                         <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">
                           Placa
                         </span>
-                        <p className="mt-1 rounded-lg border border-zinc-600/60 bg-zinc-800 px-2 py-1 font-mono text-sm font-bold text-white">
+                        <p className={`mt-1 rounded-lg border border-white/15 bg-zinc-800 px-2 py-1 font-mono text-sm font-bold text-white shadow ${vehicleShadows[index % vehicleShadows.length]}`}>
                           {vehicle.plate}
                         </p>
                       </div>
@@ -207,27 +220,37 @@ export default function DashboardPage() {
                   </h3>
 
                   <div className="mb-5 flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-600/60 bg-zinc-800/80 px-2.5 py-1 text-xs font-bold text-zinc-200">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-zinc-800/80 px-2.5 py-1 text-xs font-bold text-zinc-100">
                       <Calendar className="w-3.5 h-3.5" />
                       {vehicle.year}
                     </span>
-                    <span className={`inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r px-2.5 py-1 text-xs font-bold text-white shadow ${vehicleGradients[index % vehicleGradients.length]}`}>
+                    <span className={`inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r px-2.5 py-1 text-xs font-bold text-white shadow ${vehicleGradients[index % vehicleGradients.length]} ${vehicleShadows[index % vehicleShadows.length]}`}>
                       <Fuel className="w-3.5 h-3.5" />
                       {vehicle.fuelType}
                     </span>
                     {vehicle.color && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-600/60 bg-zinc-800/80 px-2.5 py-1 text-xs font-bold text-zinc-200">
+                      <span className={`inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r px-2.5 py-1 text-xs font-bold text-white shadow ${vehicleGradients[index % vehicleGradients.length]} ${vehicleShadows[index % vehicleShadows.length]}`}>
                         {vehicle.color}
                       </span>
                     )}
                   </div>
 
-                  <Link href={`/dashboard/vehicles/${vehicle.id}`}>
-                    <button className={`group/btn relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r px-6 py-3.5 text-sm font-bold uppercase tracking-widest text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 ${vehicleGradients[index % vehicleGradients.length]}`}>
+                  <Link href={`/dashboard/vehicles/${vehicle.id}`} className="block">
+                    <motion.button
+                      whileHover={{ scale: 1.02, y: -1 }}
+                      whileTap={{ scale: 0.94, transition: { type: "spring", stiffness: 400, damping: 18 } }}
+                      className={`group/btn relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r px-6 py-3.5 text-sm font-bold uppercase tracking-widest text-white shadow-lg transition-[filter] duration-300 hover:brightness-110 active:brightness-90 ${vehicleGradients[index % vehicleGradients.length]} ${vehicleShadows[index % vehicleShadows.length]}`}
+                    >
+                      <motion.span
+                        className="absolute inset-0 -z-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
+                        initial={{ x: "-120%" }}
+                        whileHover={{ x: "120%" }}
+                        transition={{ duration: 0.7 }}
+                      />
                       <span className="absolute inset-y-0 left-0 w-1 bg-white/25 transition-all duration-300 group-hover/btn:w-full group-hover/btn:bg-white/10" />
                       <span className="relative">Gerenciamento do Veículo</span>
                       <ChevronRight className="relative h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                    </button>
+                    </motion.button>
                   </Link>
                 </div>
               </Card>
