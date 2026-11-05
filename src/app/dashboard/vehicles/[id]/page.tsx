@@ -337,8 +337,10 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const [registerBarVisible, setRegisterBarVisible] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
   const [resumeAutoTimer, setResumeAutoTimer] = useState<number | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const dragStartRef = useRef<{ x: number; scroll: number } | null>(null);
 
   const tabStyle: Record<string, { from: string; to: string; shadow: string; ring: string }> = {
     maintenance: { from: "from-violet-600", to: "to-fuchsia-500", shadow: "shadow-violet-500/40", ring: "ring-violet-300" },
@@ -511,21 +513,6 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   ];
 
   useEffect(() => {
-    if (!isAutoPlaying || historyOpen) return;
-    const timer = window.setInterval(() => {
-      const el = carouselRef.current;
-      if (!el || el.scrollWidth <= el.clientWidth) return;
-      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
-      if (atEnd) {
-        el.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        el.scrollBy({ left: 180, behavior: "smooth" });
-      }
-    }, 2600);
-    return () => window.clearInterval(timer);
-  }, [isAutoPlaying, historyOpen]);
-
-  useEffect(() => {
     return () => {
       if (resumeAutoTimer) window.clearTimeout(resumeAutoTimer);
     };
@@ -536,6 +523,26 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     if (resumeAutoTimer) window.clearTimeout(resumeAutoTimer);
     const t = window.setTimeout(() => setIsAutoPlaying(true), 6000);
     setResumeAutoTimer(t);
+  };
+
+  const onCarouselMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = carouselRef.current;
+    if (!el) return;
+    el.setPointerCapture?.(e.nativeEvent.button);
+    dragStartRef.current = { x: e.clientX, scroll: el.scrollLeft };
+    setIsDragging(true);
+    pauseAuto();
+  };
+
+  const onCarouselMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = carouselRef.current;
+    if (!el || !dragStartRef.current || !isDragging) return;
+    el.scrollLeft = dragStartRef.current.scroll - (e.clientX - dragStartRef.current.x);
+  };
+
+  const onCarouselMouseUp = () => {
+    dragStartRef.current = null;
+    setIsDragging(false);
   };
 
   const toggleTab = (tabId: string) => {
@@ -1269,56 +1276,69 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
             Sessões
           </h2>
           <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur">
-            <span className={cn("h-1.5 w-1.5 rounded-full", isAutoPlaying ? "animate-pulse bg-emerald-400" : "bg-zinc-400")} />
-            {isAutoPlaying ? "Automático" : "Manual"}
+            <span className={cn("h-1.5 w-1.5 rounded-full", isAutoPlaying && !isDragging ? "animate-pulse bg-emerald-400" : "bg-zinc-400")} />
+            {isDragging ? "Arrastando" : isAutoPlaying ? "Girando" : "Manual"}
           </span>
         </div>
-        <motion.div
-          ref={carouselRef}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.08}
+        <div
+          className="relative overflow-hidden"
           onMouseEnter={() => { setIsAutoPlaying(false); if (resumeAutoTimer) window.clearTimeout(resumeAutoTimer); }}
           onMouseLeave={() => { const t = window.setTimeout(() => setIsAutoPlaying(true), 3000); setResumeAutoTimer(t); }}
-          onDragStart={pauseAuto}
-          className="carousel-track flex gap-3 overflow-x-auto pb-3 pt-1 pr-2 cursor-grab active:cursor-grabbing"
         >
-          {tabs.map((tab) => {
-            const style = tabStyle[tab.id];
-            const isActive = activeTab === tab.id && historyOpen;
-            return (
-              <motion.button
-                key={tab.id}
-                type="button"
-                whileHover={{ y: -4, scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                data-active={isActive}
-                onClick={() => toggleTab(tab.id)}
-                aria-pressed={isActive}
-                title={`${tab.label}${isActive ? " — clique novamente para ocultar" : ""}`}
-                className={cn(
-                  "group relative min-w-[124px] shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br p-[1.5px] text-left text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950",
-                  style.from, style.to
-                )}
-              >
-                <span className={cn(
-                  "relative flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-[calc(1rem-1px)] px-3 py-4 text-center text-[11px] font-bold uppercase tracking-wide backdrop-blur transition-all",
-                  isActive
-                    ? "bg-white/20 ring-2 ring-white/80 shadow-[0_14px_30px_-10px_rgba(255,255,255,0.5)]"
-                    : "bg-black/25 group-hover:bg-black/10"
-                )}>
-                  <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-110">{tab.icon}</span>
-                  <span className="leading-tight">{tab.label}</span>
-                  <span className="text-[9px] font-semibold normal-case tracking-normal text-white/80">
-                    {isActive ? "Ocultar" : "Ver histórico"}
-                  </span>
-                </span>
-                <span className={cn("pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-br from-white/30 to-transparent")} />
-              </motion.button>
-            );
-          })}
-        </motion.div>
-        <p className="text-center text-[10px] uppercase tracking-[0.25em] text-zinc-500">Arraste para o lado ou toque em uma sessão</p>
+          <div
+            ref={carouselRef}
+            onMouseDown={onCarouselMouseDown}
+            onMouseMove={onCarouselMouseMove}
+            onMouseUp={onCarouselMouseUp}
+            onMouseLeave={onCarouselMouseUp}
+            className="carousel-track cursor-grab overflow-x-auto active:cursor-grabbing"
+          >
+            <motion.div
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.1}
+              dragMomentum={true}
+              onDragStart={pauseAuto}
+              className={cn("carousel-march flex w-max gap-3 pb-1 pt-1 pr-3", (!isAutoPlaying || isDragging) && "paused")}
+            >
+              {[...tabs, ...tabs].map((tab, idx) => {
+                const style = tabStyle[tab.id];
+                const isActive = activeTab === tab.id && historyOpen;
+                return (
+                  <motion.button
+                    key={`${tab.id}-${idx}`}
+                    type="button"
+                    whileHover={{ y: -4, scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    data-active={isActive}
+                    onClick={(e) => { e.stopPropagation(); toggleTab(tab.id); }}
+                    aria-pressed={isActive}
+                    title={`${tab.label}${isActive ? " — clique novamente para ocultar" : ""}`}
+                    className={cn(
+                      "group relative min-w-[124px] shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br p-[1.5px] text-left text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950",
+                      style.from, style.to
+                    )}
+                  >
+                    <span className={cn(
+                      "relative flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-[calc(1rem-1px)] px-3 py-4 text-center text-[11px] font-bold uppercase tracking-wide backdrop-blur transition-all",
+                      isActive
+                        ? "bg-white/20 ring-2 ring-white/80 shadow-[0_14px_30px_-10px_rgba(255,255,255,0.5)]"
+                        : "bg-black/25 group-hover:bg-black/10"
+                    )}>
+                      <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-110">{tab.icon}</span>
+                      <span className="leading-tight">{tab.label}</span>
+                      <span className="text-[9px] font-semibold normal-case tracking-normal text-white/80">
+                        {isActive ? "Ocultar" : "Ver histórico"}
+                      </span>
+                    </span>
+                    <span className={cn("pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-br from-white/30 to-transparent")} />
+                  </motion.button>
+                );
+              })}
+            </motion.div>
+          </div>
+        </div>
+        <p className="text-center text-[10px] uppercase tracking-[0.25em] text-zinc-500">Gira sozinho • clique e arraste para chegar a qualquer sessão</p>
       </section>
 
       <Card className="px-4 py-3 md:px-5 md:py-3.5 rounded-2xl bg-gradient-to-br from-violet-500/20 via-fuchsia-500/10 to-amber-400/20 backdrop-blur-sm border-violet-300/30 text-white">

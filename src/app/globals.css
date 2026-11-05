@@ -183,7 +183,7 @@
   }
 
   .carousel-track {
-    scroll-snap-type: x mandatory;
+    scroll-behavior: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
@@ -192,7 +192,17 @@
     display: none;
   }
 
-  .carousel-track > * {
-    scroll-snap-align: start;
+  @keyframes carousel-march {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .carousel-march {
+    animation: carousel-march 55s linear infinite;
+    will-change: transform;
+  }
+
+  .carousel-march.paused {
+    animation-play-state: paused;
   }
 }
