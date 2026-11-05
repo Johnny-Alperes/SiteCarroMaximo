@@ -127,7 +127,7 @@ export default function DashboardPage() {
           </p>
         </div>
         <Link href="/dashboard/vehicles/new">
-          <Button className="h-11 rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-violet-600 px-6 text-white shadow-lg shadow-violet-500/30 hover:brightness-110">
+          <Button className="h-11 rounded-full bg-white px-6 text-zinc-950 shadow-lg shadow-white/10 hover:bg-zinc-200 hover:text-zinc-950">
             <Plus className="w-4 h-4" />
             Adicionar Veículo
           </Button>
@@ -227,7 +227,7 @@ export default function DashboardPage() {
                     <motion.button
                       whileHover={{ scale: 1.02, y: -1 }}
                       whileTap={{ scale: 0.94 }}
-                      className={`group/btn relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r px-6 py-3.5 text-sm font-bold uppercase tracking-widest text-white shadow-lg transition-[filter] duration-300 hover:brightness-110 active:brightness-90 ${accent.gradient}`}
+                      className={`group/btn relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r px-6 py-3.5 text-sm font-bold uppercase tracking-widest text-white shadow-lg transition-[filter] duration-300 hover:brightness-110 active:brightness-90 from-emerald-500 to-green-600 shadow-emerald-500/40`}
                     >
                       <motion.span
                         className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
