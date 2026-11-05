@@ -1200,29 +1200,29 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         </Button>
       </div>
 
-      <Card className="p-6 md:p-8 bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="border border-zinc-700 bg-zinc-900 p-4">
-              <CarIcon className="text-white w-8 h-8" />
+      <Card className="px-4 py-3 md:px-5 md:py-3.5 bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="border border-zinc-700 bg-zinc-900 p-2">
+              <CarIcon className="text-white w-5 h-5" />
             </div>
-            <div>
-              <h1 className="text-3xl font-black uppercase tracking-tight text-white">{vehicle.model}</h1>
-              <p className="text-zinc-400 font-mono text-sm tracking-widest">{vehicle.plate}</p>
+            <div className="flex flex-wrap items-baseline gap-x-3">
+              <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white leading-none">{vehicle.model}</h1>
+              <p className="text-zinc-400 font-mono text-xs tracking-widest">{vehicle.plate}</p>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:border-l md:border-zinc-800 md:pl-6">
-            <div>
-              <span className="text-xs uppercase tracking-widest text-zinc-500">Ano / Modelo</span>
-              <p className="mt-1 font-bold text-white">{vehicle.year}</p>
+          <div className="grid grid-cols-3 gap-3 md:border-l md:border-zinc-800 md:pl-5">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-widest text-zinc-500">Ano</span>
+              <p className="font-bold text-white text-sm">{vehicle.year}</p>
             </div>
-            <div>
-              <span className="text-xs uppercase tracking-widest text-zinc-500">Combustível</span>
-              <p className="mt-1 font-bold text-white">{vehicle.fuelType}</p>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-widest text-zinc-500">Combustível</span>
+              <p className="font-bold text-white text-sm">{vehicle.fuelType}</p>
             </div>
-            <div>
-              <span className="text-xs uppercase tracking-widest text-zinc-500">Cor</span>
-              <p className="mt-1 font-bold text-white">{vehicle.color}</p>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-widest text-zinc-500">Cor</span>
+              <p className="font-bold text-white text-sm">{vehicle.color}</p>
             </div>
           </div>
         </div>
@@ -1231,15 +1231,15 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       <div className="space-y-8">
           {/* Stats Overview */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Card className="p-6 bg-zinc-900/40 border-zinc-800">
+            <Card className="modern-hover group p-6 bg-zinc-900/40 border-zinc-800">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-zinc-800 rounded-none text-zinc-300">
+                <div className="p-2 bg-zinc-800 rounded-none text-zinc-300 transition-all duration-300 group-hover:bg-white group-hover:text-zinc-950 group-hover:-rotate-6 group-hover:scale-110">
                   <DollarSign className="w-5 h-5" />
                 </div>
-                <TrendingUp className="w-4 h-4 text-zinc-400" />
+                <TrendingUp className="w-4 h-4 text-zinc-400 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white" />
               </div>
-              <p className="text-sm text-zinc-400">Gasto Total</p>
-              <h3 className="text-2xl font-bold text-white">
+              <p className="text-sm text-zinc-400 transition-colors duration-300 group-hover:text-zinc-300">Gasto Total</p>
+              <h3 className="text-2xl font-bold text-white transition-transform duration-300 group-hover:translate-x-0.5">
                 {totalCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </h3>
               <p className="text-xs text-zinc-400 mt-1">
@@ -1247,14 +1247,15 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               </p>
             </Card>
             
-            <Card className="p-6 bg-zinc-900/40 border-zinc-800">
+            <Card className="modern-hover group p-6 bg-zinc-900/40 border-zinc-800">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-zinc-800 rounded-none text-zinc-300">
+                <div className="p-2 bg-zinc-800 rounded-none text-zinc-300 transition-all duration-300 group-hover:bg-white group-hover:text-zinc-950 group-hover:rotate-6 group-hover:scale-110">
                   <Calendar className="w-5 h-5" />
                 </div>
+                <TrendingUp className="hidden" />
               </div>
-              <p className="text-sm text-zinc-400">Última Atividade</p>
-              <h3 className="text-2xl font-bold text-white">
+              <p className="text-sm text-zinc-400 transition-colors duration-300 group-hover:text-zinc-300">Última Atividade</p>
+              <h3 className="text-2xl font-bold text-white transition-transform duration-300 group-hover:translate-x-0.5">
                 {lastActivity ? lastActivity.dateText : "Nenhuma atividade"}
               </h3>
               <p className="text-xs text-zinc-400 mt-1">
@@ -1278,25 +1279,26 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
+                  data-active={activeTab === tab.id}
                   onClick={() => {
                     setActiveTab(tab.id);
                     setSearchTerm("");
                   }}
                   className={cn(
-                    "flex flex-col items-center justify-center gap-1 p-2 rounded-none text-[10px] sm:text-xs font-bold transition-all text-center h-full",
+                    "modern-tab flex flex-col items-center justify-center gap-1 p-2 rounded-none text-[10px] sm:text-xs font-bold transition-all text-center h-full",
                     activeTab === tab.id 
-                      ? "bg-white text-zinc-950 shadow-none" 
+                      ? "bg-white text-zinc-950 shadow-[0_0_22px_rgba(255,255,255,0.18)] scale-[1.03]" 
                       : "bg-zinc-900 border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
                   )}
                   title={tab.label}
                 >
-                  <div className="shrink-0">{tab.icon}</div>
-                  <span className="truncate w-full leading-tight">{tab.label}</span>
+                  <div className="shrink-0 relative z-10">{tab.icon}</div>
+                  <span className="truncate w-full leading-tight relative z-10">{tab.label}</span>
                 </button>
               ))}
             </div>
 
-            <Card className="overflow-hidden border-zinc-800 bg-zinc-900">
+            <Card hoverable={false} className="modern-hover overflow-hidden border-zinc-800 bg-zinc-900">
               <div className="p-6 border-b border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-zinc-900/50">
                 <h3 className="font-bold text-white">
                   Registros de {tabs.find(t => t.id === activeTab)?.label}
@@ -1345,9 +1347,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                     : null;
 
                   return (
-                    <div key={item.id} className="p-6 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
+                    <div key={item.id} className="modern-record group p-6 flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="p-3 rounded-none bg-zinc-800 text-zinc-300">
+                        <div className="modern-record-icon p-3 rounded-none bg-zinc-800 text-zinc-300">
                           {getTabIcon(activeTab)}
                         </div>
                         <div>

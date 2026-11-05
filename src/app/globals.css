@@ -55,12 +55,128 @@
   .glass {
     @apply bg-white/5 backdrop-blur-md border border-white/10;
   }
-  
+
   .text-gradient {
     @apply bg-clip-text text-transparent bg-linear-to-r from-white via-zinc-300 to-zinc-500;
   }
 
   .premium-shadow {
     box-shadow: 0 0 40px -10px rgba(255, 255, 255, 0.12);
+  }
+
+  .modern-hover {
+    position: relative;
+    overflow: hidden;
+    transition:
+      border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .modern-hover::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+
+  .modern-hover::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+
+  .modern-hover:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    background-color: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 12px 32px -12px rgba(255, 255, 255, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+  }
+
+  .modern-hover:hover::before {
+    opacity: 1;
+  }
+
+  .modern-hover:hover::after {
+    transform: translateX(0);
+  }
+
+  .modern-tab {
+    position: relative;
+    overflow: hidden;
+    transition:
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.25s,
+      background-color 0.25s,
+      color 0.25s,
+      box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .modern-tab::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.25s;
+    pointer-events: none;
+  }
+
+  .modern-tab:hover:not([data-active="true"]) {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.45);
+    box-shadow: 0 10px 22px -10px rgba(255, 255, 255, 0.22);
+  }
+
+  .modern-tab:hover:not([data-active="true"])::after {
+    opacity: 1;
+  }
+
+  .modern-tab:active:not([data-active="true"]) {
+    transform: translateY(0);
+  }
+
+  .modern-tab svg {
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .modern-tab:hover:not([data-active="true"]) svg {
+    transform: translateY(-1px) scale(1.12) rotate(-2deg);
+  }
+
+  .modern-record {
+    transition:
+      background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.3s;
+    border-left: 2px solid transparent;
+  }
+
+  .modern-record:hover {
+    background-color: rgba(255, 255, 255, 0.045);
+    border-left-color: rgba(255, 255, 255, 0.75);
+    transform: translateX(4px);
+  }
+
+  .modern-record:hover .modern-record-icon {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.06) rotate(-3deg);
+  }
+
+  .modern-record-icon {
+    transition: color 0.3s, background-color 0.3s, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
