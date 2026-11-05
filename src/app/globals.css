@@ -98,18 +98,20 @@
   }
 
   .modern-hover:hover {
-    border-color: rgba(255, 255, 255, 0.28);
-    background-color: rgba(255, 255, 255, 0.03);
-    box-shadow: 0 12px 32px -12px rgba(255, 255, 255, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    border-color: rgba(0, 0, 0, 0.24);
+    background-color: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
   }
 
   .modern-hover:hover::before {
     opacity: 1;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.05), transparent 55%);
   }
 
   .modern-hover:hover::after {
     transform: translateX(0);
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.5), transparent);
   }
 
   .modern-tab {
@@ -165,14 +167,14 @@
   }
 
   .modern-record:hover {
-    background-color: rgba(255, 255, 255, 0.045);
-    border-left-color: rgba(255, 255, 255, 0.75);
+    background-color: rgba(0, 0, 0, 0.04);
+    border-left-color: rgba(0, 0, 0, 0.7);
     transform: translateX(4px);
   }
 
   .modern-record:hover .modern-record-icon {
-    color: #fff;
-    background-color: rgba(255, 255, 255, 0.1);
+    color: #09090b;
+    background-color: rgba(0, 0, 0, 0.08);
     transform: scale(1.06) rotate(-3deg);
   }
 

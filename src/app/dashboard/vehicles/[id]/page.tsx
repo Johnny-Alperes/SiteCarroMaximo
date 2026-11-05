@@ -1200,29 +1200,29 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         </Button>
       </div>
 
-      <Card className="px-4 py-3 md:px-5 md:py-3.5 bg-zinc-900/50 backdrop-blur-sm border-zinc-800">
+      <Card className="px-4 py-3 md:px-5 md:py-3.5 bg-white backdrop-blur-sm border-zinc-200 text-zinc-950">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
-            <div className="border border-zinc-700 bg-zinc-900 p-2">
-              <CarIcon className="text-white w-5 h-5" />
+            <div className="border border-zinc-300 bg-zinc-100 p-2">
+              <CarIcon className="text-zinc-950 w-5 h-5" />
             </div>
             <div className="flex flex-wrap items-baseline gap-x-3">
-              <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white leading-none">{vehicle.model}</h1>
-              <p className="text-zinc-400 font-mono text-xs tracking-widest">{vehicle.plate}</p>
+              <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight text-zinc-950 leading-none">{vehicle.model}</h1>
+              <p className="text-zinc-500 font-mono text-xs tracking-widest">{vehicle.plate}</p>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3 md:border-l md:border-zinc-800 md:pl-5">
+          <div className="grid grid-cols-3 gap-3 md:border-l md:border-zinc-200 md:pl-5">
             <div className="flex items-center gap-2">
               <span className="text-[10px] uppercase tracking-widest text-zinc-500">Ano</span>
-              <p className="font-bold text-white text-sm">{vehicle.year}</p>
+              <p className="font-bold text-zinc-950 text-sm">{vehicle.year}</p>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] uppercase tracking-widest text-zinc-500">Combustível</span>
-              <p className="font-bold text-white text-sm">{vehicle.fuelType}</p>
+              <p className="font-bold text-zinc-950 text-sm">{vehicle.fuelType}</p>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] uppercase tracking-widest text-zinc-500">Cor</span>
-              <p className="font-bold text-white text-sm">{vehicle.color}</p>
+              <p className="font-bold text-zinc-950 text-sm">{vehicle.color}</p>
             </div>
           </div>
         </div>
@@ -1231,34 +1231,34 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       <div className="space-y-8">
           {/* Stats Overview */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Card className="modern-hover group p-4 bg-zinc-900/40 border-zinc-800">
+            <Card className="modern-hover group p-4 bg-white border-zinc-200 text-zinc-950">
               <div className="flex items-center justify-between mb-2">
-                <div className="p-1.5 bg-zinc-800 rounded-none text-zinc-300 transition-all duration-300 group-hover:bg-white group-hover:text-zinc-950 group-hover:-rotate-6 group-hover:scale-110">
+                <div className="p-1.5 bg-zinc-100 rounded-none text-zinc-950 transition-all duration-300 group-hover:bg-zinc-950 group-hover:text-white group-hover:-rotate-6 group-hover:scale-110">
                   <DollarSign className="w-4 h-4" />
                 </div>
-                <TrendingUp className="w-3.5 h-3.5 text-zinc-400 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white" />
+                <TrendingUp className="w-3.5 h-3.5 text-zinc-600 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-zinc-950" />
               </div>
-              <p className="text-xs text-zinc-400 transition-colors duration-300 group-hover:text-zinc-300">Gasto Total</p>
-              <h3 className="text-xl font-bold text-white transition-transform duration-300 group-hover:translate-x-0.5">
+              <p className="text-xs text-zinc-500 transition-colors duration-300 group-hover:text-zinc-700">Gasto Total</p>
+              <h3 className="text-xl font-bold text-zinc-950 transition-transform duration-300 group-hover:translate-x-0.5">
                 {totalCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </h3>
-              <p className="text-[11px] text-zinc-400 mt-0.5">
+              <p className="text-[11px] text-zinc-500 mt-0.5">
                 {maintenances.length} serviços + {fuelings.length} abastecimentos
               </p>
             </Card>
             
-            <Card className="modern-hover group p-4 bg-zinc-900/40 border-zinc-800">
+            <Card className="modern-hover group p-4 bg-white border-zinc-200 text-zinc-950">
               <div className="flex items-center justify-between mb-2">
-                <div className="p-1.5 bg-zinc-800 rounded-none text-zinc-300 transition-all duration-300 group-hover:bg-white group-hover:text-zinc-950 group-hover:rotate-6 group-hover:scale-110">
+                <div className="p-1.5 bg-zinc-100 rounded-none text-zinc-950 transition-all duration-300 group-hover:bg-zinc-950 group-hover:text-white group-hover:rotate-6 group-hover:scale-110">
                   <Calendar className="w-4 h-4" />
                 </div>
                 <TrendingUp className="hidden" />
               </div>
-              <p className="text-xs text-zinc-400 transition-colors duration-300 group-hover:text-zinc-300">Última Atividade</p>
-              <h3 className="text-xl font-bold text-white transition-transform duration-300 group-hover:translate-x-0.5">
+              <p className="text-xs text-zinc-500 transition-colors duration-300 group-hover:text-zinc-700">Última Atividade</p>
+              <h3 className="text-xl font-bold text-zinc-950 transition-transform duration-300 group-hover:translate-x-0.5">
                 {lastActivity ? lastActivity.dateText : "Nenhuma atividade"}
               </h3>
-              <p className="text-[11px] text-zinc-400 mt-0.5">
+              <p className="text-[11px] text-zinc-500 mt-0.5">
                 {lastActivity
                   ? `${lastActivityTab?.label ?? "Registro"} • ${
                       lastActivity.price !== null
@@ -1298,9 +1298,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               ))}
             </div>
 
-            <Card hoverable={false} className="modern-hover overflow-hidden border-zinc-800 bg-zinc-900">
-              <div className="p-6 border-b border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-zinc-900/50">
-                <h3 className="font-bold text-white">
+            <Card hoverable={false} className="modern-hover overflow-hidden border-zinc-200 bg-white text-zinc-950">
+              <div className="p-6 border-b border-zinc-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-zinc-50">
+                <h3 className="font-bold text-zinc-950">
                   Registros de {tabs.find(t => t.id === activeTab)?.label}
                 </h3>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
@@ -1311,7 +1311,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                         placeholder="Buscar serviço pelo nome..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="h-10 text-white border-zinc-700 bg-zinc-800/50 placeholder:text-zinc-500"
+                        className="h-10 text-zinc-950 border-zinc-300 bg-white placeholder:text-zinc-400"
                         aria-label="Buscar serviço pelo nome"
                       />
                     </div>
@@ -1338,7 +1338,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                 </div>
               </div>
               
-              <div className="divide-y divide-zinc-800">
+              <div className="divide-y divide-zinc-200">
                 {activeData.map((item: any) => {
                   const batteryLifespan = activeTab === "battery" ? getBatteryLifespan(item) : null;
                   const fuelLifespan = activeTab === "fuel" ? getFuelingLifespan(item) : null;
@@ -1349,16 +1349,16 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                   return (
                     <div key={item.id} className="modern-record group p-6 flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="modern-record-icon p-3 rounded-none bg-zinc-800 text-zinc-300">
+                        <div className="modern-record-icon p-3 rounded-none bg-zinc-100 text-zinc-950">
                           {getTabIcon(activeTab)}
                         </div>
                         <div>
                           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <p className="font-bold text-white">
+                            <p className="font-bold text-zinc-950">
                               {getItemName(item, activeTab)}
                             </p>
                             {(batteryLifespan?.text || fuelLifespan || recordLifespan) && (
-                              <span className="text-zinc-500">-</span>
+                              <span className="text-zinc-400">-</span>
                             )}
                             {batteryLifespan?.text && (
                               <span
@@ -1418,7 +1418,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                               </span>
                             )}
                           </div>
-                          <p className="mt-1 text-xs text-zinc-400">
+                          <p className="mt-1 text-xs text-zinc-500">
                             {getItemDate(item, activeTab)}
                             {batteryLifespan?.replacedOn && (
                               <span className="text-amber-400/80">
@@ -1434,7 +1434,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                         </div>
                       </div>
                       <div className="flex shrink-0 items-center gap-3">
-                        <span className="font-bold text-zinc-100">
+                        <span className="font-bold text-zinc-950">
                           {getItemPrice(item, activeTab).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                         </span>
                         <button
@@ -1443,7 +1443,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                             setDeleteError("");
                             setDeleteTarget({ item, tab: activeTab });
                           }}
-                          className="p-2 text-zinc-500 transition-colors hover:text-red-400"
+                          className="p-2 text-zinc-400 transition-colors hover:text-red-600"
                           title="Excluir registro"
                           aria-label={`Excluir ${getItemName(item, activeTab)}`}
                         >
@@ -1456,27 +1456,27 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
                 {activeData.length === 0 && (
                   <div className="p-12 text-center">
-                    <div className="w-16 h-16 rounded-none bg-zinc-800 flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 rounded-none bg-zinc-100 text-zinc-950 flex items-center justify-center mx-auto mb-4">
                       {getTabIcon(activeTab)}
                     </div>
                     {activeTab === "maintenance" && searchTerm.trim() ? (
                       <>
-                        <p className="text-zinc-400 text-sm italic">
+                        <p className="text-zinc-500 text-sm italic">
                           Nenhum serviço encontrado para &quot;{searchTerm.trim()}&quot;.
                         </p>
                         <button
                           onClick={() => setSearchTerm("")}
-                          className="text-zinc-400 text-xs mt-2 hover:text-zinc-300 transition-colors"
+                          className="text-zinc-500 text-xs mt-2 hover:text-zinc-950 transition-colors"
                         >
                           Limpar busca
                         </button>
                       </>
                     ) : (
                       <>
-                        <p className="text-zinc-400 text-sm italic">
+                        <p className="text-zinc-500 text-sm italic">
                           Nenhum registro de {tabs.find(t => t.id === activeTab)?.label?.toLowerCase()} encontrado para este veículo.
                         </p>
-                        <p className="text-zinc-500 text-xs mt-2">
+                        <p className="text-zinc-400 text-xs mt-2">
                           Adicione pelo aplicativo Carro Máximo para ver aqui
                         </p>
                       </>
