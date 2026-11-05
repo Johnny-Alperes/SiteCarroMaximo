@@ -1320,7 +1320,6 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
             </div>
           </div>
         </div>
-        <p className="text-center text-[10px] uppercase tracking-[0.25em] text-zinc-500">Gira sozinho • clique e arraste para chegar a qualquer sessão</p>
       </section>
 
           <AnimatePresence initial={false}>
