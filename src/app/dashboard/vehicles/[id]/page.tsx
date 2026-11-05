@@ -1332,9 +1332,6 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                     <Plus className="relative h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
                     <span className="relative">Cadastrar Item</span>
                   </button>
-                  <Button size="sm" variant="outline" className="text-zinc-600 border-zinc-300 hover:text-zinc-950 hover:bg-zinc-100 hover:border-zinc-400">
-                    Ver Histórico Completo
-                  </Button>
                 </div>
               </div>
               
