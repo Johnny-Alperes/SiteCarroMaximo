@@ -20,10 +20,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setShowForgotPassword(true);
     setIsLoading(true);
     setError("");
 
@@ -117,10 +119,7 @@ export default function LoginPage() {
             />
 
             <div className="space-y-1.5">
-              <div className="flex justify-between items-center ml-1">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Senha</label>
-                <Link href="#" className="text-[10px] uppercase tracking-widest text-zinc-400 transition-colors hover:text-white">Esqueceu a senha?</Link>
-              </div>
+              <label className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Senha</label>
               <Input 
                 type="password"
                 showPasswordToggle
@@ -131,6 +130,11 @@ export default function LoginPage() {
                 required
                 className="rounded-xl bg-zinc-950/60"
               />
+              {showForgotPassword && (
+                <div className="pt-1 text-right">
+                  <Link href="#" className="inline-block text-[10px] uppercase tracking-widest text-zinc-400 underline-offset-4 transition-colors hover:text-white hover:underline">Esqueceu a senha?</Link>
+                </div>
+              )}
             </div>
 
             <Button 
