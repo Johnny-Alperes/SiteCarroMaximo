@@ -776,6 +776,7 @@ export default function DashboardPage() {
         subtitle="Tem certeza de que deseja realmente sair da sua conta?"
         icon={<LogOut className="h-7 w-7 text-zinc-950" />}
         variant="balloon"
+        hideCloseButton
       >
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button
