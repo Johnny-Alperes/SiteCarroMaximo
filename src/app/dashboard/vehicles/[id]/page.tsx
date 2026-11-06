@@ -1272,14 +1272,10 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       </div>
 
       <section aria-label="Sessões" className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="bg-gradient-to-r from-violet-300 via-fuchsia-200 to-amber-200 bg-clip-text text-sm font-black uppercase tracking-[0.25em] text-transparent">
+        <div className="flex items-center justify-center gap-3">
+          <h2 className="text-sm font-black uppercase tracking-[0.25em] text-white text-center">
             Sessões
           </h2>
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur">
-            <span className={cn("h-1.5 w-1.5 rounded-full", isAutoPlaying && !isDragging ? "animate-pulse bg-emerald-400" : "bg-zinc-400")} />
-            {isDragging ? "Arrastando" : isAutoPlaying ? "Girando" : "Manual"}
-          </span>
         </div>
         <div
           className="relative overflow-hidden"
