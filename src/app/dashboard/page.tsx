@@ -571,6 +571,7 @@ export default function DashboardPage() {
         subtitle="Confirme a exclusão do veículo selecionado."
         icon={<Trash2 className="h-7 w-7" />}
         variant="balloon"
+        hideCloseButton
         className="max-w-lg max-h-[90vh] overflow-y-auto"
       >
         <div className="relative space-y-6">

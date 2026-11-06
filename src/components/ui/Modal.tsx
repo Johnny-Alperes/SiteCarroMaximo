@@ -12,11 +12,12 @@ interface ModalProps {
   subtitle?: string;
   icon?: ReactNode;
   variant?: "default" | "balloon";
+  hideCloseButton?: boolean;
   children: ReactNode;
   className?: string;
 }
 
-export function Modal({ isOpen, onClose, title, subtitle, icon, variant = "default", children, className }: ModalProps) {
+export function Modal({ isOpen, onClose, title, subtitle, icon, variant = "default", hideCloseButton = false, children, className }: ModalProps) {
   const isBalloon = variant === "balloon";
   useEffect(() => {
     if (isOpen) {
@@ -77,12 +78,14 @@ export function Modal({ isOpen, onClose, title, subtitle, icon, variant = "defau
                     </h3>
                   )
                 )}
-                <button
-                  onClick={onClose}
-                  className="p-2 text-zinc-500 transition-colors hover:text-white"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                {!hideCloseButton && (
+                  <button
+                    onClick={onClose}
+                    className="p-2 text-zinc-500 transition-colors hover:text-white"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                )}
               </div>
               {children}
             </motion.div>
