@@ -1274,7 +1274,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       <section aria-label="Sessões" className="space-y-3">
         <div className="flex items-center justify-center gap-3">
           <h2 className="text-sm font-black uppercase tracking-[0.25em] text-white text-center">
-            Sessões
+            --- Sessões ---
           </h2>
         </div>
         <div
