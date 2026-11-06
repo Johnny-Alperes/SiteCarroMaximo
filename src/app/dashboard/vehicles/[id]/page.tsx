@@ -1710,7 +1710,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                 className="flex-1 gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm text-white shadow-lg shadow-blue-500/30 hover:bg-blue-500 hover:text-white"
               >
                 <Plus className="h-4 w-4" />
-                Cadastrar Item
+                Salvar
               </Button>
             </div>
           </form>
