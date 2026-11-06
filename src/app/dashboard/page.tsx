@@ -347,7 +347,7 @@ export default function DashboardPage() {
               Recuperar Veículo
             </button>
             <Link
-              href="/dashboard/history"
+              href="/dashboard/report"
               className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold uppercase tracking-wide text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white"
             >
               <BarChart3 className="h-4 w-4 shrink-0" />
