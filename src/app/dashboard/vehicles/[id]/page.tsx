@@ -1271,6 +1271,34 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         </Button>
       </div>
 
+      <Card className="px-4 py-3 md:px-5 md:py-3.5 rounded-2xl bg-gradient-to-br from-violet-500/20 via-fuchsia-500/10 to-amber-400/20 backdrop-blur-sm border-violet-300/30 text-white">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="rounded-2xl border border-white/30 bg-gradient-to-br from-violet-500 to-fuchsia-500 p-2 shadow-lg shadow-fuchsia-500/30">
+              <CarIcon className="text-white w-5 h-5" />
+            </div>
+            <div className="flex flex-wrap items-baseline gap-x-3">
+              <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white leading-none">{vehicle.model}</h1>
+              <p className="text-zinc-300 font-mono text-xs tracking-widest">{vehicle.plate}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3 md:border-l md:border-white/20 md:pl-5">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-widest text-zinc-300">Ano</span>
+              <p className="font-bold text-white text-sm">{vehicle.year}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-widest text-zinc-300">Combustível</span>
+              <p className="font-bold text-white text-sm">{vehicle.fuelType}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-widest text-zinc-300">Cor</span>
+              <p className="font-bold text-white text-sm">{vehicle.color}</p>
+            </div>
+          </div>
+        </div>
+      </Card>
+
       <section aria-label="Sessões" className="space-y-3">
         <div className="flex items-center justify-center gap-3">
           <h2 className="text-sm font-black uppercase tracking-[0.25em] text-white text-center">
@@ -1337,34 +1365,6 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden space-y-6"
               >
-      <Card className="px-4 py-3 md:px-5 md:py-3.5 rounded-2xl bg-gradient-to-br from-violet-500/20 via-fuchsia-500/10 to-amber-400/20 backdrop-blur-sm border-violet-300/30 text-white">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="rounded-2xl border border-white/30 bg-gradient-to-br from-violet-500 to-fuchsia-500 p-2 shadow-lg shadow-fuchsia-500/30">
-              <CarIcon className="text-white w-5 h-5" />
-            </div>
-            <div className="flex flex-wrap items-baseline gap-x-3">
-              <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight text-white leading-none">{vehicle.model}</h1>
-              <p className="text-zinc-300 font-mono text-xs tracking-widest">{vehicle.plate}</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-3 md:border-l md:border-white/20 md:pl-5">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-300">Ano</span>
-              <p className="font-bold text-white text-sm">{vehicle.year}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-300">Combustível</span>
-              <p className="font-bold text-white text-sm">{vehicle.fuelType}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-300">Cor</span>
-              <p className="font-bold text-white text-sm">{vehicle.color}</p>
-            </div>
-          </div>
-        </div>
-      </Card>
-
       <div className="space-y-6">
           {/* Stats Overview */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
