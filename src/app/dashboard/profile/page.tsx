@@ -12,7 +12,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { User, Mail, Lock, Trash2, Shield, BarChart2, ChevronLeft } from "lucide-react";
+import { User, Mail, Lock, Trash2, Shield, Settings, Sparkles, Save } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -97,93 +97,118 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-foreground/60 hover:text-primary transition-colors">
-        <ChevronLeft className="w-4 h-4" />
-        Voltar para o Dashboard
-      </Link>
-      <div>
-        <h1 className="text-3xl font-black uppercase tracking-tight">Meu Perfil</h1>
-        <p className="text-foreground/60">Gerencie suas informações pessoais e segurança.</p>
-      </div>
+    <div className="relative mx-auto max-w-4xl py-4">
+      <div aria-hidden="true" className="pointer-events-none absolute -top-16 -left-16 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -top-10 -right-10 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -bottom-16 right-1/3 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Sidebar / Stats */}
-        <div className="space-y-6">
-          <Card className="p-8 text-center">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center border border-zinc-700 bg-zinc-900">
-              <User className="w-10 h-10 text-white" />
-            </div>
-            <h2 className="text-xl font-bold">{user?.displayName || "Usuário"}</h2>
-            <p className="text-sm text-foreground/40 mb-6">{user?.email}</p>
-            <div className="pt-6 border-t border-border grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs text-foreground/40 font-bold uppercase">Veículos</p>
-                <p className="text-xl font-bold text-white">{stats.vehicles}</p>
-              </div>
-              <div>
-                <p className="text-xs text-foreground/40 font-bold uppercase">Gastos</p>
-                <p className="text-xl font-bold text-white">R$ 12k</p>
-              </div>
-            </div>
-          </Card>
+      <Card className="relative overflow-hidden rounded-[1.75rem] border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-white/5 p-8 shadow-[0_25px_60px_-20px_rgba(255,255,255,0.15)] backdrop-blur md:p-10">
+        <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-white/60 via-white/30 to-white/10" />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-20 -right-20 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
 
-          <Button 
-            variant="outline" 
-            className="w-full text-red-500 border-red-500/20 hover:bg-red-500/5"
-            onClick={handleDeleteAccount}
-          >
-            <Trash2 className="w-4 h-4" />
-            Excluir Conta
-          </Button>
+        <div className="relative mb-8 flex items-center gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.25rem] border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
+            <Settings className="h-7 w-7 text-zinc-950" />
+          </div>
+          <div>
+            <h1 className="flex items-center gap-2 text-3xl font-black uppercase tracking-tight text-white">
+              Configurações
+              <Sparkles className="h-5 w-5 text-white" />
+            </h1>
+            <p className="mt-1 text-sm text-zinc-400">Gerencie suas informações pessoais e segurança.</p>
+          </div>
         </div>
 
-        {/* Main Forms */}
-        <div className="md:col-span-2 space-y-8">
-          <Card className="p-8">
-            <div className="flex items-center gap-2 mb-6">
-              <User className="w-5 h-5 text-white" />
-              <h3 className="text-lg font-bold">Informações Pessoais</h3>
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Sidebar / Stats */}
+          <div className="space-y-6">
+            <div className="rounded-2xl border border-white/10 bg-zinc-950/40 p-6 text-center">
+              <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-[1.25rem] border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
+                <User className="w-10 h-10" />
+              </div>
+              <h2 className="text-xl font-bold text-white">{user?.displayName || "Usuário"}</h2>
+              <p className="text-sm text-zinc-400 mb-6">{user?.email}</p>
+              <div className="pt-6 border-t border-white/10 grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Veículos</p>
+                  <p className="text-xl font-bold text-white">{stats.vehicles}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Gastos</p>
+                  <p className="text-xl font-bold text-white">R$ 12k</p>
+                </div>
+              </div>
             </div>
-            <form onSubmit={handleUpdateProfile} className="space-y-6">
-              <Input 
-                label="Nome Completo"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                icon={<User className="w-5 h-5" />}
-              />
-              <Input 
-                label="E-mail"
-                value={user?.email || ""}
-                disabled
-                icon={<Mail className="w-5 h-5" />}
-              />
-              <Button type="submit" isLoading={loading}>Salvar Alterações</Button>
-            </form>
-          </Card>
 
-          <Card className="p-8">
-            <div className="flex items-center gap-2 mb-6">
-              <Shield className="w-5 h-5 text-white" />
-              <h3 className="text-lg font-bold">Segurança</h3>
+            <Button 
+              variant="outline" 
+              className="w-full rounded-full border-red-500/20 py-3 text-red-500 hover:bg-red-500/5"
+              onClick={handleDeleteAccount}
+            >
+              <Trash2 className="w-4 h-4" />
+              Excluir Conta
+            </Button>
+          </div>
+
+          {/* Main Forms */}
+          <div className="md:col-span-2 space-y-6">
+            <div className="rounded-2xl border border-white/10 bg-zinc-950/40 p-6">
+              <div className="flex items-center gap-2 mb-6">
+                <User className="w-5 h-5 text-white" />
+                <h3 className="text-lg font-bold text-white">Informações Pessoais</h3>
+              </div>
+              <form onSubmit={handleUpdateProfile} className="space-y-6">
+                <Input 
+                  label="Nome Completo"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  icon={<User className="w-5 h-5" />}
+                  className="rounded-xl bg-zinc-950/60"
+                />
+                <Input 
+                  label="E-mail"
+                  value={user?.email || ""}
+                  disabled
+                  icon={<Mail className="w-5 h-5" />}
+                  className="rounded-xl bg-zinc-950/60"
+                />
+                <Button type="submit" isLoading={loading} className="w-full rounded-full py-3">
+                  <Save className="w-4 h-4" />
+                  Salvar Alterações
+                </Button>
+              </form>
             </div>
-            <form onSubmit={handleUpdatePassword} className="space-y-6">
-              <Input 
-                label="Nova Senha"
-                type="password"
-                showPasswordToggle
-                placeholder="Mínimo 6 caracteres"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                icon={<Lock className="w-5 h-5" />}
-              />
-              <Button type="submit" variant="secondary" isLoading={loading} disabled={!password}>
-                Alterar Senha
+
+            <div className="rounded-2xl border border-white/10 bg-zinc-950/40 p-6">
+              <div className="flex items-center gap-2 mb-6">
+                <Shield className="w-5 h-5 text-white" />
+                <h3 className="text-lg font-bold text-white">Segurança</h3>
+              </div>
+              <form onSubmit={handleUpdatePassword} className="space-y-6">
+                <Input 
+                  label="Nova Senha"
+                  type="password"
+                  showPasswordToggle
+                  placeholder="Mínimo 6 caracteres"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  icon={<Lock className="w-5 h-5" />}
+                  className="rounded-xl bg-zinc-950/60"
+                />
+                <Button type="submit" variant="secondary" isLoading={loading} disabled={!password} className="w-full rounded-full py-3">
+                  Alterar Senha
+                </Button>
+              </form>
+            </div>
+
+            <Link href="/dashboard" className="block">
+              <Button variant="outline" type="button" className="w-full rounded-full py-3">
+                Cancelar
               </Button>
-            </form>
-          </Card>
+            </Link>
+          </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
