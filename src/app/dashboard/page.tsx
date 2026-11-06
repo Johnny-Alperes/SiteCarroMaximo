@@ -518,32 +518,39 @@ export default function DashboardPage() {
         isOpen={vehiclePickerMode !== null}
         onClose={() => setVehiclePickerMode(null)}
         title={vehiclePickerMode === "delete" ? "Qual veículo deseja excluir?" : "Qual veículo deseja editar?"}
+        subtitle={`Selecione o veículo para ${vehiclePickerMode === "delete" ? "excluir" : "editar"}.`}
+        icon={
+          <span className="flex items-center justify-center">
+            {vehiclePickerMode === "delete" ? <Trash2 className="h-7 w-7" /> : <Pencil className="h-7 w-7" />}
+          </span>
+        }
+        variant="balloon"
+        className="max-w-xl max-h-[90vh] overflow-y-auto"
       >
-        <div className="space-y-4">
-          <p className="text-sm text-zinc-400">
-            Selecione o veículo para {vehiclePickerMode === "delete" ? "excluir" : "editar"}:
-          </p>
+        <div className="relative space-y-4">
           <div className="space-y-2">
             {vehicles.map((vehicle) => (
               <button
                 key={vehicle.id}
                 type="button"
                 onClick={() => handlePickVehicle(vehicle)}
-                className="flex w-full items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-left transition-colors hover:border-zinc-600 hover:bg-zinc-800"
+                className="group flex w-full items-center justify-between gap-3 rounded-2xl border border-zinc-700 bg-zinc-950/60 p-4 text-left transition-all duration-300 hover:border-blue-500/60 hover:bg-zinc-900"
               >
                 <span className="flex min-w-0 items-center gap-3">
-                  <CarIcon className="h-5 w-5 shrink-0 text-zinc-400" />
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-zinc-950 shadow-lg shadow-white/10 transition-transform duration-300 group-hover:scale-105">
+                    <CarIcon className="h-5 w-5" />
+                  </span>
                   <span className="min-w-0">
                     <span className="block truncate font-bold text-white">{vehicle.model}</span>
                     <span className="block text-xs text-zinc-400">{vehicle.plate}{vehicle.year ? ` • ${vehicle.year}` : ""}{vehicle.color ? ` • ${vehicle.color}` : ""}</span>
                   </span>
                 </span>
-                <ChevronRight className="h-4 w-4 shrink-0 text-zinc-500" />
+                <ChevronRight className="h-4 w-4 shrink-0 text-zinc-500 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-white" />
               </button>
             ))}
           </div>
           <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setVehiclePickerMode(null)}>
+            <Button variant="outline" onClick={() => setVehiclePickerMode(null)} className="rounded-full px-6 py-3">
               Cancelar
             </Button>
           </div>
