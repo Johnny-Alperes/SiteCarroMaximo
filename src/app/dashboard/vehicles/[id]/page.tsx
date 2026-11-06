@@ -44,12 +44,16 @@ import {
   Edit,
   Plus,
   ChevronRight,
-  Search
+  Search,
+  Loader2,
+  Route as RouteIcon
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
+import { CityAutocomplete } from "@/components/ui/CityAutocomplete";
+import { getRouteDistanceKm, type City } from "@/lib/cities";
 
 interface Vehicle {
   id: string;
@@ -335,6 +339,11 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [registerError, setRegisterError] = useState("");
   const [registerBarVisible, setRegisterBarVisible] = useState(false);
+  const [travelPlaces, setTravelPlaces] = useState<{ origin: City | null; destination: City | null }>({
+    origin: null,
+    destination: null,
+  });
+  const [distanceLoading, setDistanceLoading] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
@@ -1107,6 +1116,51 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     return "";
   };
 
+  const handleTravelCityValueChange = (key: "origin" | "destination", value: string) => {
+    setFormData((current) => ({ ...current, [key]: value, distance: "" }));
+    const selected = travelPlaces[key];
+    if (!selected || selected.label !== value) {
+      setTravelPlaces((current) => ({ ...current, [key]: null }));
+    }
+  };
+
+  const handleTravelCitySelect = (key: "origin" | "destination", city: City) => {
+    setFormData((current) => ({ ...current, [key]: city.label, distance: "" }));
+    setTravelPlaces((current) => ({ ...current, [key]: city }));
+  };
+
+  useEffect(() => {
+    if (activeTab !== "travel") {
+      setDistanceLoading(false);
+      return;
+    }
+
+    const { origin, destination } = travelPlaces;
+    if (!origin || !destination) {
+      setDistanceLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    const controller = new AbortController();
+    setDistanceLoading(true);
+
+    getRouteDistanceKm(origin, destination, controller.signal)
+      .then((distance) => {
+        if (!cancelled) {
+          setFormData((current) => ({ ...current, distance: String(distance) }));
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setDistanceLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [travelPlaces, activeTab]);
+
   const handleRegisterService = async (e: React.FormEvent) => {
     e.preventDefault();
     const user = auth.currentUser;
@@ -1153,6 +1207,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
         setRegisterSuccess(true);
         setFormData({});
+        setTravelPlaces({ origin: null, destination: null });
         window.setTimeout(() => {
           setRegisterBarVisible(false);
           setIsRegisterModalOpen(false);
@@ -1458,6 +1513,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                       setServiceProgress(0);
                       setRegisterBarVisible(false);
                       setFormData({});
+                      setTravelPlaces({ origin: null, destination: null });
                     }}
                     className="group flex shrink-0 items-center justify-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white shadow-lg shadow-blue-500/30 transition-all duration-300 hover:bg-blue-500 hover:shadow-blue-500/50"
                   >
@@ -1657,6 +1713,51 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
             <div className="space-y-4">
               {getRegisterFields(activeTab).map((field) => {
                 const fieldValue = formData[field.key] ?? field.value ?? "";
+                if (activeTab === "travel" && (field.key === "origin" || field.key === "destination")) {
+                  const cityKey = field.key as "origin" | "destination";
+                  return (
+                    <CityAutocomplete
+                      key={field.key}
+                      label={field.label}
+                      value={String(fieldValue)}
+                      required={field.required}
+                      selectedCity={travelPlaces[cityKey]}
+                      onValueChange={(value) => handleTravelCityValueChange(cityKey, value)}
+                      onSelect={(city) => handleTravelCitySelect(cityKey, city)}
+                    />
+                  );
+                }
+                if (activeTab === "travel" && field.key === "distance") {
+                  const bothCitiesSelected = Boolean(travelPlaces.origin && travelPlaces.destination);
+                  return (
+                    <div key={field.key} className="space-y-1.5">
+                      <label className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                        {field.label} *
+                      </label>
+                      <div className="relative">
+                        <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600">
+                          {distanceLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RouteIcon className="h-4 w-4" />}
+                        </div>
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          readOnly
+                          value={fieldValue}
+                          placeholder={bothCitiesSelected ? "Calculando..." : "Selecione origem e destino"}
+                          className="flex h-12 w-full cursor-default rounded-xl border border-zinc-700 bg-zinc-950/60 py-2 pl-11 pr-12 text-sm text-zinc-100 outline-none transition-all placeholder:text-zinc-600"
+                        />
+                        {!distanceLoading && fieldValue && (
+                          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold uppercase tracking-widest text-zinc-500">
+                            km
+                          </span>
+                        )}
+                      </div>
+                      <p className="ml-1 text-[10px] text-zinc-500">
+                        Calculado automaticamente entre as cidades selecionadas.
+                      </p>
+                    </div>
+                  );
+                }
                 if (field.type === "select") {
                   return (
                     <div key={field.key} className="space-y-1.5">
