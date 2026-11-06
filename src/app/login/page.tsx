@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { 
   signInWithEmailAndPassword, 
   signInWithPopup, 
-  GoogleAuthProvider 
+  GoogleAuthProvider,
+  sendPasswordResetEmail
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Car, Mail, Lock, ArrowRight, AlertCircle, ChevronLeft, Sparkles } from "lucide-react";
@@ -20,7 +21,27 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const router = useRouter();
+
+  const handleForgotPassword = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!email.trim()) {
+      setError("Informe seu e-mail para recuperar a senha.");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email.trim());
+      setSuccess("Enviamos um link de recuperação para o seu e-mail.");
+    } catch (err) {
+      console.error(err);
+      setError("Não foi possível enviar o e-mail de recuperação.");
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,6 +125,13 @@ export default function LoginPage() {
             </div>
           )}
 
+          {success && (
+            <div className="relative mb-6 flex items-center gap-3 rounded-2xl border border-emerald-800 bg-emerald-900/30 p-3 text-xs uppercase tracking-wider text-emerald-300">
+              <AlertCircle className="w-5 h-5 shrink-0" />
+              {success}
+            </div>
+          )}
+
           <form className="relative space-y-5" onSubmit={handleLogin} noValidate>
             <Input 
               label="E-mail"
@@ -129,7 +157,7 @@ export default function LoginPage() {
                 className="rounded-xl bg-zinc-950/60"
               />
               <div className="pt-2 text-right">
-                <a href="#" data-testid="esqueceu-a-senha" onClick={(e) => e.preventDefault()} className="inline-block cursor-pointer text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300">Esqueceu a senha?</a>
+                <a href="#" data-testid="esqueceu-a-senha" onClick={handleForgotPassword} className="inline-block cursor-pointer text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300">Esqueceu a senha?</a>
               </div>
             </div>
 

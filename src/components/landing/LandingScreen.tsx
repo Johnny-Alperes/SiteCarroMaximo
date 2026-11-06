@@ -8,6 +8,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   onAuthStateChanged,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import Cookies from "js-cookie";
 import { auth } from "@/lib/firebase";
@@ -50,6 +51,7 @@ export default function LandingScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [showAbout, setShowAbout] = useState(false);
   const [loggedUser, setLoggedUser] = useState<any>(null);
 
@@ -65,12 +67,33 @@ export default function LandingScreen() {
 
   const toggleLogin = () => {
     setError("");
+    setSuccess("");
     setShowLogin((open) => !open);
   };
 
   const closeLogin = () => {
     setShowLogin(false);
     setError("");
+    setSuccess("");
+  };
+
+  const handleForgotPassword = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!email.trim()) {
+      setError("Informe seu e-mail para recuperar a senha.");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email.trim());
+      setSuccess("Enviamos um link de recuperação para o seu e-mail.");
+    } catch (err) {
+      console.error(err);
+      setError("Não foi possível enviar o e-mail de recuperação.");
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -184,6 +207,13 @@ export default function LandingScreen() {
         </div>
       )}
 
+      {success && (
+        <div className="flex items-center gap-2 border border-emerald-700 bg-emerald-900/40 px-3 py-2 text-[10px] uppercase tracking-wider text-emerald-300">
+          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+          {success}
+        </div>
+      )}
+
       <form onSubmit={handleLogin} noValidate className="space-y-3">
         <div className="relative">
           <Mail className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
@@ -219,7 +249,7 @@ export default function LandingScreen() {
         </div>
 
           <div className="text-right">
-            <a href="#" data-testid="esqueceu-a-senha" onClick={(e) => e.preventDefault()} className="inline-block cursor-pointer text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300">Esqueceu a senha?</a>
+            <a href="#" data-testid="esqueceu-a-senha" onClick={handleForgotPassword} className="inline-block cursor-pointer text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300">Esqueceu a senha?</a>
           </div>
 
           <button
