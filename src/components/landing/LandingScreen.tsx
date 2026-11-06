@@ -380,18 +380,6 @@ export default function LandingScreen() {
             Controle total do seu veículo em tempo real.
           </p>
 
-          {loggedUser && (
-            <div className="pt-1">
-              <Link
-                href="/dashboard"
-                className="inline-flex max-w-full items-center gap-2 border border-white/20 bg-white/10 px-6 py-3 text-sm font-bold uppercase tracking-widest text-white backdrop-blur transition-colors hover:bg-white/20"
-                title="Ir para o Dashboard"
-              >
-                Olá, {userDisplayName}
-              </Link>
-            </div>
-          )}
-
           <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row">
             <Link
               href="/register"
