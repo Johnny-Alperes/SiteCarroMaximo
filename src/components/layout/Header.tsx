@@ -108,22 +108,25 @@ export default function Header() {
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
         title="Sair da conta?"
+        subtitle="Tem certeza de que deseja realmente sair da sua conta?"
+        icon={<LogOut className="h-7 w-7 text-zinc-950" />}
+        variant="balloon"
       >
-        <div className="space-y-6">
-          <p className="text-sm text-zinc-400">
-            Tem certeza de que deseja realmente sair da sua conta?
-          </p>
-          <div className="flex justify-end gap-3">
-            <Button
-              variant="outline"
-              onClick={() => setIsLogoutModalOpen(false)}
-            >
-              Cancelar
-            </Button>
-            <Button variant="danger" onClick={handleLogout}>
-              Sair
-            </Button>
-          </div>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button
+            variant="outline"
+            onClick={() => setIsLogoutModalOpen(false)}
+            className="flex-1 rounded-full py-3"
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleLogout}
+            className="flex-1 rounded-full py-3"
+          >
+            Sair
+          </Button>
         </div>
       </Modal>
     </>
