@@ -35,7 +35,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
   const [vehicleToDelete, setVehicleToDelete] = useState<Vehicle | null>(null);
-  const [selectedVehicleId, setSelectedVehicleId] = useState("");
+  const [vehiclePickerMode, setVehiclePickerMode] = useState<"edit" | "delete" | null>(null);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -51,17 +51,39 @@ export default function DashboardPage() {
   const [recoveringId, setRecoveringId] = useState<string | null>(null);
   const [recoverySuccess, setRecoverySuccess] = useState("");
 
-  useEffect(() => {
-    if (vehicles.length === 0) {
-      setSelectedVehicleId("");
+  const handleEditVehicleClick = () => {
+    if (vehicles.length === 0) return;
+    if (vehicles.length === 1) {
+      router.push(`/dashboard/vehicles/${vehicles[0].id}/edit`);
       return;
     }
-    if (!vehicles.some((vehicle) => vehicle.id === selectedVehicleId)) {
-      setSelectedVehicleId(vehicles[0].id);
-    }
-  }, [vehicles, selectedVehicleId]);
+    setVehiclePickerMode("edit");
+  };
 
-  const selectedVehicle = vehicles.find((vehicle) => vehicle.id === selectedVehicleId) ?? vehicles[0] ?? null;
+  const handleDeleteVehicleClick = () => {
+    if (vehicles.length === 0) return;
+    if (vehicles.length === 1) {
+      setDeleteError("");
+      setDeleteBarVisible(false);
+      setDeleteProgress(0);
+      setVehicleToDelete(vehicles[0]);
+      return;
+    }
+    setVehiclePickerMode("delete");
+  };
+
+  const handlePickVehicle = (vehicle: Vehicle) => {
+    const mode = vehiclePickerMode;
+    setVehiclePickerMode(null);
+    if (mode === "edit") {
+      router.push(`/dashboard/vehicles/${vehicle.id}/edit`);
+    } else if (mode === "delete") {
+      setDeleteError("");
+      setDeleteBarVisible(false);
+      setDeleteProgress(0);
+      setVehicleToDelete(vehicle);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -291,25 +313,6 @@ export default function DashboardPage() {
             </button>
           </div>
           <div className={`${isSidebarOpen ? "flex" : "hidden"} flex-col gap-1 lg:flex`}>
-            {vehicles.length > 0 && (
-              <div className="mb-3 space-y-1.5">
-                <label htmlFor="sidebar-vehicle" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                  Veículo
-                </label>
-                <select
-                  id="sidebar-vehicle"
-                  value={selectedVehicleId}
-                  onChange={(event) => setSelectedVehicleId(event.target.value)}
-                  className="flex h-11 w-full rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20 focus-visible:border-zinc-500"
-                >
-                  {vehicles.map((vehicle) => (
-                    <option key={vehicle.id} value={vehicle.id}>
-                      {vehicle.model} - {vehicle.plate}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
             <Link
               href="/dashboard/vehicles/new"
               className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold uppercase tracking-wide text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white"
@@ -317,31 +320,19 @@ export default function DashboardPage() {
               <Plus className="h-4 w-4 shrink-0" />
               Cadastrar Veículo
             </Link>
-            {selectedVehicle ? (
-              <Link
-                href={`/dashboard/vehicles/${selectedVehicle.id}/edit`}
-                className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold uppercase tracking-wide text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white"
-              >
-                <Pencil className="h-4 w-4 shrink-0" />
-                Editar Veículo
-              </Link>
-            ) : (
-              <span className="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold uppercase tracking-wide text-zinc-600 opacity-60">
-                <Pencil className="h-4 w-4 shrink-0" />
-                Editar Veículo
-              </span>
-            )}
             <button
               type="button"
-              disabled={!selectedVehicle}
-              onClick={() => {
-                if (selectedVehicle) {
-                  setDeleteError("");
-                  setDeleteBarVisible(false);
-                  setDeleteProgress(0);
-                  setVehicleToDelete(selectedVehicle);
-                }
-              }}
+              disabled={vehicles.length === 0}
+              onClick={handleEditVehicleClick}
+              className="flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold uppercase tracking-wide text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Pencil className="h-4 w-4 shrink-0" />
+              Editar Veículo
+            </button>
+            <button
+              type="button"
+              disabled={vehicles.length === 0}
+              onClick={handleDeleteVehicleClick}
               className="flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold uppercase tracking-wide text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Trash2 className="h-4 w-4 shrink-0" />
@@ -522,6 +513,42 @@ export default function DashboardPage() {
           })}
         </div>
       )}
+
+      <Modal
+        isOpen={vehiclePickerMode !== null}
+        onClose={() => setVehiclePickerMode(null)}
+        title={vehiclePickerMode === "delete" ? "Qual veículo deseja excluir?" : "Qual veículo deseja editar?"}
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-zinc-400">
+            Selecione o veículo para {vehiclePickerMode === "delete" ? "excluir" : "editar"}:
+          </p>
+          <div className="space-y-2">
+            {vehicles.map((vehicle) => (
+              <button
+                key={vehicle.id}
+                type="button"
+                onClick={() => handlePickVehicle(vehicle)}
+                className="flex w-full items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-left transition-colors hover:border-zinc-600 hover:bg-zinc-800"
+              >
+                <span className="flex min-w-0 items-center gap-3">
+                  <CarIcon className="h-5 w-5 shrink-0 text-zinc-400" />
+                  <span className="min-w-0">
+                    <span className="block truncate font-bold text-white">{vehicle.model}</span>
+                    <span className="block text-xs text-zinc-400">{vehicle.plate}{vehicle.year ? ` • ${vehicle.year}` : ""}{vehicle.color ? ` • ${vehicle.color}` : ""}</span>
+                  </span>
+                </span>
+                <ChevronRight className="h-4 w-4 shrink-0 text-zinc-500" />
+              </button>
+            ))}
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setVehiclePickerMode(null)}>
+              Cancelar
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <Modal
         isOpen={Boolean(vehicleToDelete)}
