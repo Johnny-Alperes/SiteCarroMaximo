@@ -89,7 +89,7 @@ export default function RegisterPage() {
               <Car className="h-7 w-7 text-zinc-950" />
             </div>
             <div>
-              <h1 className="flex items-center gap-2 text-3xl font-black uppercase tracking-tight text-white">
+              <h1 className="flex items-center gap-2 text-3xl font-black tracking-tight text-white">
                 Crie sua conta
                 <Sparkles className="h-5 w-5 text-white" />
               </h1>
