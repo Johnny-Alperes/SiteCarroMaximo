@@ -90,10 +90,10 @@ export default function LoginPage() {
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.25rem] border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
               <Car className="h-7 w-7 text-zinc-950" />
             </div>
-            <div>
-              <h1 className="flex items-center gap-2 text-3xl font-black tracking-tight text-white">
+            <div className="min-w-0 flex-1">
+              <h1 className="flex items-center gap-2 whitespace-nowrap text-2xl font-black tracking-tight text-white">
                 Bem-vindo de volta
-                <Sparkles className="h-5 w-5 text-white" />
+                <Sparkles className="h-5 w-5 shrink-0 text-white" />
               </h1>
               <p className="mt-1 text-sm text-zinc-400">Acesse sua conta para gerenciar seus veículos</p>
             </div>
