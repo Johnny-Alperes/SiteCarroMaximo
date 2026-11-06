@@ -48,13 +48,27 @@ export default function LoginPage() {
       return;
     }
 
+    const destino = email.trim();
     setIsLoading(true);
     try {
-      await sendPasswordResetEmail(auth, email.trim());
-      setSuccess("Enviamos um link de recuperação para o seu e-mail.");
-    } catch (err) {
+      await sendPasswordResetEmail(auth, destino);
+      setSuccess(`Enviamos um link de recuperação para ${destino}. Verifique a caixa de entrada e o spam.`);
+      setEmail("");
+      setModoRecuperacao(false);
+    } catch (err: any) {
       console.error(err);
-      setError("Não foi possível enviar o e-mail de recuperação.");
+      const code = err?.code;
+      if (code === "auth/invalid-email") {
+        setError("E-mail inválido. Verifique e tente novamente.");
+      } else if (code === "auth/user-not-found") {
+        setError("Não encontramos uma conta com esse e-mail.");
+      } else if (code === "auth/too-many-requests") {
+        setError("Muitas tentativas. Aguarde alguns minutos e tente novamente.");
+      } else if (code === "auth/network-request-failed") {
+        setError("Falha de conexão. Verifique sua internet e tente novamente.");
+      } else {
+        setError("Não foi possível enviar o e-mail de recuperação. Tente novamente.");
+      }
     } finally {
       setIsLoading(false);
     }
