@@ -8,7 +8,7 @@ import {
   updateProfile 
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { Car, Mail, Lock, User, ArrowRight, AlertCircle, Home, Sparkles } from "lucide-react";
+import { Car, Mail, Lock, User, ArrowRight, AlertCircle, ChevronLeft, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -70,9 +70,8 @@ export default function RegisterPage() {
         animate={{ opacity: 1, x: 0 }}
         className="absolute top-8 left-8 z-20"
       >
-        <Link href="/" className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] uppercase tracking-widest text-zinc-300 backdrop-blur transition-colors hover:bg-white/10 hover:text-white">
-          <Home className="w-4 h-4" />
-          <span>Voltar para Home</span>
+        <Link href="/" aria-label="Voltar" title="Voltar" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-zinc-300 backdrop-blur transition-colors hover:bg-white/10 hover:text-white">
+          <ChevronLeft className="w-5 h-5" />
         </Link>
       </motion.div>
 
