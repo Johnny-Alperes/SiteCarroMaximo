@@ -22,9 +22,23 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [modoRecuperacao, setModoRecuperacao] = useState(false);
   const router = useRouter();
 
-  const handleForgotPassword = async (e: React.MouseEvent) => {
+  const abrirRecuperacaoSenha = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    setModoRecuperacao(true);
+  };
+
+  const voltarParaLogin = () => {
+    setError("");
+    setSuccess("");
+    setModoRecuperacao(false);
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -34,12 +48,15 @@ export default function LoginPage() {
       return;
     }
 
+    setIsLoading(true);
     try {
       await sendPasswordResetEmail(auth, email.trim());
       setSuccess("Enviamos um link de recuperação para o seu e-mail.");
     } catch (err) {
       console.error(err);
       setError("Não foi possível enviar o e-mail de recuperação.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -132,7 +149,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form className="relative space-y-5" onSubmit={handleLogin} noValidate>
+          <form className="relative space-y-5" onSubmit={modoRecuperacao ? handleForgotPassword : handleLogin} noValidate>
             <Input 
               label="E-mail"
               type="email"
@@ -144,57 +161,73 @@ export default function LoginPage() {
               className="rounded-xl bg-zinc-950/60"
             />
 
-            <div className="space-y-1.5">
-              <label className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Senha</label>
-              <Input 
-                type="password"
-                showPasswordToggle
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                icon={<Lock className="w-5 h-5" />}
-                required
-                className="rounded-xl bg-zinc-950/60"
-              />
-              <div className="pt-2 text-right">
-                <a href="#" data-testid="esqueceu-a-senha" onClick={handleForgotPassword} className="inline-block cursor-pointer text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300">Esqueceu a senha?</a>
+            {!modoRecuperacao && (
+              <div className="space-y-1.5">
+                <label className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Senha</label>
+                <Input 
+                  type="password"
+                  showPasswordToggle
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  icon={<Lock className="w-5 h-5" />}
+                  required
+                  className="rounded-xl bg-zinc-950/60"
+                />
+                <div className="pt-2 text-right">
+                  <a href="#" data-testid="esqueceu-a-senha" onClick={abrirRecuperacaoSenha} className="inline-block cursor-pointer text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300">Esqueceu a senha?</a>
+                </div>
               </div>
-            </div>
+            )}
 
             <button
               type="submit"
               disabled={isLoading}
               className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 text-sm font-bold uppercase tracking-widest text-zinc-950 shadow-lg shadow-white/10 transition-colors hover:bg-zinc-200 disabled:opacity-50"
             >
-              {isLoading ? "Entrando..." : "Entrar"}
+              {modoRecuperacao ? (isLoading ? "Enviando..." : "Enviar") : (isLoading ? "Entrando..." : "Entrar")}
               {!isLoading && <ArrowRight className="w-5 h-5" />}
             </button>
+
+            {modoRecuperacao && (
+              <button
+                type="button"
+                onClick={voltarParaLogin}
+                className="relative w-full text-center text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300"
+              >
+                Voltar para o login
+              </button>
+            )}
           </form>
 
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-zinc-800"></span>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-zinc-900 px-4 text-[9px] font-bold uppercase tracking-widest text-zinc-600">Ou continue com</span>
-            </div>
-          </div>
+          {!modoRecuperacao && (
+            <>
+              <div className="relative my-8">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-zinc-800"></span>
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-zinc-900 px-4 text-[9px] font-bold uppercase tracking-widest text-zinc-600">Ou continue com</span>
+                </div>
+              </div>
 
-          <div className="relative flex flex-col gap-4">
-            <Button variant="outline" className="w-full rounded-full py-3 h-auto bg-white border-white text-zinc-950 hover:bg-zinc-200 hover:text-zinc-950 hover:border-zinc-300 normal-case tracking-widest" onClick={handleGoogleLogin}>
-              <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-              </svg>
-              Conectar com Google
-            </Button>
-          </div>
+              <div className="relative flex flex-col gap-4">
+                <Button variant="outline" className="w-full rounded-full py-3 h-auto bg-white border-white text-zinc-950 hover:bg-zinc-200 hover:text-zinc-950 hover:border-zinc-300 normal-case tracking-widest" onClick={handleGoogleLogin}>
+                  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                  </svg>
+                  Conectar com Google
+                </Button>
+              </div>
 
-          <p className="relative mt-8 text-center text-sm text-zinc-500">
-            Não tem uma conta? <Link href="/register" className="font-bold uppercase tracking-widest text-white hover:underline">Cadastre-se</Link>
-          </p>
+              <p className="relative mt-8 text-center text-sm text-zinc-500">
+                Não tem uma conta? <Link href="/register" className="font-bold uppercase tracking-widest text-white hover:underline">Cadastre-se</Link>
+              </p>
+            </>
+          )}
         </div>
       </motion.div>
     </main>

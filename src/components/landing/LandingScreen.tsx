@@ -52,6 +52,7 @@ export default function LandingScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [modoRecuperacao, setModoRecuperacao] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [loggedUser, setLoggedUser] = useState<any>(null);
 
@@ -68,6 +69,7 @@ export default function LandingScreen() {
   const toggleLogin = () => {
     setError("");
     setSuccess("");
+    setModoRecuperacao(false);
     setShowLogin((open) => !open);
   };
 
@@ -75,9 +77,23 @@ export default function LandingScreen() {
     setShowLogin(false);
     setError("");
     setSuccess("");
+    setModoRecuperacao(false);
   };
 
-  const handleForgotPassword = async (e: React.MouseEvent) => {
+  const abrirRecuperacaoSenha = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    setModoRecuperacao(true);
+  };
+
+  const voltarParaLogin = () => {
+    setError("");
+    setSuccess("");
+    setModoRecuperacao(false);
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -87,12 +103,15 @@ export default function LandingScreen() {
       return;
     }
 
+    setIsLoading(true);
     try {
       await sendPasswordResetEmail(auth, email.trim());
       setSuccess("Enviamos um link de recuperação para o seu e-mail.");
     } catch (err) {
       console.error(err);
       setError("Não foi possível enviar o e-mail de recuperação.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -214,7 +233,7 @@ export default function LandingScreen() {
         </div>
       )}
 
-      <form onSubmit={handleLogin} noValidate className="space-y-3">
+      <form onSubmit={modoRecuperacao ? handleForgotPassword : handleLogin} noValidate className="space-y-3">
         <div className="relative">
           <Mail className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
           <input
@@ -226,75 +245,94 @@ export default function LandingScreen() {
             className="w-full border border-zinc-700 bg-zinc-900 px-2.5 py-2.5 pl-8 text-xs text-zinc-300 outline-none transition-colors placeholder:text-zinc-600 focus:border-zinc-500"
           />
         </div>
-        <div className="relative">
-          <Lock className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Senha"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            aria-label="Senha"
-            className="w-full border border-zinc-700 bg-zinc-900 px-2.5 py-2.5 pl-8 pr-9 text-xs text-zinc-300 outline-none transition-colors placeholder:text-zinc-600 focus:border-zinc-500"
-          />
+
+        {!modoRecuperacao && (
+          <>
+            <div className="relative">
+              <Lock className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                aria-label="Senha"
+                className="w-full border border-zinc-700 bg-zinc-900 px-2.5 py-2.5 pl-8 pr-9 text-xs text-zinc-300 outline-none transition-colors placeholder:text-zinc-600 focus:border-zinc-500"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                title={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-none p-1 text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-white"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+
+            <div className="text-right">
+              <a href="#" data-testid="esqueceu-a-senha" onClick={abrirRecuperacaoSenha} className="inline-block cursor-pointer text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300">Esqueceu a senha?</a>
+            </div>
+          </>
+        )}
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-white py-2.5 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200 disabled:opacity-50"
+        >
+          {modoRecuperacao ? (isLoading ? "Enviando..." : "Enviar") : (isLoading ? "Entrando..." : "Entrar")}
+        </button>
+
+        {modoRecuperacao && (
           <button
             type="button"
-            onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-            title={showPassword ? "Ocultar senha" : "Mostrar senha"}
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-none p-1 text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-white"
+            onClick={voltarParaLogin}
+            className="w-full text-center text-[10px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300"
           >
-            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            Voltar para o login
           </button>
-        </div>
+        )}
+      </form>
 
-          <div className="text-right">
-            <a href="#" data-testid="esqueceu-a-senha" onClick={handleForgotPassword} className="inline-block cursor-pointer text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300">Esqueceu a senha?</a>
+      {!modoRecuperacao && (
+        <>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-zinc-800" />
+            </div>
+            <div className="relative flex justify-center text-[9px] uppercase tracking-widest">
+              <span className="bg-zinc-950 px-3 text-zinc-600">Ou continue com</span>
+            </div>
           </div>
 
           <button
-            type="submit"
+            type="button"
+            onClick={handleGoogleLogin}
             disabled={isLoading}
-            className="w-full bg-white py-2.5 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 border border-white bg-white py-2.5 text-xs font-bold tracking-widest text-zinc-950 transition-all hover:bg-zinc-200 hover:text-zinc-950 hover:border-zinc-300 disabled:opacity-50"
           >
-            {isLoading ? "Entrando..." : "Entrar"}
+            {googleIcon}
+            Conectar com Google
           </button>
-      </form>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-zinc-800" />
-        </div>
-        <div className="relative flex justify-center text-[9px] uppercase tracking-widest">
-          <span className="bg-zinc-950 px-3 text-zinc-600">Ou continue com</span>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        onClick={handleGoogleLogin}
-        disabled={isLoading}
-        className="flex w-full items-center justify-center gap-2 border border-white bg-white py-2.5 text-xs font-bold tracking-widest text-zinc-950 transition-all hover:bg-zinc-200 hover:text-zinc-950 hover:border-zinc-300 disabled:opacity-50"
-      >
-        {googleIcon}
-        Conectar com Google
-      </button>
-
-      <div className="flex items-center justify-between pt-1">
-        <button
-          type="button"
-          onClick={closeLogin}
-          className="text-[10px] uppercase tracking-widest text-zinc-600 transition-colors hover:text-zinc-400"
-        >
-          ← Voltar
-        </button>
-        <Link
-          href="/register"
-          className="text-[10px] uppercase tracking-widest text-zinc-500 transition-colors hover:text-white"
-        >
-          Cadastrar-se
-        </Link>
-      </div>
+          <div className="flex items-center justify-between pt-1">
+            <button
+              type="button"
+              onClick={closeLogin}
+              className="text-[10px] uppercase tracking-widest text-zinc-600 transition-colors hover:text-zinc-400"
+            >
+              ← Voltar
+            </button>
+            <Link
+              href="/register"
+              className="text-[10px] uppercase tracking-widest text-zinc-500 transition-colors hover:text-white"
+            >
+              Cadastrar-se
+            </Link>
+          </div>
+        </>
+      )}
     </div>
   );
 
