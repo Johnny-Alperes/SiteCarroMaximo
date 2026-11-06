@@ -1651,6 +1651,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                 <p className="mt-2 text-right text-xs text-emerald-300">{serviceProgress}%</p>
               </div>
             )}
+            {!registerBarVisible && (
+              <>
             <div className="space-y-4">
               {getRegisterFields(activeTab).map((field) => {
                 const fieldValue = formData[field.key] ?? field.value ?? "";
@@ -1712,6 +1714,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                 Salvar
               </Button>
             </div>
+              </>
+            )}
           </form>
       </Modal>
 
