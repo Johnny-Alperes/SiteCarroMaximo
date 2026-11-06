@@ -7,11 +7,14 @@ import { auth, db } from "@/lib/firebase";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { ChevronLeft, Save } from "lucide-react";
+import { ChevronLeft, Save, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
 export default function NewVehiclePage() {
   const [loading, setLoading] = useState(false);
+  const [registerProgress, setRegisterProgress] = useState(0);
+  const [registerBarVisible, setRegisterBarVisible] = useState(false);
+  const [registerSuccess, setRegisterSuccess] = useState(false);
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -38,8 +41,15 @@ export default function NewVehiclePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setRegisterSuccess(false);
+    setRegisterBarVisible(true);
+    setRegisterProgress(0);
 
     if (!auth.currentUser) return;
+
+    const progressTimer = window.setInterval(() => {
+      setRegisterProgress((current) => (current >= 80 ? current : current + 2));
+    }, 140);
 
     try {
       await addDoc(collection(db, `users/${auth.currentUser.uid}/vehicles`), {
@@ -47,9 +57,17 @@ export default function NewVehiclePage() {
         plate: formData.plate.toUpperCase(),
         createdAt: new Date().toISOString(),
       });
-      router.push("/dashboard");
+      window.clearInterval(progressTimer);
+      setRegisterProgress(100);
+      setRegisterSuccess(true);
+      window.setTimeout(() => {
+        router.push("/dashboard");
+      }, 1600);
     } catch (error) {
       console.error("Erro ao adicionar veículo:", error);
+      window.clearInterval(progressTimer);
+      setRegisterBarVisible(false);
+      setRegisterProgress(0);
       alert("Erro ao salvar veículo. Tente novamente.");
     } finally {
       setLoading(false);
@@ -69,6 +87,20 @@ export default function NewVehiclePage() {
 
       <Card className="p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {registerBarVisible && (
+            <div className="border border-emerald-900/70 bg-emerald-500/10 p-4">
+              <div className="mb-3 flex items-center gap-3 text-emerald-300">
+                <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" />
+                <p className="text-sm font-bold uppercase tracking-widest text-emerald-400">
+                  {registerSuccess ? "Cadastrado com sucesso!" : "Cadastrando..."}
+                </p>
+              </div>
+              <div className="h-2 border border-emerald-900/70 bg-zinc-900">
+                <div className="h-full bg-emerald-500 transition-all duration-700" style={{ width: `${registerProgress}%` }} />
+              </div>
+              <p className="mt-2 text-right text-xs text-emerald-300">{registerProgress}%</p>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Input
               label="Modelo"

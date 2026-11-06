@@ -12,9 +12,10 @@ import { collection, getDocs } from "firebase/firestore";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { User, Mail, Lock, Trash2, Shield, BarChart2 } from "lucide-react";
+import { User, Mail, Lock, Trash2, Shield, BarChart2, ChevronLeft } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Cookies from "js-cookie";
 
 export default function ProfilePage() {
@@ -97,6 +98,10 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
+      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-foreground/60 hover:text-primary transition-colors">
+        <ChevronLeft className="w-4 h-4" />
+        Voltar para o Dashboard
+      </Link>
       <div>
         <h1 className="text-3xl font-black uppercase tracking-tight">Meu Perfil</h1>
         <p className="text-foreground/60">Gerencie suas informações pessoais e segurança.</p>

@@ -6,12 +6,11 @@ import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Plus, Car as CarIcon, ChevronRight, Fuel, Calendar, Trash2, AlertTriangle, Pencil, BarChart3, Settings, Sun, Moon, LogOut, Menu } from "lucide-react";
+import { Plus, Car as CarIcon, ChevronRight, Fuel, Calendar, Trash2, AlertTriangle, Pencil, BarChart3, Settings, MessageCircle, Mail, Phone, LogOut, Menu } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Modal } from "@/components/ui/Modal";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import Cookies from "js-cookie";
 
 interface Vehicle {
@@ -25,24 +24,18 @@ interface Vehicle {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const isLightMode = (mounted ? resolvedTheme : theme) === "light";
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
   const [vehicleToDelete, setVehicleToDelete] = useState<Vehicle | null>(null);
   const [selectedVehicleId, setSelectedVehicleId] = useState("");
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDeletingVehicle, setIsDeletingVehicle] = useState(false);
   const [deleteProgress, setDeleteProgress] = useState(0);
   const [deleteBarVisible, setDeleteBarVisible] = useState(false);
   const [deleteError, setDeleteError] = useState("");
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (vehicles.length === 0) {
@@ -66,10 +59,6 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Erro ao sair:", error);
     }
-  };
-
-  const handleToggleTheme = () => {
-    setTheme(isLightMode ? "dark" : "light");
   };
 
   const handleDeleteVehicle = async () => {
@@ -245,12 +234,11 @@ export default function DashboardPage() {
             </Link>
             <button
               type="button"
-              onClick={handleToggleTheme}
-              aria-pressed={isLightMode}
+              onClick={() => setIsContactModalOpen(true)}
               className="flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold uppercase tracking-wide text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white"
             >
-              {isLightMode ? <Moon className="h-4 w-4 shrink-0" /> : <Sun className="h-4 w-4 shrink-0" />}
-              {isLightMode ? "Ativar modo Escuro" : "Ativar modo Claro"}
+              <MessageCircle className="h-4 w-4 shrink-0" />
+              Fale Conosco
             </button>
             <div className="mt-auto flex flex-col pt-4">
               <button
@@ -462,6 +450,43 @@ export default function DashboardPage() {
               isLoading={isDeletingVehicle}
             >
               Excluir
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
+        title="Fale Conosco"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-zinc-400">
+            Entre em contato com a gente pelos canais abaixo:
+          </p>
+          <a
+            href="mailto:Johnnypereiradacostajr@gmail.com"
+            className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-sm text-zinc-200 transition-colors hover:border-zinc-700 hover:text-white"
+          >
+            <Mail className="h-5 w-5 shrink-0" />
+            <span>
+              <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">E-mail</span>
+              Johnnypereiradacostajr@gmail.com
+            </span>
+          </a>
+          <a
+            href="tel:+5583991387121"
+            className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-sm text-zinc-200 transition-colors hover:border-zinc-700 hover:text-white"
+          >
+            <Phone className="h-5 w-5 shrink-0" />
+            <span>
+              <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Telefone</span>
+              (83) 99138-7121
+            </span>
+          </a>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setIsContactModalOpen(false)}>
+              Fechar
             </Button>
           </div>
         </div>
