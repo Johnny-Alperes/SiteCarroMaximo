@@ -1459,11 +1459,10 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                       setRegisterBarVisible(false);
                       setFormData({});
                     }}
-                    className="group relative flex shrink-0 items-center gap-2 overflow-hidden rounded-xl border border-violet-600 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-violet-600 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/40 hover:brightness-110"
+                    className="group flex shrink-0 items-center justify-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white shadow-lg shadow-blue-500/30 transition-all duration-300 hover:bg-blue-500 hover:shadow-blue-500/50"
                   >
-                    <span className="absolute inset-y-0 left-0 w-1 bg-white/30 transition-all duration-300 group-hover:w-full group-hover:bg-white/10" />
-                    <Plus className="relative h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
-                    <span className="relative">Cadastrar Item</span>
+                    <Plus className="h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
+                    <span>Cadastrar Item</span>
                   </button>
                 </div>
               </div>
@@ -1699,7 +1698,11 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               >
                 Cancelar
               </Button>
-              <Button type="submit" isLoading={isSavingService} className="gap-2">
+              <Button
+                type="submit"
+                isLoading={isSavingService}
+                className="gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm text-white shadow-lg shadow-blue-500/30 hover:bg-blue-500 hover:text-white"
+              >
                 <Plus className="h-4 w-4" />
                 Cadastrar Item
               </Button>
