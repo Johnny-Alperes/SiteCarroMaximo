@@ -8,7 +8,7 @@ import { auth, db } from "@/lib/firebase";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { ChevronLeft, Save, Car as CarIcon, Sparkles } from "lucide-react";
+import { Save, Car as CarIcon, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 export default function EditVehiclePage({ params }: { params: Promise<{ id: string }> }) {
@@ -107,11 +107,12 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
   if (notFound) {
     return (
       <div className="max-w-2xl mx-auto space-y-6">
-        <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-foreground/60 hover:text-primary transition-colors mb-4">
-          <ChevronLeft className="w-4 h-4" />
-          Voltar para o Dashboard
-        </Link>
         <h1 className="text-3xl font-black uppercase tracking-tight">Veículo não encontrado</h1>
+        <Link href="/dashboard" className="inline-block">
+          <Button variant="outline" type="button">
+            Cancelar
+          </Button>
+        </Link>
       </div>
     );
   }
@@ -121,11 +122,6 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
       <div aria-hidden="true" className="pointer-events-none absolute -top-16 -left-16 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
       <div aria-hidden="true" className="pointer-events-none absolute -top-10 -right-10 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
       <div aria-hidden="true" className="pointer-events-none absolute -bottom-16 right-1/3 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
-
-      <Link href="/dashboard" className="relative mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-300 backdrop-blur transition-colors hover:bg-white/10 hover:text-white">
-        <ChevronLeft className="w-4 h-4" />
-        Voltar para Meus Veículos
-      </Link>
 
       <Card className="relative overflow-hidden rounded-[1.75rem] border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-white/5 p-8 shadow-[0_25px_60px_-20px_rgba(255,255,255,0.15)] backdrop-blur md:p-10">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-white/60 via-white/30 to-white/10" />
