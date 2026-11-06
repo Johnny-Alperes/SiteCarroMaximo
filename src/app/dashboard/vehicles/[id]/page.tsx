@@ -1263,7 +1263,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         <Button 
           variant="outline" 
           size="sm" 
-          onClick={() => router.push(`/dashboard/vehicles/new?edit=${id}`)}
+          onClick={() => router.push(`/dashboard/vehicles/${id}/edit`)}
           className="gap-2 rounded-full bg-white text-zinc-950 border-white hover:bg-zinc-200 hover:text-zinc-950"
         >
           <Edit className="w-4 h-4" />
