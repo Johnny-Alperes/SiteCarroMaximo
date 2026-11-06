@@ -48,12 +48,6 @@ export default function Header() {
                 Veículos
               </Link>
               <Link
-                href="/dashboard/history"
-                className="text-xs uppercase tracking-widest text-zinc-400 transition-colors hover:text-white"
-              >
-                Histórico
-              </Link>
-              <Link
                 href="/dashboard/profile"
                 className="text-xs uppercase tracking-widest text-zinc-400 transition-colors hover:text-white"
               >
