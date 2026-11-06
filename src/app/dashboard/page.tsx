@@ -3,13 +3,16 @@
 import { useState, useEffect } from "react";
 import { collection, query, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Plus, Car as CarIcon, ChevronRight, Fuel, Calendar, Trash2, AlertTriangle } from "lucide-react";
+import { Plus, Car as CarIcon, ChevronRight, Fuel, Calendar, Trash2, AlertTriangle, Pencil, BarChart3, Settings, Sun, Moon, LogOut, Menu } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Modal } from "@/components/ui/Modal";
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import Cookies from "js-cookie";
 
 interface Vehicle {
   id: string;
@@ -21,14 +24,53 @@ interface Vehicle {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const isLightMode = (mounted ? resolvedTheme : theme) === "light";
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
   const [vehicleToDelete, setVehicleToDelete] = useState<Vehicle | null>(null);
+  const [selectedVehicleId, setSelectedVehicleId] = useState("");
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDeletingVehicle, setIsDeletingVehicle] = useState(false);
   const [deleteProgress, setDeleteProgress] = useState(0);
   const [deleteBarVisible, setDeleteBarVisible] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (vehicles.length === 0) {
+      setSelectedVehicleId("");
+      return;
+    }
+    if (!vehicles.some((vehicle) => vehicle.id === selectedVehicleId)) {
+      setSelectedVehicleId(vehicles[0].id);
+    }
+  }, [vehicles, selectedVehicleId]);
+
+  const selectedVehicle = vehicles.find((vehicle) => vehicle.id === selectedVehicleId) ?? vehicles[0] ?? null;
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      Cookies.remove("session");
+      setIsLogoutModalOpen(false);
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Erro ao sair:", error);
+    }
+  };
+
+  const handleToggleTheme = () => {
+    setTheme(isLightMode ? "dark" : "light");
+  };
 
   const handleDeleteVehicle = async () => {
     if (!vehicleToDelete) return;
@@ -115,7 +157,115 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
+      <aside aria-label="Opções do Dashboard" className="w-full shrink-0 lg:sticky lg:top-20 lg:w-72">
+        <nav className="flex flex-col gap-1 rounded-2xl border border-zinc-800 bg-zinc-900 p-4 text-white shadow-sm dark:bg-zinc-900">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Menu</p>
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen((open) => !open)}
+              aria-expanded={isSidebarOpen}
+              aria-label="Alternar menu lateral"
+              className="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white lg:hidden"
+            >
+              <Menu className="h-4 w-4" />
+            </button>
+          </div>
+          <div className={`${isSidebarOpen ? "flex" : "hidden"} flex-col gap-1 lg:flex`}>
+            {vehicles.length > 0 && (
+              <div className="mb-3 space-y-1.5">
+                <label htmlFor="sidebar-vehicle" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                  Veículo
+                </label>
+                <select
+                  id="sidebar-vehicle"
+                  value={selectedVehicleId}
+                  onChange={(event) => setSelectedVehicleId(event.target.value)}
+                  className="flex h-11 w-full rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20 focus-visible:border-zinc-500"
+                >
+                  {vehicles.map((vehicle) => (
+                    <option key={vehicle.id} value={vehicle.id}>
+                      {vehicle.model} - {vehicle.plate}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <Link
+              href="/dashboard/vehicles/new"
+              className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold uppercase tracking-wide text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white"
+            >
+              <Plus className="h-4 w-4 shrink-0" />
+              Cadastrar Veículo
+            </Link>
+            {selectedVehicle ? (
+              <Link
+                href={`/dashboard/vehicles/${selectedVehicle.id}/edit`}
+                className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold uppercase tracking-wide text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white"
+              >
+                <Pencil className="h-4 w-4 shrink-0" />
+                Editar Veículo
+              </Link>
+            ) : (
+              <span className="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold uppercase tracking-wide text-zinc-600 opacity-60">
+                <Pencil className="h-4 w-4 shrink-0" />
+                Editar Veículo
+              </span>
+            )}
+            <button
+              type="button"
+              disabled={!selectedVehicle}
+              onClick={() => {
+                if (selectedVehicle) {
+                  setDeleteError("");
+                  setDeleteBarVisible(false);
+                  setDeleteProgress(0);
+                  setVehicleToDelete(selectedVehicle);
+                }
+              }}
+              className="flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold uppercase tracking-wide text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Trash2 className="h-4 w-4 shrink-0" />
+              Excluir Veículo
+            </button>
+            <Link
+              href="/dashboard/history"
+              className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold uppercase tracking-wide text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white"
+            >
+              <BarChart3 className="h-4 w-4 shrink-0" />
+              Relatório em Gráfico
+            </Link>
+            <Link
+              href="/dashboard/profile"
+              className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold uppercase tracking-wide text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white"
+            >
+              <Settings className="h-4 w-4 shrink-0" />
+              Configurações
+            </Link>
+            <button
+              type="button"
+              onClick={handleToggleTheme}
+              aria-pressed={isLightMode}
+              className="flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold uppercase tracking-wide text-zinc-200 transition-colors hover:bg-zinc-800 hover:text-white"
+            >
+              {isLightMode ? <Moon className="h-4 w-4 shrink-0" /> : <Sun className="h-4 w-4 shrink-0" />}
+              {isLightMode ? "Ativar modo Escuro" : "Ativar modo Claro"}
+            </button>
+            <div className="mt-auto flex flex-col pt-4">
+              <button
+                type="button"
+                onClick={() => setIsLogoutModalOpen(true)}
+                className="flex items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-3 text-sm font-bold uppercase tracking-wide text-red-500 transition-colors hover:border-red-500 hover:bg-red-500 hover:text-white"
+              >
+                <LogOut className="h-4 w-4 shrink-0" />
+                Sair
+              </button>
+            </div>
+          </div>
+        </nav>
+      </aside>
+      <div className="min-w-0 flex-1 space-y-8">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
           <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Garagem</p>
@@ -316,6 +466,27 @@ export default function DashboardPage() {
           </div>
         </div>
       </Modal>
+
+      <Modal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        title="Sair da conta?"
+      >
+        <div className="space-y-6">
+          <p className="text-sm text-zinc-400">
+            Tem certeza de que deseja realmente sair da sua conta?
+          </p>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setIsLogoutModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button variant="danger" onClick={handleLogout}>
+              Sair
+            </Button>
+          </div>
+        </div>
+      </Modal>
+      </div>
     </div>
   );
 }
