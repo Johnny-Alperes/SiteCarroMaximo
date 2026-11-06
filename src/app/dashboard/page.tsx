@@ -568,9 +568,13 @@ export default function DashboardPage() {
           }
         }}
         title="Excluir veículo"
+        subtitle="Confirme a exclusão do veículo selecionado."
+        icon={<Trash2 className="h-7 w-7" />}
+        variant="balloon"
+        className="max-w-lg max-h-[90vh] overflow-y-auto"
       >
-        <div className="space-y-6">
-          <div className="flex items-start gap-3 border border-red-900/60 bg-red-950/30 p-4">
+        <div className="relative space-y-6">
+          <div className="flex items-start gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-4">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
             <div>
               <p className="text-sm text-zinc-300">Você está prestes a excluir:</p>
@@ -584,25 +588,25 @@ export default function DashboardPage() {
           </div>
 
           {deleteBarVisible && (
-            <div className="border border-red-900/70 bg-red-500/10 p-4">
+            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4">
               <div className="mb-3 flex items-center gap-3 text-red-300">
-                <Trash2 className="h-5 w-5 shrink-0" />
-                <p className="text-sm font-bold uppercase tracking-widest">Excluindo...</p>
+                <Trash2 className="h-5 w-5 shrink-0 text-red-400" />
+                <p className="text-sm font-bold uppercase tracking-widest text-red-400">Excluindo...</p>
               </div>
-              <div className="h-2 border border-red-900/70 bg-zinc-900">
-                <div className="h-full bg-red-500 transition-all duration-700" style={{ width: `${deleteProgress}%` }} />
+              <div className="h-2.5 overflow-hidden rounded-full border border-red-900/70 bg-zinc-900">
+                <div className="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-700" style={{ width: `${deleteProgress}%` }} />
               </div>
               <p className="mt-2 text-right text-xs text-red-300">{deleteProgress}%</p>
             </div>
           )}
 
           {deleteError && (
-            <p className="border border-red-900/60 bg-red-950/30 p-3 text-xs text-red-300">
+            <p className="rounded-2xl border border-red-800 bg-red-900/30 p-3 text-xs text-red-300">
               {deleteError}
             </p>
           )}
 
-          <div className="flex justify-end gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <Button
               variant="outline"
               onClick={() => {
@@ -612,6 +616,7 @@ export default function DashboardPage() {
                 setDeleteProgress(0);
               }}
               disabled={isDeletingVehicle}
+              className="flex-1 rounded-full py-3"
             >
               Cancelar
             </Button>
@@ -619,6 +624,7 @@ export default function DashboardPage() {
               variant="danger"
               onClick={handleDeleteVehicle}
               isLoading={isDeletingVehicle}
+              className="flex-1 rounded-full py-3"
             >
               Excluir
             </Button>
