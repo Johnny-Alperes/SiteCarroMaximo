@@ -196,9 +196,13 @@ export default function ReportPage() {
 
   return (
     <div className="space-y-8 pb-20">
-      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-foreground/60 hover:text-primary transition-colors">
-        <ChevronLeft className="w-4 h-4" />
-        Voltar para o Dashboard
+      <Link
+        href="/dashboard"
+        aria-label="Voltar para o Dashboard"
+        title="Voltar para o Dashboard"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900/40 text-zinc-400 transition-colors hover:border-zinc-600 hover:text-white"
+      >
+        <ChevronLeft className="h-4 w-4" />
       </Link>
 
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
