@@ -525,6 +525,7 @@ export default function DashboardPage() {
           </span>
         }
         variant="balloon"
+        hideCloseButton
         className="max-w-xl max-h-[90vh] overflow-y-auto"
       >
         <div className="relative space-y-4">
