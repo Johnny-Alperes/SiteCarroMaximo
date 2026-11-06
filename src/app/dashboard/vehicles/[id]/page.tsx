@@ -526,9 +526,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     const dx = e.clientX - dragStartRef.current.x;
     if (Math.abs(dx) > 4) wasDraggingRef.current = true;
     el.scrollLeft = dragStartRef.current.scrollLeft - dx;
-    const half = el.scrollWidth / 2;
-    if (el.scrollLeft >= half) el.scrollLeft -= half;
-    else if (el.scrollLeft <= 0) el.scrollLeft += half;
+    const cycle = el.scrollWidth / 3;
+    if (el.scrollLeft >= cycle) el.scrollLeft -= cycle;
+    else if (el.scrollLeft <= 0) el.scrollLeft += cycle;
   };
 
   const onCarouselMouseUp = () => {
@@ -536,9 +536,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     setIsDragging(false);
     const el = carouselRef.current;
     if (el) {
-      const half = el.scrollWidth / 2;
-      if (el.scrollLeft >= half) el.scrollLeft -= half;
-      else if (el.scrollLeft <= 0) el.scrollLeft += half;
+      const cycle = el.scrollWidth / 3;
+      if (el.scrollLeft >= cycle) el.scrollLeft -= cycle;
+      else if (el.scrollLeft <= 0) el.scrollLeft += cycle;
     }
     window.setTimeout(() => { wasDraggingRef.current = false; }, 0);
   };
@@ -1319,37 +1319,46 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
             className="carousel-track select-none cursor-grab overflow-x-auto active:cursor-grabbing"
           >
             <div
-              className={cn("carousel-march flex w-max gap-3 pb-1 pt-1 pr-3", (!isAutoPlaying || isDragging) && "paused")}
+              className={cn("carousel-march flex w-max pb-1 pt-1", (!isAutoPlaying || isDragging) && "paused")}
             >
-              {[...tabs, ...tabs].map((tab, idx) => {
-                const style = tabStyle[tab.id];
-                const isActive = activeTab === tab.id && historyOpen;
-                return (
-                  <button
-                    key={`${tab.id}-${idx}`}
-                    type="button"
-                    data-active={isActive}
-                    onClick={() => toggleTab(tab.id)}
-                    aria-pressed={isActive}
-                    title={tab.label}
-                    className={cn(
-                      "group relative min-w-[124px] shrink-0 cursor-pointer overflow-hidden rounded-2xl bg-gradient-to-br p-[1.5px] text-left text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 hover:-translate-y-1",
-                      style.from, style.to
-                    )}
-                  >
-                    <span className={cn(
-                      "relative flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-[calc(1rem-1px)] px-3 py-4 text-center text-[11px] font-bold uppercase tracking-wide backdrop-blur transition-all",
-                      isActive
-                        ? "bg-white/20 ring-2 ring-white/80 shadow-[0_14px_30px_-10px_rgba(255,255,255,0.5)]"
-                        : "bg-black/25 group-hover:bg-black/10"
-                    )}>
-                      <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-110">{tab.icon}</span>
-                      <span className="leading-tight">{tab.label}</span>
-                    </span>
-                    <span className={cn("pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-br from-white/30 to-transparent")} />
-                  </button>
-                );
-              })}
+              {[0, 1, 2].map((setIndex) => (
+                <div
+                  key={setIndex}
+                  className="flex shrink-0 gap-3 pr-3"
+                  aria-hidden={setIndex > 0}
+                >
+                  {tabs.map((tab) => {
+                    const style = tabStyle[tab.id];
+                    const isActive = activeTab === tab.id && historyOpen;
+                    return (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        data-active={isActive}
+                        onClick={() => toggleTab(tab.id)}
+                        aria-pressed={isActive}
+                        title={tab.label}
+                        tabIndex={setIndex > 0 ? -1 : undefined}
+                        className={cn(
+                          "group relative min-w-[124px] shrink-0 cursor-pointer overflow-hidden rounded-2xl bg-gradient-to-br p-[1.5px] text-left text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 hover:-translate-y-1",
+                          style.from, style.to
+                        )}
+                      >
+                        <span className={cn(
+                          "relative flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-[calc(1rem-1px)] px-3 py-4 text-center text-[11px] font-bold uppercase tracking-wide transition-all",
+                          isActive
+                            ? "bg-white/20 ring-2 ring-white/80 shadow-[0_14px_30px_-10px_rgba(255,255,255,0.5)]"
+                            : "bg-black/25 group-hover:bg-black/10"
+                        )}>
+                          <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-110">{tab.icon}</span>
+                          <span className="leading-tight">{tab.label}</span>
+                        </span>
+                        <span className={cn("pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-gradient-to-br from-white/30 to-transparent")} />
+                      </button>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
           </div>
         </div>
