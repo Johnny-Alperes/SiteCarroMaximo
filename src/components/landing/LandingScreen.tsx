@@ -51,7 +51,7 @@ export default function LandingScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showAbout, setShowAbout] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [mostrarEsqueceuSenha, setMostrarEsqueceuSenha] = useState(false);
   const [loggedUser, setLoggedUser] = useState<any>(null);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ export default function LandingScreen() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShowForgotPassword(true);
+    setMostrarEsqueceuSenha(true);
     setIsLoading(true);
     setError("");
 
@@ -220,16 +220,16 @@ export default function LandingScreen() {
           </button>
         </div>
 
-          {(showForgotPassword || error) && (
+          {mostrarEsqueceuSenha && (
             <div className="text-right">
-              <Link href="#" data-testid="esqueceu-a-senha" className="inline-block cursor-pointer text-xs uppercase tracking-widest text-zinc-300 underline underline-offset-4 transition-colors hover:text-white">Esqueceu a senha?</Link>
+              <a href="#" data-testid="esqueceu-a-senha" onClick={(e) => e.preventDefault()} className="inline-block cursor-pointer text-xs uppercase tracking-widest text-zinc-300 underline underline-offset-4 transition-colors hover:text-white">Esqueceu a senha?</a>
             </div>
           )}
 
           <button
             type="submit"
             disabled={isLoading}
-            onClick={() => setShowForgotPassword(true)}
+            onClick={() => setMostrarEsqueceuSenha(true)}
             className="w-full bg-white py-2.5 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200 disabled:opacity-50"
           >
             {isLoading ? "Entrando..." : "Entrar"}

@@ -20,12 +20,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [mostrarEsqueceuSenha, setMostrarEsqueceuSenha] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShowForgotPassword(true);
+    setMostrarEsqueceuSenha(true);
     setIsLoading(true);
     setError("");
 
@@ -130,22 +130,22 @@ export default function LoginPage() {
                 required
                 className="rounded-xl bg-zinc-950/60"
               />
-              {(showForgotPassword || error) && (
-                <div className="pt-1 text-right">
-                  <Link href="#" data-testid="esqueceu-a-senha" className="inline-block cursor-pointer text-xs uppercase tracking-widest text-zinc-300 underline underline-offset-4 transition-colors hover:text-white">Esqueceu a senha?</Link>
+              {mostrarEsqueceuSenha && (
+                <div className="pt-2 text-right">
+                  <a href="#" data-testid="esqueceu-a-senha" onClick={(e) => e.preventDefault()} className="inline-block cursor-pointer text-xs uppercase tracking-widest text-zinc-300 underline underline-offset-4 transition-colors hover:text-white">Esqueceu a senha?</a>
                 </div>
               )}
             </div>
 
-            <Button 
-              type="submit" 
-              onClick={() => setShowForgotPassword(true)}
-              className="w-full rounded-full bg-white py-4 text-sm text-zinc-950 shadow-lg shadow-white/10 hover:bg-zinc-200 hover:text-zinc-950" 
-              isLoading={isLoading}
+            <button
+              type="submit"
+              disabled={isLoading}
+              onClick={() => setMostrarEsqueceuSenha(true)}
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 text-sm font-bold uppercase tracking-widest text-zinc-950 shadow-lg shadow-white/10 transition-colors hover:bg-zinc-200 disabled:opacity-50"
             >
-              Entrar
+              {isLoading ? "Entrando..." : "Entrar"}
               {!isLoading && <ArrowRight className="w-5 h-5" />}
-            </Button>
+            </button>
           </form>
 
           <div className="relative my-8">
