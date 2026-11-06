@@ -1707,9 +1707,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               <Button
                 type="submit"
                 isLoading={isSavingService}
-                className="flex-1 gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm text-white shadow-lg shadow-blue-500/30 hover:bg-blue-500 hover:text-white"
+                className="flex-1 rounded-full bg-emerald-600 px-6 py-3 text-sm text-white shadow-lg shadow-emerald-500/30 hover:bg-emerald-500 hover:text-white"
               >
-                <Plus className="h-4 w-4" />
                 Salvar
               </Button>
             </div>
