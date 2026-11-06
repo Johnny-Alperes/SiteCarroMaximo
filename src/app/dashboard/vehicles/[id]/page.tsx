@@ -1630,19 +1630,23 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
               setServiceProgress(0);
             }
           }}
-          title={`Cadastrar - ${tabs.find(t => t.id === activeTab)?.label ?? "Item"}`}
+          title={`Cadastrar ${tabs.find(t => t.id === activeTab)?.label ?? "Item"}`}
+          subtitle="Preencha os dados abaixo para adicionar o registro."
+          icon={<span className="[&>svg]:h-7 [&>svg]:w-7">{getTabIcon(activeTab)}</span>}
+          variant="balloon"
+          className="max-w-xl max-h-[90vh] overflow-y-auto"
         >
-          <form onSubmit={handleRegisterService} className="space-y-4">
+          <form onSubmit={handleRegisterService} className="relative space-y-5">
             {registerBarVisible && (
-              <div className="border border-emerald-900/70 bg-emerald-500/10 p-4">
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4">
                 <div className="mb-3 flex items-center gap-3 text-emerald-300">
-                  <CheckCircle2 className="h-5 w-5 shrink-0" />
-                  <p className="text-sm font-bold uppercase tracking-widest">
+                  <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" />
+                  <p className="text-sm font-bold uppercase tracking-widest text-emerald-400">
                     {registerSuccess ? "Cadastrado com sucesso!" : "Cadastrando..."}
                   </p>
                 </div>
-                <div className="h-2 border border-emerald-900/70 bg-zinc-900 transition-opacity duration-700">
-                  <div className="h-full bg-emerald-500 transition-all duration-700" style={{ width: `${serviceProgress}%` }} />
+                <div className="h-2.5 overflow-hidden rounded-full border border-emerald-900/70 bg-zinc-900">
+                  <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-green-400 transition-all duration-700" style={{ width: `${serviceProgress}%` }} />
                 </div>
                 <p className="mt-2 text-right text-xs text-emerald-300">{serviceProgress}%</p>
               </div>
@@ -1658,7 +1662,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                         required={field.required}
                         value={fieldValue}
                         onChange={(e) => setFormData((current) => ({ ...current, [field.key]: e.target.value }))}
-                        className="flex h-12 w-full rounded-none border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm text-zinc-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20 focus-visible:border-zinc-500 transition-all"
+                        className="flex h-12 w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 py-2 text-sm text-zinc-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20 focus-visible:border-zinc-500 transition-all"
                       >
                         <option value="" disabled>Selecione...</option>
                         {field.options?.map((option) => (
@@ -1682,26 +1686,28 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                     }}
                     icon={field.type === "currency" ? <DollarSign className="h-4 w-4" /> : undefined}
                     required={field.required}
+                    className="rounded-xl bg-zinc-950/60"
                   />
                 );
               })}
             </div>
             {registerError && (
-              <p className="border border-red-900/60 bg-red-950/30 p-3 text-xs text-red-300">{registerError}</p>
+              <p className="rounded-2xl border border-red-800 bg-red-900/30 p-3 text-xs text-red-300">{registerError}</p>
             )}
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex flex-col gap-3 pt-2 sm:flex-row">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setIsRegisterModalOpen(false)}
                 disabled={isSavingService}
+                className="flex-1 rounded-full py-3"
               >
                 Cancelar
               </Button>
               <Button
                 type="submit"
                 isLoading={isSavingService}
-                className="gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm text-white shadow-lg shadow-blue-500/30 hover:bg-blue-500 hover:text-white"
+                className="flex-1 gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm text-white shadow-lg shadow-blue-500/30 hover:bg-blue-500 hover:text-white"
               >
                 <Plus className="h-4 w-4" />
                 Cadastrar Item
