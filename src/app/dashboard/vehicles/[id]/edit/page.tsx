@@ -118,9 +118,9 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <Link href={`/dashboard/vehicles/${id}`} className="inline-flex items-center gap-2 text-sm text-foreground/60 hover:text-primary transition-colors mb-4">
+      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-foreground/60 hover:text-primary transition-colors mb-4">
         <ChevronLeft className="w-4 h-4" />
-        Voltar para o veículo
+        Voltar para Meus Veículos
       </Link>
 
       <div className="flex items-center justify-between">
@@ -199,7 +199,7 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
               <Save className="w-5 h-5" />
               Salvar Alterações
             </Button>
-            <Link href={`/dashboard/vehicles/${id}`} className="flex-1">
+            <Link href="/dashboard" className="flex-1">
               <Button variant="outline" type="button" className="w-full py-4 text-lg">
                 Cancelar
               </Button>
