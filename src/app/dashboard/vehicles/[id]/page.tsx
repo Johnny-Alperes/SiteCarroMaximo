@@ -1634,6 +1634,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           subtitle="Preencha os dados abaixo para adicionar o registro."
           icon={<span className="[&>svg]:h-7 [&>svg]:w-7">{getTabIcon(activeTab)}</span>}
           variant="balloon"
+          hideCloseButton
           className="max-w-xl max-h-[90vh] overflow-y-auto"
         >
           <form onSubmit={handleRegisterService} className="relative space-y-5">
