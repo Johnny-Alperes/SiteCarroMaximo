@@ -20,12 +20,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [mostrarEsqueceuSenha, setMostrarEsqueceuSenha] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMostrarEsqueceuSenha(true);
     setIsLoading(true);
     setError("");
 
@@ -130,17 +128,14 @@ export default function LoginPage() {
                 required
                 className="rounded-xl bg-zinc-950/60"
               />
-              {mostrarEsqueceuSenha && (
-                <div className="pt-2 text-right">
-                  <a href="#" data-testid="esqueceu-a-senha" onClick={(e) => e.preventDefault()} className="inline-block cursor-pointer text-xs uppercase tracking-widest text-zinc-300 underline underline-offset-4 transition-colors hover:text-white">Esqueceu a senha?</a>
-                </div>
-              )}
+              <div className="pt-2 text-right">
+                <a href="#" data-testid="esqueceu-a-senha" onClick={(e) => e.preventDefault()} className="inline-block cursor-pointer text-xs uppercase tracking-widest text-zinc-300 underline underline-offset-4 transition-colors hover:text-white">Esqueceu a senha?</a>
+              </div>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              onClick={() => setMostrarEsqueceuSenha(true)}
               className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 text-sm font-bold uppercase tracking-widest text-zinc-950 shadow-lg shadow-white/10 transition-colors hover:bg-zinc-200 disabled:opacity-50"
             >
               {isLoading ? "Entrando..." : "Entrar"}
