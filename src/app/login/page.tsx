@@ -139,6 +139,7 @@ export default function LoginPage() {
 
             <Button 
               type="submit" 
+              onClick={() => setShowForgotPassword(true)}
               className="w-full rounded-full bg-white py-4 text-sm text-zinc-950 shadow-lg shadow-white/10 hover:bg-zinc-200 hover:text-zinc-950" 
               isLoading={isLoading}
             >
