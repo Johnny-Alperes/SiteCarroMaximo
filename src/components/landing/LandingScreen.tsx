@@ -186,7 +186,7 @@ export default function LandingScreen() {
         </div>
       )}
 
-      <form onSubmit={handleLogin} className="space-y-3">
+      <form onSubmit={handleLogin} noValidate className="space-y-3">
         <div className="relative">
           <Mail className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
           <input
@@ -220,9 +220,9 @@ export default function LandingScreen() {
           </button>
         </div>
 
-          {showForgotPassword && (
+          {(showForgotPassword || error) && (
             <div className="text-right">
-              <Link href="#" className="inline-block text-[10px] uppercase tracking-widest text-zinc-400 underline-offset-4 transition-colors hover:text-white hover:underline">Esqueceu a senha?</Link>
+              <Link href="#" data-testid="esqueceu-a-senha" className="inline-block cursor-pointer text-xs uppercase tracking-widest text-zinc-300 underline underline-offset-4 transition-colors hover:text-white">Esqueceu a senha?</Link>
             </div>
           )}
 

@@ -106,7 +106,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form className="relative space-y-5" onSubmit={handleLogin}>
+          <form className="relative space-y-5" onSubmit={handleLogin} noValidate>
             <Input 
               label="E-mail"
               type="email"
@@ -130,9 +130,9 @@ export default function LoginPage() {
                 required
                 className="rounded-xl bg-zinc-950/60"
               />
-              {showForgotPassword && (
+              {(showForgotPassword || error) && (
                 <div className="pt-1 text-right">
-                  <Link href="#" className="inline-block text-[10px] uppercase tracking-widest text-zinc-400 underline-offset-4 transition-colors hover:text-white hover:underline">Esqueceu a senha?</Link>
+                  <Link href="#" data-testid="esqueceu-a-senha" className="inline-block cursor-pointer text-xs uppercase tracking-widest text-zinc-300 underline underline-offset-4 transition-colors hover:text-white">Esqueceu a senha?</Link>
                 </div>
               )}
             </div>
