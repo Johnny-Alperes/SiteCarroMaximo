@@ -129,7 +129,7 @@ export default function LoginPage() {
                 className="rounded-xl bg-zinc-950/60"
               />
               <div className="pt-2 text-right">
-                <a href="#" data-testid="esqueceu-a-senha" onClick={(e) => e.preventDefault()} className="inline-block cursor-pointer text-xs uppercase tracking-widest text-zinc-300 underline underline-offset-4 transition-colors hover:text-white">Esqueceu a senha?</a>
+                <a href="#" data-testid="esqueceu-a-senha" onClick={(e) => e.preventDefault()} className="inline-block cursor-pointer text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300">Esqueceu a senha?</a>
               </div>
             </div>
 
