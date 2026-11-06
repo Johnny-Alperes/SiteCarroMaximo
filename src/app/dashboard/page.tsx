@@ -637,14 +637,19 @@ export default function DashboardPage() {
         isOpen={isRecoveryModalOpen}
         onClose={() => setIsRecoveryModalOpen(false)}
         title="Recuperar Veículo"
+        subtitle="Restaure um veículo excluído informando o Renavam cadastrado."
+        icon={<RotateCcw className="h-7 w-7" />}
+        variant="balloon"
+        hideCloseButton
+        className="max-w-2xl max-h-[90vh] overflow-y-auto"
       >
-        <div className="space-y-6">
+        <div className="relative space-y-6">
           <p className="text-sm text-zinc-400">
             Veículos excluídos ficam salvos por 10 dias. Para recuperar, é obrigatório digitar o Renavam cadastrado do veículo.
           </p>
 
           {recoverySuccess && (
-            <div className="flex items-center gap-3 border border-emerald-900/70 bg-emerald-500/10 p-4 text-emerald-300">
+            <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-300">
               <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" />
               <p className="text-sm font-bold">{recoverySuccess}</p>
             </div>
@@ -653,13 +658,13 @@ export default function DashboardPage() {
           {loadingDeletedVehicles ? (
             <p className="text-sm text-zinc-400">Carregando veículos excluídos...</p>
           ) : deletedVehicles.length === 0 ? (
-            <p className="border border-zinc-800 bg-zinc-900 p-4 text-sm text-zinc-400">
+            <p className="rounded-2xl border border-white/10 bg-zinc-950/40 p-4 text-sm text-zinc-400">
               Nenhum veículo na lixeira.
             </p>
           ) : (
             <div className="space-y-4">
               {deletedVehicles.map((deleted) => (
-                <div key={deleted.id} className="space-y-3 border border-zinc-800 bg-zinc-900 p-4">
+                <div key={deleted.id} className="space-y-3 rounded-2xl border border-white/10 bg-zinc-950/40 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate font-bold text-white">{deleted.model} - {deleted.plate}</p>
@@ -667,7 +672,7 @@ export default function DashboardPage() {
                         {deleted.year}{deleted.color ? ` • ${deleted.color}` : ""}{deleted.fuelType ? ` • ${deleted.fuelType}` : ""}
                       </p>
                     </div>
-                    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-950 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-zinc-300">
+                    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-zinc-300">
                       <Clock className="h-3 w-3" />
                       {getDaysRemaining(deleted)} dias restantes
                     </span>
@@ -694,11 +699,11 @@ export default function DashboardPage() {
                         }
                       }}
                       maxLength={11}
-                      className="flex h-11 w-full rounded-none border border-zinc-700 bg-zinc-950 px-4 py-2 text-sm text-zinc-100 outline-none transition-all placeholder:text-zinc-600 focus:border-zinc-500"
+                      className="flex h-12 w-full rounded-xl border border-zinc-700 bg-zinc-950/60 px-4 py-2 text-sm text-zinc-100 outline-none transition-all placeholder:text-zinc-600 focus:border-zinc-500 focus-visible:ring-1 focus-visible:ring-white/20"
                     />
                   </div>
                   {recoveryErrors[deleted.id] && (
-                    <p className="border border-red-900/60 bg-red-950/30 p-3 text-xs text-red-300">
+                    <p className="rounded-2xl border border-red-800 bg-red-900/30 p-3 text-xs text-red-300">
                       {recoveryErrors[deleted.id]}
                     </p>
                   )}
@@ -707,7 +712,7 @@ export default function DashboardPage() {
                     onClick={() => handleRecoverVehicle(deleted)}
                     isLoading={recoveringId === deleted.id}
                     disabled={!renavamInputs[deleted.id]}
-                    className="w-full"
+                    className="w-full rounded-full py-3"
                   >
                     <RotateCcw className="h-4 w-4" />
                     Recuperar Veículo
@@ -718,7 +723,7 @@ export default function DashboardPage() {
           )}
 
           <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setIsRecoveryModalOpen(false)}>
+            <Button variant="outline" onClick={() => setIsRecoveryModalOpen(false)} className="rounded-full px-6 py-3">
               Fechar
             </Button>
           </div>
