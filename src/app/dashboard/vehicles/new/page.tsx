@@ -76,27 +76,27 @@ export default function NewVehiclePage() {
 
   return (
     <div className="relative mx-auto max-w-2xl py-4">
-      <div aria-hidden="true" className="pointer-events-none absolute -top-16 -left-16 h-64 w-64 rounded-full bg-violet-600/20 blur-3xl" />
-      <div aria-hidden="true" className="pointer-events-none absolute -top-10 -right-10 h-56 w-56 rounded-full bg-fuchsia-500/20 blur-3xl" />
-      <div aria-hidden="true" className="pointer-events-none absolute -bottom-16 right-1/3 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -top-16 -left-16 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -top-10 -right-10 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -bottom-16 right-1/3 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
 
       <Link href="/dashboard" className="relative mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-300 backdrop-blur transition-colors hover:bg-white/10 hover:text-white">
         <ChevronLeft className="w-4 h-4" />
         Voltar para o Dashboard
       </Link>
 
-      <Card className="relative overflow-hidden rounded-[1.75rem] border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-violet-950/40 p-8 shadow-[0_25px_60px_-20px_rgba(168,85,247,0.35)] backdrop-blur md:p-10">
-        <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-violet-500 via-fuchsia-400 to-amber-300" />
-        <div aria-hidden="true" className="pointer-events-none absolute -top-20 -right-20 h-48 w-48 rounded-full bg-fuchsia-500/15 blur-3xl" />
+      <Card className="relative overflow-hidden rounded-[1.75rem] border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-white/5 p-8 shadow-[0_25px_60px_-20px_rgba(255,255,255,0.15)] backdrop-blur md:p-10">
+        <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-white/60 via-white/30 to-white/10" />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-20 -right-20 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
 
         <div className="relative mb-8 flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg shadow-fuchsia-500/30">
-            <CarIcon className="h-7 w-7 text-white" />
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.25rem] border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
+            <CarIcon className="h-7 w-7 text-zinc-950" />
           </div>
           <div>
             <h1 className="flex items-center gap-2 text-3xl font-black uppercase tracking-tight text-white">
               Novo Veículo
-              <Sparkles className="h-5 w-5 text-amber-300" />
+              <Sparkles className="h-5 w-5 text-white" />
             </h1>
             <p className="mt-1 text-sm text-zinc-400">Preencha os dados para adicionar à sua garagem.</p>
           </div>
@@ -186,7 +186,7 @@ export default function NewVehiclePage() {
           </div>
 
           <div className="pt-4 flex flex-col sm:flex-row gap-4">
-            <Button type="submit" className="flex-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-500 py-4 text-lg shadow-lg shadow-fuchsia-500/25 hover:brightness-110" isLoading={loading}>
+            <Button type="submit" className="flex-1 rounded-full bg-white py-4 text-lg text-zinc-950 shadow-lg shadow-white/10 hover:bg-zinc-200 hover:text-zinc-950" isLoading={loading}>
               <Save className="w-5 h-5" />
               Salvar Veículo
             </Button>
