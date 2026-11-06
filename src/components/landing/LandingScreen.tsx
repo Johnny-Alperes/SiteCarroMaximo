@@ -285,7 +285,13 @@ export default function LandingScreen() {
         </Link>
 
         <nav className="hidden items-center gap-3 md:flex">
-          {loggedUser && (
+          <Link
+            href="/register"
+            className="text-xs uppercase tracking-widest text-zinc-300 transition-colors hover:text-white"
+          >
+            Cadastrar
+          </Link>
+          {loggedUser ? (
             <Link
               href="/dashboard"
               className="max-w-44 truncate bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200"
@@ -293,14 +299,7 @@ export default function LandingScreen() {
             >
               {userDisplayName}
             </Link>
-          )}
-          <Link
-            href="/register"
-            className="text-xs uppercase tracking-widest text-zinc-300 transition-colors hover:text-white"
-          >
-            Cadastrar
-          </Link>
-          {!loggedUser && (
+          ) : (
             <div className="relative">
               <button
                 type="button"
@@ -331,7 +330,14 @@ export default function LandingScreen() {
 
       {isMenuOpen && (
         <div className="relative z-20 space-y-3 border-b border-zinc-800 bg-zinc-950 px-6 py-4 md:hidden">
-          {loggedUser && (
+          <Link
+            href="/register"
+            onClick={() => setIsMenuOpen(false)}
+            className="block text-xs uppercase tracking-widest text-zinc-300"
+          >
+            Cadastrar
+          </Link>
+          {loggedUser ? (
             <Link
               href="/dashboard"
               onClick={() => setIsMenuOpen(false)}
@@ -340,15 +346,7 @@ export default function LandingScreen() {
             >
               {userDisplayName}
             </Link>
-          )}
-          <Link
-            href="/register"
-            onClick={() => setIsMenuOpen(false)}
-            className="block text-xs uppercase tracking-widest text-zinc-300"
-          >
-            Cadastrar
-          </Link>
-          {!loggedUser && (
+          ) : (
             <>
               <button
                 type="button"
