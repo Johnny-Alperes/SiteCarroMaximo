@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import { Car, LogOut, User } from "lucide-react";
+import { Car, LogOut, User, Home } from "lucide-react";
 import Cookies from "js-cookie";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
@@ -58,6 +58,13 @@ export default function Header() {
                 className="text-xs uppercase tracking-widest text-zinc-400 transition-colors hover:text-white"
               >
                 Perfil
+              </Link>
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-zinc-400 transition-colors hover:text-white"
+              >
+                <Home className="h-3.5 w-3.5" />
+                Tela Inicial
               </Link>
             </nav>
           </div>

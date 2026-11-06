@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  onAuthStateChanged,
 } from "firebase/auth";
 import Cookies from "js-cookie";
 import { auth } from "@/lib/firebase";
@@ -50,6 +51,17 @@ export default function LandingScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showAbout, setShowAbout] = useState(false);
+  const [loggedUser, setLoggedUser] = useState<any>(null);
+
+  useEffect(() => {
+    setLoggedUser(auth.currentUser);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setLoggedUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const userDisplayName = loggedUser?.displayName || loggedUser?.email || "";
 
   const toggleLogin = () => {
     setError("");
@@ -273,6 +285,15 @@ export default function LandingScreen() {
         </Link>
 
         <nav className="hidden items-center gap-3 md:flex">
+          {loggedUser && (
+            <Link
+              href="/dashboard"
+              className="max-w-44 truncate bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200"
+              title="Ir para o Dashboard"
+            >
+              {userDisplayName}
+            </Link>
+          )}
           <Link
             href="/register"
             className="text-xs uppercase tracking-widest text-zinc-300 transition-colors hover:text-white"
@@ -308,6 +329,16 @@ export default function LandingScreen() {
 
       {isMenuOpen && (
         <div className="relative z-20 space-y-3 border-b border-zinc-800 bg-zinc-950 px-6 py-4 md:hidden">
+          {loggedUser && (
+            <Link
+              href="/dashboard"
+              onClick={() => setIsMenuOpen(false)}
+              className="block truncate bg-white px-4 py-2 text-center text-xs font-bold uppercase tracking-widest text-zinc-950"
+              title="Ir para o Dashboard"
+            >
+              {userDisplayName}
+            </Link>
+          )}
           <Link
             href="/register"
             onClick={() => setIsMenuOpen(false)}
@@ -348,6 +379,18 @@ export default function LandingScreen() {
             Manutenção, combustível, custos e alertas em um só lugar.
             Controle total do seu veículo em tempo real.
           </p>
+
+          {loggedUser && (
+            <div className="pt-1">
+              <Link
+                href="/dashboard"
+                className="inline-flex max-w-full items-center gap-2 border border-white/20 bg-white/10 px-6 py-3 text-sm font-bold uppercase tracking-widest text-white backdrop-blur transition-colors hover:bg-white/20"
+                title="Ir para o Dashboard"
+              >
+                Olá, {userDisplayName}
+              </Link>
+            </div>
+          )}
 
           <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row">
             <Link
