@@ -734,6 +734,7 @@ export default function DashboardPage() {
         isOpen={isContactModalOpen}
         onClose={() => setIsContactModalOpen(false)}
         title="Fale Conosco"
+        hideCloseButton
         className="overflow-hidden rounded-[1.75rem] border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-white/5 shadow-[0_25px_60px_-20px_rgba(255,255,255,0.15)] backdrop-blur"
       >
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-white/60 via-white/30 to-white/10" />
