@@ -1364,15 +1364,14 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         </div>
       </section>
 
-          <AnimatePresence initial={false}>
+          <AnimatePresence initial={false} mode="wait">
             {!historyOpen && (
               <motion.div
                 key="details"
-                initial={{ opacity: 0, height: 0, y: -12 }}
-                animate={{ opacity: 1, height: "auto", y: 0 }}
-                exit={{ opacity: 0, height: 0, y: -12 }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                className="overflow-hidden space-y-6"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0, transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] } }}
+                exit={{ opacity: 0, y: -6, transition: { duration: 0.12, ease: [0.22, 1, 0.36, 1] } }}
+                className="space-y-6 will-change-transform"
               >
       <div className="space-y-6">
           {/* Stats Overview */}
@@ -1425,11 +1424,10 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
             {historyOpen && (
               <motion.div
                 key="history"
-                initial={{ opacity: 0, height: 0, y: -12 }}
-                animate={{ opacity: 1, height: "auto", y: 0 }}
-                exit={{ opacity: 0, height: 0, y: -12 }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                className="overflow-hidden"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }}
+                exit={{ opacity: 0, y: -6, transition: { duration: 0.12, ease: [0.22, 1, 0.36, 1] } }}
+                className="will-change-transform"
               >
           {/* History Section */}
           <div className="space-y-6">
