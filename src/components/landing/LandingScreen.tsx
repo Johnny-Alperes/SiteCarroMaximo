@@ -300,21 +300,23 @@ export default function LandingScreen() {
           >
             Cadastrar
           </Link>
-          <div className="relative">
-            <button
-              type="button"
-              onClick={toggleLogin}
-              className="bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200"
-            >
-              {showLogin ? "Fechar" : "Entrar"}
-            </button>
+          {!loggedUser && (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={toggleLogin}
+                className="bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200"
+              >
+                {showLogin ? "Fechar" : "Entrar"}
+              </button>
 
-            {showLogin && (
-              <div className="absolute right-0 top-full z-30 mt-3 w-80 border border-zinc-800 bg-zinc-950 p-5 shadow-2xl">
-                {renderLoginFields()}
-              </div>
-            )}
-          </div>
+              {showLogin && (
+                <div className="absolute right-0 top-full z-30 mt-3 w-80 border border-zinc-800 bg-zinc-950 p-5 shadow-2xl">
+                  {renderLoginFields()}
+                </div>
+              )}
+            </div>
+          )}
         </nav>
 
         <button
@@ -346,17 +348,21 @@ export default function LandingScreen() {
           >
             Cadastrar
           </Link>
-          <button
-            type="button"
-            onClick={toggleLogin}
-            className="block w-full bg-white px-4 py-2 text-center text-xs font-bold uppercase tracking-widest text-zinc-950"
-          >
-            {showLogin ? "Fechar" : "Entrar"}
-          </button>
-          {showLogin && (
-            <div className="border border-zinc-800 bg-zinc-950 p-4">
-              {renderLoginFields()}
-            </div>
+          {!loggedUser && (
+            <>
+              <button
+                type="button"
+                onClick={toggleLogin}
+                className="block w-full bg-white px-4 py-2 text-center text-xs font-bold uppercase tracking-widest text-zinc-950"
+              >
+                {showLogin ? "Fechar" : "Entrar"}
+              </button>
+              {showLogin && (
+                <div className="border border-zinc-800 bg-zinc-950 p-4">
+                  {renderLoginFields()}
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
