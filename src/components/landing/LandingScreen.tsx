@@ -171,78 +171,78 @@ export default function LandingScreen() {
         className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm"
         onClick={() => setShowAbout(false)}
       />
-      <div className="relative z-10 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-white/5 p-5 text-white shadow-[0_25px_60px_-20px_rgba(255,255,255,0.15)] backdrop-blur md:p-6" role="dialog" aria-modal="true" aria-label="Sobre a NPX Soluções Tecnológicas">
+      <div className="relative z-10 max-h-[92vh] w-full max-w-xl overflow-hidden rounded-[1.5rem] border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-white/5 p-4 text-white shadow-[0_25px_60px_-20px_rgba(255,255,255,0.15)] backdrop-blur md:p-5" role="dialog" aria-modal="true" aria-label="Sobre a NPX Soluções Tecnológicas">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-white/60 via-white/30 to-white/10" />
-        <div aria-hidden="true" className="pointer-events-none absolute -top-20 -right-20 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
         <button
           type="button"
           onClick={() => setShowAbout(false)}
-          className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10 transition-colors hover:bg-zinc-200"
+          className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10 transition-colors hover:bg-zinc-200"
           aria-label="Fechar sobre nós"
         >
-          <X className="h-4 w-4" />
+          <X className="h-3.5 w-3.5" />
         </button>
 
-        <div className="relative space-y-4">
-          <div className="px-10 text-center">
-            <p className="mb-1 text-[10px] font-bold tracking-[0.3em] text-zinc-500">Sobre nós</p>
-            <h2 className="text-2xl font-black tracking-tight text-white md:text-3xl">NPX Soluções Tecnológicas</h2>
-            <p className="mt-1.5 text-sm leading-relaxed text-zinc-400">
+        <div className="relative space-y-3">
+          <div className="px-8 text-center">
+            <p className="mb-1 text-[9px] font-bold tracking-[0.3em] text-zinc-500">Sobre nós</p>
+            <h2 className="text-xl font-black tracking-tight text-white md:text-2xl">NPX Soluções Tecnológicas</h2>
+            <p className="mt-1 text-xs leading-snug text-zinc-400">
               Tecnologia para colocar ideias em movimento, com produtos digitais modernos, rápidos e preparados para crescer.
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[1.25rem] border border-white/10 bg-white/5 p-4 backdrop-blur">
-              <div className="mb-2 flex items-center gap-3 text-white">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
-                  <Building2 className="h-4 w-4" />
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur">
+              <div className="mb-1.5 flex items-center gap-2 text-white">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
+                  <Building2 className="h-3.5 w-3.5" />
                 </span>
-                <h3 className="text-xs font-bold tracking-widest text-zinc-300">A empresa</h3>
+                <h3 className="text-[11px] font-bold tracking-wider text-zinc-300">A empresa</h3>
               </div>
-              <p className="text-sm leading-relaxed text-zinc-400">A <strong className="text-white">NPX Soluções Tecnológicas</strong> foi fundada em <strong className="text-white">2024</strong> pelo <strong className="text-white">Johnny Alperes</strong>, com a missão de transformar desafios em produtos digitais simples, eficientes e com alto impacto.</p>
+              <p className="text-xs leading-snug text-zinc-400">A <strong className="text-white">NPX Soluções Tecnológicas</strong> foi fundada em <strong className="text-white">2024</strong> pelo <strong className="text-white">Johnny Alperes</strong>, com a missão de transformar desafios em produtos digitais simples, eficientes e com alto impacto.</p>
             </div>
-            <div className="rounded-[1.25rem] border border-white/10 bg-white/5 p-4 backdrop-blur">
-              <div className="mb-2 flex items-center gap-3 text-white">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
-                  <MapPin className="h-4 w-4" />
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur">
+              <div className="mb-1.5 flex items-center gap-2 text-white">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
+                  <MapPin className="h-3.5 w-3.5" />
                 </span>
-                <h3 className="text-xs font-bold tracking-widest text-zinc-300">Sede</h3>
+                <h3 className="text-[11px] font-bold tracking-wider text-zinc-300">Sede</h3>
               </div>
-              <p className="text-sm leading-relaxed text-zinc-400">Estamos sediados em <strong className="text-white">João Pessoa – PB</strong>, atendendo clientes de todo o Brasil com comunicação direta, suporte próximo e uma visão moderna de tecnologia.</p>
-            </div>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[1.25rem] border border-white/10 bg-white/5 p-4 backdrop-blur">
-              <div className="mb-2 flex items-center gap-3 text-white">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
-                  <Smartphone className="h-4 w-4" />
-                </span>
-                <h3 className="text-xs font-bold tracking-widest text-zinc-300">Mobile e web</h3>
-              </div>
-              <p className="text-sm leading-relaxed text-zinc-400">Desenvolvemos <strong className="text-white">aplicações mobile e web</strong>, sistemas internos, páginas institucionais, e-commerce, automações e plataformas sob medida — do planejamento ao lançamento.</p>
-            </div>
-            <div className="rounded-[1.25rem] border border-white/10 bg-white/5 p-4 backdrop-blur">
-              <div className="mb-2 flex items-center gap-3 text-white">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
-                  <Code2 className="h-4 w-4" />
-                </span>
-                <h3 className="text-xs font-bold tracking-widest text-zinc-300">Como trabalhamos</h3>
-              </div>
-              <p className="text-sm leading-relaxed text-zinc-400">Valorizamos design, performance, segurança e experiência do usuário. Criamos produtos que unem estética, funcionalidade e escalabilidade para o seu negócio crescer.</p>
+              <p className="text-xs leading-snug text-zinc-400">Estamos sediados em <strong className="text-white">João Pessoa – PB</strong>, atendendo clientes de todo o Brasil com comunicação direta, suporte próximo e uma visão moderna de tecnologia.</p>
             </div>
           </div>
 
-          <div className="rounded-[1.25rem] border border-white/10 bg-white/5 p-4 text-center backdrop-blur">
-            <p className="mb-1 text-[10px] font-bold tracking-[0.3em] text-zinc-500">Fale com a NPX</p>
-            <p className="text-sm leading-relaxed text-zinc-400">Vamos tirar sua ideia do papel? Receba um atendimento direto e sem burocracia.</p>
-            <a href="tel:+5583998691921" className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white px-4 py-2 text-xs font-bold tracking-widest text-zinc-950 shadow-lg shadow-white/10 transition-colors hover:bg-zinc-200">
-              <Phone className="h-3.5 w-3.5" /> (83) 99869-1921 <ArrowUpRight className="h-3.5 w-3.5" />
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur">
+              <div className="mb-1.5 flex items-center gap-2 text-white">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
+                  <Smartphone className="h-3.5 w-3.5" />
+                </span>
+                <h3 className="text-[11px] font-bold tracking-wider text-zinc-300">Mobile e web</h3>
+              </div>
+              <p className="text-xs leading-snug text-zinc-400">Desenvolvemos <strong className="text-white">aplicações mobile e web</strong>, sistemas internos, páginas institucionais, e-commerce, automações e plataformas sob medida — do planejamento ao lançamento.</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur">
+              <div className="mb-1.5 flex items-center gap-2 text-white">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
+                  <Code2 className="h-3.5 w-3.5" />
+                </span>
+                <h3 className="text-[11px] font-bold tracking-wider text-zinc-300">Como trabalhamos</h3>
+              </div>
+              <p className="text-xs leading-snug text-zinc-400">Valorizamos design, performance, segurança e experiência do usuário. Criamos produtos que unem estética, funcionalidade e escalabilidade para o seu negócio crescer.</p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-center backdrop-blur">
+            <p className="mb-1 text-[9px] font-bold tracking-[0.3em] text-zinc-500">Fale com a NPX</p>
+            <p className="text-xs leading-snug text-zinc-400">Vamos tirar sua ideia do papel? Receba um atendimento direto e sem burocracia.</p>
+            <a href="tel:+5583998691921" className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white px-3 py-1.5 text-[11px] font-bold tracking-widest text-zinc-950 shadow-lg shadow-white/10 transition-colors hover:bg-zinc-200">
+              <Phone className="h-3 w-3" /> (83) 99869-1921 <ArrowUpRight className="h-3 w-3" />
             </a>
-            <div className="mt-3 flex items-center justify-center gap-2 text-zinc-500">
-              <CalendarDays className="h-4 w-4" />
-              <span className="text-xs tracking-widest">Fundada em 2024</span>
+            <div className="mt-2 flex items-center justify-center gap-2 text-zinc-500">
+              <CalendarDays className="h-3.5 w-3.5" />
+              <span className="text-[10px] tracking-widest">Fundada em 2024</span>
             </div>
           </div>
         </div>
