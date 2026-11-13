@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Save, Car as CarIcon, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { formatPlate } from "@/lib/utils";
 
 export default function EditVehiclePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -55,7 +56,7 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
           const data = docSnap.data();
           setFormData({
             model: data.model ?? "",
-            plate: data.plate ?? "",
+            plate: formatPlate(data.plate ?? ""),
             year: data.year ?? new Date().getFullYear().toString(),
             color: data.color ?? "Prata",
             renavam: data.renavam ?? "",
@@ -85,7 +86,7 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
       const docRef = doc(db, `users/${auth.currentUser.uid}/vehicles`, id);
       await updateDoc(docRef, {
         ...formData,
-        plate: formData.plate.toUpperCase(),
+        plate: formatPlate(formData.plate),
       });
       router.push(`/dashboard/vehicles/${id}`);
     } catch (error) {
@@ -153,9 +154,10 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
 
             <Input
               label="Placa"
-              placeholder="ABC-1234"
+              placeholder="ABC-1234 ou ABC1D23"
               value={formData.plate}
-              onChange={(e) => setFormData({ ...formData, plate: e.target.value.toUpperCase() })}
+              onChange={(e) => setFormData({ ...formData, plate: formatPlate(e.target.value) })}
+              maxLength={8}
               required
               className="rounded-xl bg-zinc-950/60"
             />

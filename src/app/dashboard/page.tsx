@@ -735,41 +735,42 @@ export default function DashboardPage() {
         isOpen={isContactModalOpen}
         onClose={() => setIsContactModalOpen(false)}
         title="Fale Conosco"
+        titleClassName="w-full text-center normal-case"
         hideCloseButton
         className="overflow-hidden rounded-[1.75rem] border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-white/5 shadow-[0_25px_60px_-20px_rgba(255,255,255,0.15)] backdrop-blur"
       >
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-white/60 via-white/30 to-white/10" />
         <div aria-hidden="true" className="pointer-events-none absolute -top-20 -right-20 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
-        <div className="relative space-y-4">
+        <div className="relative space-y-4 text-center">
           <p className="text-sm text-zinc-400">
             Entre em contato com a gente pelos canais abaixo:
           </p>
           <a
             href="mailto:Johnnypereiradacostajr@gmail.com"
-            className="flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/5 p-4 text-sm text-zinc-200 backdrop-blur transition-colors hover:bg-white/10 hover:text-white"
+            className="flex flex-col items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/5 p-4 text-center text-sm text-zinc-200 backdrop-blur transition-colors hover:bg-white/10 hover:text-white"
           >
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
               <Mail className="h-5 w-5 shrink-0 text-zinc-950" />
             </span>
             <span className="min-w-0">
-              <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">E-mail</span>
-              Johnnypereiradacostajr@gmail.com
+              <span className="block text-[10px] font-bold tracking-widest text-zinc-500">E-mail</span>
+              <span className="block break-all">Johnnypereiradacostajr@gmail.com</span>
             </span>
           </a>
           <a
             href="tel:+5583991387121"
-            className="flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/5 p-4 text-sm text-zinc-200 backdrop-blur transition-colors hover:bg-white/10 hover:text-white"
+            className="flex flex-col items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/5 p-4 text-center text-sm text-zinc-200 backdrop-blur transition-colors hover:bg-white/10 hover:text-white"
           >
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
               <Phone className="h-5 w-5 shrink-0 text-zinc-950" />
             </span>
             <span className="min-w-0">
-              <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Telefone</span>
-              (83) 99138-7121
+              <span className="block text-[10px] font-bold tracking-widest text-zinc-500">Telefone</span>
+              <span className="block">(83) 99138-7121</span>
             </span>
           </a>
-          <div className="flex justify-end gap-3 pt-2">
-            <Button variant="outline" onClick={() => setIsContactModalOpen(false)} className="rounded-full">
+          <div className="flex justify-center gap-3 pt-2">
+            <Button variant="outline" onClick={() => setIsContactModalOpen(false)} className="normal-case rounded-full">
               Fechar
             </Button>
           </div>
@@ -780,6 +781,7 @@ export default function DashboardPage() {
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
         title="Sair da conta?"
+        titleClassName="normal-case"
         subtitle="Tem certeza de que deseja realmente sair da sua conta?"
         icon={<LogOut className="h-7 w-7 text-zinc-950" />}
         variant="balloon"

@@ -9,6 +9,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
+  titleClassName?: string;
   subtitle?: string;
   icon?: ReactNode;
   variant?: "default" | "balloon";
@@ -17,7 +18,7 @@ interface ModalProps {
   className?: string;
 }
 
-export function Modal({ isOpen, onClose, title, subtitle, icon, variant = "default", hideCloseButton = false, children, className }: ModalProps) {
+export function Modal({ isOpen, onClose, title, titleClassName, subtitle, icon, variant = "default", hideCloseButton = false, children, className }: ModalProps) {
   const isBalloon = variant === "balloon";
   useEffect(() => {
     if (isOpen) {
@@ -67,13 +68,13 @@ export function Modal({ isOpen, onClose, title, subtitle, icon, variant = "defau
                       {icon}
                     </div>
                     <div className="min-w-0">
-                      {title && <h3 className="text-2xl font-black uppercase tracking-tight text-white">{title}</h3>}
+                      {title && <h3 className={cn("text-2xl font-black uppercase tracking-tight text-white", titleClassName)}>{title}</h3>}
                       {subtitle && <p className="mt-1 text-sm text-zinc-400">{subtitle}</p>}
                     </div>
                   </div>
                 ) : (
                   title && (
-                    <h3 className={cn("text-xl font-black uppercase tracking-tight", isBalloon && "text-white")}>
+                    <h3 className={cn("text-xl font-black uppercase tracking-tight", isBalloon && "text-white", titleClassName)}>
                       {title}
                     </h3>
                   )

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Save, CheckCircle2, Car as CarIcon, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { formatPlate } from "@/lib/utils";
 
 export default function NewVehiclePage() {
   const [loading, setLoading] = useState(false);
@@ -54,7 +55,7 @@ export default function NewVehiclePage() {
     try {
       await addDoc(collection(db, `users/${auth.currentUser.uid}/vehicles`), {
         ...formData,
-        plate: formData.plate.toUpperCase(),
+        plate: formatPlate(formData.plate),
         createdAt: new Date().toISOString(),
       });
       window.clearInterval(progressTimer);
@@ -124,9 +125,10 @@ export default function NewVehiclePage() {
 
             <Input
               label="Placa"
-              placeholder="ABC-1234"
+              placeholder="ABC-1234 ou ABC1D23"
               value={formData.plate}
-              onChange={(e) => setFormData({ ...formData, plate: e.target.value.toUpperCase() })}
+              onChange={(e) => setFormData({ ...formData, plate: formatPlate(e.target.value) })}
+              maxLength={8}
               required
               className="rounded-xl bg-zinc-950/60"
             />

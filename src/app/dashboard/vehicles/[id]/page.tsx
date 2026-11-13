@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use, useRef } from "react";
+import { useState, useEffect, use, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { 
@@ -8,8 +8,6 @@ import {
   getDoc, 
   collection, 
   getDocs,
-  query,
-  orderBy,
   deleteDoc,
   addDoc
 } from "firebase/firestore";
@@ -136,6 +134,7 @@ interface TireItem {
   model: string;
   price: number;
   position: string;
+  kmAtChange?: number;
   vehicleId: string;
 }
 
@@ -170,6 +169,7 @@ interface TravelItem {
   origin: string;
   destination: string;
   distance: number;
+  fuelCost?: number;
   vehicleId: string;
 }
 
@@ -308,6 +308,7 @@ const tabsWithPrice = [
   "licensing",
   "fines",
   "ipva",
+  "travel",
 ];
 
 const recordLifespanNextLabels: Record<string, string> = {
@@ -389,95 +390,100 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   
   const router = useRouter();
 
+  const fuelStats = useMemo(() => {
+    const entries = fuelings
+      .map((fueling) => ({
+        km: Number(fueling.kmAtFueling),
+        liters: Number(fueling.liters),
+      }))
+      .filter((entry) => Number.isFinite(entry.km) && entry.km > 0 && Number.isFinite(entry.liters) && entry.liters > 0)
+      .sort((a, b) => a.km - b.km);
+
+    let totalDistance = 0;
+    let totalLiters = 0;
+    for (let i = 1; i < entries.length; i += 1) {
+      const distance = entries[i].km - entries[i - 1].km;
+      if (distance > 0) {
+        totalDistance += distance;
+        totalLiters += entries[i].liters;
+      }
+    }
+
+    const pricedFuelings = fuelings.filter((fueling) => Number(fueling.liters) > 0);
+    const totalSpent = pricedFuelings.reduce((sum, fueling) => sum + Number(fueling.totalPrice || 0), 0);
+    const litersSpent = pricedFuelings.reduce((sum, fueling) => sum + Number(fueling.liters || 0), 0);
+
+    return {
+      kmPerLiter: totalLiters > 0 ? totalDistance / totalLiters : 0,
+      averagePrice: litersSpent > 0 ? totalSpent / litersSpent : 0,
+    };
+  }, [fuelings]);
+
+  const calculateTravelFuelCost = (distance: number) => {
+    if (!Number.isFinite(distance) || distance <= 0) return 0;
+    if (fuelStats.kmPerLiter <= 0 || fuelStats.averagePrice <= 0) return 0;
+    return (distance / fuelStats.kmPerLiter) * fuelStats.averagePrice;
+  };
+
   useEffect(() => {
     if (!id) return;
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
-      if (user) {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
         const docRef = doc(db, `users/${user.uid}/vehicles`, id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setVehicle({ id: docSnap.id, ...docSnap.data() } as Vehicle);
         }
 
-        // Função para coleções que usam campo 'date'
+        const extractVehicleId = (value: unknown) => {
+          if (!value) return "";
+          if (typeof value === "string") return value;
+          if (typeof value === "object" && value !== null && "id" in value) {
+            return String((value as { id?: unknown }).id ?? "");
+          }
+          return "";
+        };
+
         const fetchCollection = async (colName: string) => {
           try {
-            const colRef = collection(db, `users/${user.uid}/${colName}`);
-            const q = query(colRef, orderBy("date", "desc"));
-            const snapshot = await getDocs(q);
+            const snapshot = await getDocs(collection(db, `users/${user.uid}/${colName}`));
             return snapshot.docs
-              .map(doc => ({ id: doc.id, ...doc.data() }))
-              .filter((item: any) => item.vehicleId === id);
+              .map((itemDoc) => ({ id: itemDoc.id, ...itemDoc.data() }))
+              .filter((item: any) => {
+                const rawVehicleId = item.vehicleId ?? item.id_veiculo ?? item.veiculoId ?? item.idVeiculo;
+                return extractVehicleId(rawVehicleId) === id;
+              });
           } catch (e) {
             console.error(`Erro ao buscar ${colName}:`, e);
             return [];
           }
         };
 
-        // Função para óleo (usa 'lastDate')
-        const fetchOilCollection = async () => {
-          try {
-            const colRef = collection(db, `users/${user.uid}/oil`);
-            const q = query(colRef, orderBy("lastDate", "desc"));
-            const snapshot = await getDocs(q);
-            return snapshot.docs
-              .map(doc => ({ id: doc.id, ...doc.data() }))
-              .filter((item: any) => item.vehicleId === id);
-          } catch (e) {
-            console.error(`Erro ao buscar oil:`, e);
-            return [];
-          }
-        };
-
-        // Função para AC (usa 'lastServiceDate')
-        const fetchACCollection = async () => {
-          try {
-            const colRef = collection(db, `users/${user.uid}/ac`);
-            const q = query(colRef, orderBy("lastServiceDate", "desc"));
-            const snapshot = await getDocs(q);
-            return snapshot.docs
-              .map(doc => ({ id: doc.id, ...doc.data() }))
-              .filter((item: any) => item.vehicleId === id);
-          } catch (e) {
-            console.error(`Erro ao buscar ac:`, e);
-            return [];
-          }
-        };
-
-        // Função para licenciamento e IPVA (usa 'dueDate')
-        const fetchDueDateCollection = async (colName: string) => {
-          try {
-            const colRef = collection(db, `users/${user.uid}/${colName}`);
-            const q = query(colRef, orderBy("dueDate", "desc"));
-            const snapshot = await getDocs(q);
-            return snapshot.docs
-              .map(doc => ({ id: doc.id, ...doc.data() }))
-              .filter((item: any) => item.vehicleId === id);
-          } catch (e) {
-            console.error(`Erro ao buscar ${colName}:`, e);
-            return [];
-          }
-        };
-
-        const results = await Promise.all([
-          fetchCollection("maintenance"),
-          fetchCollection("fuel"),
-          fetchCollection("battery"),
-          fetchOilCollection(),
-          fetchCollection("defects"),
-          fetchCollection("filters"),
-          fetchCollection("revision"),
-          fetchCollection("tires_records"),
-          fetchCollection("alignment"),
-          fetchACCollection(),
-          fetchCollection("wash"),
-          fetchCollection("travel"),
-          fetchCollection("calibration"),
-          fetchDueDateCollection("licensing"),
-          fetchCollection("fines"),
-          fetchDueDateCollection("ipva")
-        ]);
+        const collectionNames = [
+          "maintenance",
+          "fuel",
+          "battery",
+          "oil",
+          "defects",
+          "filters",
+          "revision",
+          "tires_records",
+          "alignment",
+          "ac",
+          "wash",
+          "travel",
+          "calibration",
+          "licensing",
+          "fines",
+          "ipva",
+        ];
+        const results = await Promise.all(collectionNames.map(fetchCollection));
 
         setMaintenances(results[0] as MaintenanceItem[]);
         setFuelings(results[1] as FuelItem[]);
@@ -495,6 +501,9 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         setLicensings(results[13] as LicensingItem[]);
         setFines(results[14] as FineItem[]);
         setIpvas(results[15] as IpvaItem[]);
+      } catch (error) {
+        console.error("Erro ao carregar dados do veículo:", error);
+      } finally {
         setLoading(false);
       }
     });
@@ -807,7 +816,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         return [labels.length > 0 ? labels.join(" + ") : "Filtro", item.brand].filter(Boolean).join(" - ");
       }
       case "revision": return `Revisão ${item.type} - ${item.kmAtRevision}km`;
-      case "tires_records": return `${item.brand} - ${item.model} (${item.position})`;
+      case "tires_records": return `${item.brand} - ${item.model} (${item.position})${item.kmAtChange ? ` • ${item.kmAtChange} km` : ""}`;
       case "alignment": return `Alinhamento - ${item.kmAtAlignment}km`;
       case "ac": return "Manutenção Ar-Condicionado";
       case "wash": return `${item.type} - ${item.location}`;
@@ -882,6 +891,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       case "licensing": return item.value;
       case "fines": return item.value;
       case "ipva": return item.value;
+      case "travel": return item.fuelCost ?? 0;
       default: return 0;
     }
   };
@@ -1015,9 +1025,11 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       case "tires_records":
         return [
           { key: "date", label: "Data", type: "date", required: true, value: dateValue },
-          { key: "brand", label: "Marca", type: "text", required: true },
+          { key: "brand", label: "Marca", type: "select", required: true, options: ["Pirelli", "Michelin", "Goodyear", "Bridgestone", "Continental", "Firestone", "Dunlop", "Hankook", "Kumho", "Yokohama", "Toyo", "GT Radial", "Achilles", "Westlake", "Nexen", "Linglong", "Outra"] },
           { key: "model", label: "Modelo", type: "text", required: true },
           { key: "position", label: "Posição", type: "select", required: true, options: ["Dianteiro esquerdo", "Dianteiro direito", "Traseiro esquerdo", "Traseiro direito", "Estepe"] },
+          { key: "kmAtChange", label: "Km da troca", type: "number", required: true },
+          { key: "allFour", label: "Cadastrar os quatro pneus de uma vez", type: "checkbox", required: false },
           priceField,
         ];
       case "alignment":
@@ -1091,6 +1103,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
   const buildRecordPayload = (tabId: string) => {
     const payload: Record<string, unknown> = { vehicleId: id, createdAt: new Date().toISOString() };
     for (const field of getRegisterFields(tabId)) {
+      if (field.type === "checkbox") continue;
       const rawValue = formData[field.key] ?? field.value ?? "";
       if (field.type === "currency") payload[field.key] = parseCurrencyInput(rawValue);
       else if (field.type === "number") payload[field.key] = parseNumberInput(rawValue);
@@ -1102,18 +1115,44 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       const pricePerLiter = parseCurrencyInput(formData.pricePerLiter || "");
       payload.totalPrice = liters * pricePerLiter;
     }
+    if (tabId === "travel") {
+      const fuelCost = calculateTravelFuelCost(parseNumberInput(formData.distance || ""));
+      if (fuelCost > 0) payload.fuelCost = Number(fuelCost.toFixed(2));
+    }
     return payload;
   };
 
   const validateRecordPayload = (tabId: string, payload: Record<string, unknown>) => {
     for (const field of getRegisterFields(tabId)) {
       if (!field.required) continue;
+      if (tabId === "tires_records" && field.key === "position" && formData.allFour === "Sim") continue;
       const value = payload[field.key];
       if (value === "" || value === undefined || value === null || (typeof value === "number" && Number.isNaN(value))) {
         return `Preencha ${field.label.toLowerCase()}.`;
       }
     }
     return "";
+  };
+
+  const addRecordsToState = (tabId: string, records: any[]) => {
+    switch (tabId) {
+      case "maintenance": setMaintenances((current) => [...records, ...current]); break;
+      case "fuel": setFuelings((current) => [...records, ...current]); break;
+      case "battery": setBatteries((current) => [...records, ...current]); break;
+      case "oil": setOils((current) => [...records, ...current]); break;
+      case "defects": setDefects((current) => [...records, ...current]); break;
+      case "filters": setFilters((current) => [...records, ...current]); break;
+      case "revision": setRevisions((current) => [...records, ...current]); break;
+      case "tires_records": setTires((current) => [...records, ...current]); break;
+      case "alignment": setAlignments((current) => [...records, ...current]); break;
+      case "ac": setAcRecords((current) => [...records, ...current]); break;
+      case "wash": setWashRecords((current) => [...records, ...current]); break;
+      case "travel": setTravels((current) => [...records, ...current]); break;
+      case "calibration": setCalibrations((current) => [...records, ...current]); break;
+      case "licensing": setLicensings((current) => [...records, ...current]); break;
+      case "fines": setFines((current) => [...records, ...current]); break;
+      case "ipva": setIpvas((current) => [...records, ...current]); break;
+    }
   };
 
   const handleTravelCityValueChange = (key: "origin" | "destination", value: string) => {
@@ -1183,27 +1222,24 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     }, 140);
 
     try {
-      const docRef = await addDoc(collection(db, `users/${user.uid}/${tabId}`), payload);
+      let createdRecords: any[] = [];
+
+      if (tabId === "tires_records" && formData.allFour === "Sim") {
+        const fourPositions = ["Dianteiro esquerdo", "Dianteiro direito", "Traseiro esquerdo", "Traseiro direito"];
+        for (const position of fourPositions) {
+          const recordPayload = { ...payload, position };
+          const docRef = await addDoc(collection(db, `users/${user.uid}/${tabId}`), recordPayload);
+          createdRecords.push({ id: docRef.id, ...recordPayload });
+        }
+      } else {
+        const docRef = await addDoc(collection(db, `users/${user.uid}/${tabId}`), payload);
+        createdRecords = [{ id: docRef.id, ...payload }];
+      }
+
       window.clearInterval(progressTimer);
       setServiceProgress(100);
       window.setTimeout(() => {
-        const newRecord = { id: docRef.id, ...payload } as any;
-        if (tabId === "maintenance") setMaintenances((current) => [newRecord, ...current]);
-        else if (tabId === "fuel") setFuelings((current) => [newRecord, ...current]);
-        else if (tabId === "battery") setBatteries((current) => [newRecord, ...current]);
-        else if (tabId === "oil") setOils((current) => [newRecord, ...current]);
-        else if (tabId === "defects") setDefects((current) => [newRecord, ...current]);
-        else if (tabId === "filters") setFilters((current) => [newRecord, ...current]);
-        else if (tabId === "revision") setRevisions((current) => [newRecord, ...current]);
-        else if (tabId === "tires_records") setTires((current) => [newRecord, ...current]);
-        else if (tabId === "alignment") setAlignments((current) => [newRecord, ...current]);
-        else if (tabId === "ac") setAcRecords((current) => [newRecord, ...current]);
-        else if (tabId === "wash") setWashRecords((current) => [newRecord, ...current]);
-        else if (tabId === "travel") setTravels((current) => [newRecord, ...current]);
-        else if (tabId === "calibration") setCalibrations((current) => [newRecord, ...current]);
-        else if (tabId === "licensing") setLicensings((current) => [newRecord, ...current]);
-        else if (tabId === "fines") setFines((current) => [newRecord, ...current]);
-        else if (tabId === "ipva") setIpvas((current) => [newRecord, ...current]);
+        addRecordsToState(tabId, createdRecords);
 
         setRegisterSuccess(true);
         setFormData({});
@@ -1727,6 +1763,28 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                     />
                   );
                 }
+                if (activeTab === "tires_records" && field.key === "position" && formData.allFour === "Sim") {
+                  return null;
+                }
+                if (field.type === "checkbox") {
+                  const checked = fieldValue === "Sim";
+                  return (
+                    <label
+                      key={field.key}
+                      className="flex cursor-pointer items-center gap-3 rounded-xl border border-zinc-700 bg-zinc-950/60 p-4 transition-colors hover:border-zinc-500"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) =>
+                          setFormData((current) => ({ ...current, [field.key]: e.target.checked ? "Sim" : "Não" }))
+                        }
+                        className="h-4 w-4 shrink-0 accent-emerald-500"
+                      />
+                      <span className="text-sm text-zinc-200">{field.label}</span>
+                    </label>
+                  );
+                }
                 if (activeTab === "travel" && field.key === "distance") {
                   const bothCitiesSelected = Boolean(travelPlaces.origin && travelPlaces.destination);
                   return (
@@ -1795,6 +1853,43 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
                 );
               })}
             </div>
+            {activeTab === "travel" && (
+              <div className="rounded-2xl border border-white/10 bg-zinc-950/40 p-4">
+                {fuelStats.kmPerLiter > 0 ? (
+                  <>
+                    <div className="grid grid-cols-1 gap-3 text-center sm:grid-cols-3">
+                      <div>
+                        <p className="text-[10px] font-bold tracking-widest text-zinc-500">Consumo médio</p>
+                        <p className="mt-1 text-sm font-bold text-white">
+                          {fuelStats.kmPerLiter.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km/L
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold tracking-widest text-zinc-500">Preço médio</p>
+                        <p className="mt-1 text-sm font-bold text-white">
+                          {fuelStats.averagePrice.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/L
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold tracking-widest text-zinc-500">Gasto estimado</p>
+                        <p className="mt-1 text-sm font-bold text-emerald-400">
+                          {Number(formData.distance) > 0
+                            ? calculateTravelFuelCost(Number(formData.distance)).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+                            : "---"}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="mt-3 text-center text-[10px] text-zinc-500">
+                      Baseado nos abastecimentos cadastrados para este veículo.
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-center text-xs text-zinc-400">
+                    Cadastre pelo menos dois abastecimentos com a quilometragem para calcular o consumo e o gasto de combustível da viagem.
+                  </p>
+                )}
+              </div>
+            )}
             {registerError && (
               <p className="rounded-2xl border border-red-800 bg-red-900/30 p-3 text-xs text-red-300">{registerError}</p>
             )}
