@@ -26,9 +26,11 @@ import {
   Smartphone,
   Building2,
   ArrowUpRight,
-  Eye,
-  EyeOff,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 const backgroundImage =
   "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80";
@@ -48,7 +50,6 @@ export default function LandingScreen() {
   const [showLogin, setShowLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -251,77 +252,82 @@ export default function LandingScreen() {
   );
 
   const renderLoginFields = () => (
-    <div className="space-y-3">
+    <div className="relative w-[22rem] max-w-[calc(100vw-3rem)] overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-white/5 p-6 shadow-[0_25px_60px_-20px_rgba(255,255,255,0.15)] backdrop-blur md:p-7">
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-white/60 via-white/30 to-white/10" />
+      <div aria-hidden="true" className="pointer-events-none absolute -top-20 -right-20 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
+
+      <div className="relative mb-6 flex items-center gap-3">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.25rem] border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
+          <Car className="h-6 w-6 text-zinc-950" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h2 className="flex items-center gap-2 text-lg font-black tracking-tight text-white">
+            Bem-vindo de volta
+            <Sparkles className="h-4 w-4 shrink-0 text-white" />
+          </h2>
+          <p className="mt-1 text-xs text-zinc-400">Acesse sua conta para gerenciar seus veículos</p>
+        </div>
+      </div>
+
       {error && (
-        <div className="flex items-center gap-2 border border-red-700 bg-red-900/40 px-3 py-2 text-[10px] uppercase tracking-wider text-red-300">
-          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+        <div className="relative mb-4 flex items-center gap-3 rounded-2xl border border-red-800 bg-red-900/30 p-3 text-xs uppercase tracking-wider text-red-300">
+          <AlertCircle className="h-5 w-5 shrink-0" />
           {error}
         </div>
       )}
 
       {success && (
-        <div className="flex items-center gap-2 border border-emerald-700 bg-emerald-900/40 px-3 py-2 text-[10px] uppercase tracking-wider text-emerald-300">
-          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+        <div className="relative mb-4 flex items-center gap-3 rounded-2xl border border-emerald-800 bg-emerald-900/30 p-3 text-xs uppercase tracking-wider text-emerald-300">
+          <AlertCircle className="h-5 w-5 shrink-0" />
           {success}
         </div>
       )}
 
-      <form onSubmit={modoRecuperacao ? handleForgotPassword : handleLogin} noValidate className="space-y-3">
-        <div className="relative">
-          <Mail className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full border border-zinc-700 bg-zinc-900 px-2.5 py-2.5 pl-8 text-xs text-zinc-300 outline-none transition-colors placeholder:text-zinc-600 focus:border-zinc-500"
-          />
-        </div>
+      <form onSubmit={modoRecuperacao ? handleForgotPassword : handleLogin} noValidate className="relative space-y-4">
+        <Input
+          label="E-mail"
+          type="email"
+          placeholder="seu@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          icon={<Mail className="w-5 h-5" />}
+          required
+          className="rounded-xl bg-zinc-950/60"
+        />
 
         {!modoRecuperacao && (
-          <>
-            <div className="relative">
-              <Lock className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-600" />
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                aria-label="Senha"
-                className="w-full border border-zinc-700 bg-zinc-900 px-2.5 py-2.5 pl-8 pr-9 text-xs text-zinc-300 outline-none transition-colors placeholder:text-zinc-600 focus:border-zinc-500"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                title={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-none p-1 text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-white"
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-
-            <div className="text-right">
+          <div className="space-y-1.5">
+            <label className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">Senha</label>
+            <Input
+              type="password"
+              showPasswordToggle
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              icon={<Lock className="w-5 h-5" />}
+              required
+              className="rounded-xl bg-zinc-950/60"
+            />
+            <div className="pt-1 text-right">
               <a href="#" data-testid="esqueceu-a-senha" onClick={abrirRecuperacaoSenha} className="inline-block cursor-pointer text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300">Esqueceu a senha?</a>
             </div>
-          </>
+          </div>
         )}
 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-white py-2.5 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200 disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 text-sm font-bold uppercase tracking-widest text-zinc-950 shadow-lg shadow-white/10 transition-colors hover:bg-zinc-200 disabled:opacity-50"
         >
           {modoRecuperacao ? (isLoading ? "Enviando..." : "Enviar") : (isLoading ? "Entrando..." : "Entrar")}
+          {!isLoading && <ArrowRight className="w-5 h-5" />}
         </button>
 
         {modoRecuperacao && (
           <button
             type="button"
             onClick={voltarParaLogin}
-            className="w-full text-center text-[10px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300"
+            className="relative w-full text-center text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300"
           >
             Voltar para o login
           </button>
@@ -330,26 +336,28 @@ export default function LandingScreen() {
 
       {!modoRecuperacao && (
         <>
-          <div className="relative">
+          <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-zinc-800" />
             </div>
             <div className="relative flex justify-center text-[9px] uppercase tracking-widest">
-              <span className="bg-zinc-950 px-3 text-zinc-600">Ou continue com</span>
+              <span className="bg-zinc-900 px-3 text-zinc-600">Ou continue com</span>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            disabled={isLoading}
-            className="flex w-full items-center justify-center gap-2 border border-white bg-white py-2.5 text-xs font-bold tracking-widest text-zinc-950 transition-all hover:bg-zinc-200 hover:text-zinc-950 hover:border-zinc-300 disabled:opacity-50"
-          >
-            {googleIcon}
-            Conectar com Google
-          </button>
+          <div className="relative flex flex-col gap-4">
+            <Button
+              variant="outline"
+              className="w-full rounded-full py-3 h-auto bg-white border-white text-zinc-950 hover:bg-zinc-200 hover:text-zinc-950 hover:border-zinc-300 normal-case tracking-widest"
+              onClick={handleGoogleLogin}
+              disabled={isLoading}
+            >
+              {googleIcon}
+              Conectar com Google
+            </Button>
+          </div>
 
-          <div className="flex items-center justify-between pt-1">
+          <div className="relative mt-6 flex items-center justify-between">
             <button
               type="button"
               onClick={closeLogin}
@@ -415,7 +423,7 @@ export default function LandingScreen() {
               </button>
 
               {showLogin && (
-                <div className="absolute right-0 top-full z-30 mt-3 w-80 border border-zinc-800 bg-zinc-950 p-5 shadow-2xl">
+                <div className="absolute right-0 top-full z-30 mt-3">
                   {renderLoginFields()}
                 </div>
               )}
@@ -461,7 +469,7 @@ export default function LandingScreen() {
                 {showLogin ? "Fechar" : "Entrar"}
               </button>
               {showLogin && (
-                <div className="border border-zinc-800 bg-zinc-950 p-4">
+                <div className="pt-1">
                   {renderLoginFields()}
                 </div>
               )}
