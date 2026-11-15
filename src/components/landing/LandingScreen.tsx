@@ -252,47 +252,47 @@ export default function LandingScreen() {
   );
 
   const renderLoginFields = () => (
-    <div className="relative w-[22rem] max-w-[calc(100vw-3rem)] overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-white/5 p-6 shadow-[0_25px_60px_-20px_rgba(255,255,255,0.15)] backdrop-blur md:p-7">
+    <div className="relative w-80 max-w-[calc(100vw-3rem)] overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900/95 to-white/5 p-5 shadow-[0_25px_60px_-20px_rgba(255,255,255,0.15)] backdrop-blur">
       <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-white/60 via-white/30 to-white/10" />
       <div aria-hidden="true" className="pointer-events-none absolute -top-20 -right-20 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
 
-      <div className="relative mb-6 flex items-center gap-3">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.25rem] border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
-          <Car className="h-6 w-6 text-zinc-950" />
+      <div className="relative mb-4 flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white text-zinc-950 shadow-lg shadow-white/10">
+          <Car className="h-5 w-5 text-zinc-950" />
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="flex items-center gap-2 text-lg font-black tracking-tight text-white">
-            Bem-vindo de volta
+          <h2 className="flex items-center gap-2 text-base font-black tracking-tight text-white">
+            Bem-vindo!
             <Sparkles className="h-4 w-4 shrink-0 text-white" />
           </h2>
-          <p className="mt-1 text-xs text-zinc-400">Acesse sua conta para gerenciar seus veículos</p>
+          <p className="mt-0.5 text-[11px] text-zinc-400">Acesse sua conta para gerenciar seus veículos</p>
         </div>
       </div>
 
       {error && (
-        <div className="relative mb-4 flex items-center gap-3 rounded-2xl border border-red-800 bg-red-900/30 p-3 text-xs uppercase tracking-wider text-red-300">
-          <AlertCircle className="h-5 w-5 shrink-0" />
+        <div className="relative mb-3 flex items-center gap-2 rounded-xl border border-red-800 bg-red-900/30 p-2.5 text-[10px] uppercase tracking-wider text-red-300">
+          <AlertCircle className="h-4 w-4 shrink-0" />
           {error}
         </div>
       )}
 
       {success && (
-        <div className="relative mb-4 flex items-center gap-3 rounded-2xl border border-emerald-800 bg-emerald-900/30 p-3 text-xs uppercase tracking-wider text-emerald-300">
-          <AlertCircle className="h-5 w-5 shrink-0" />
+        <div className="relative mb-3 flex items-center gap-2 rounded-xl border border-emerald-800 bg-emerald-900/30 p-2.5 text-[10px] uppercase tracking-wider text-emerald-300">
+          <AlertCircle className="h-4 w-4 shrink-0" />
           {success}
         </div>
       )}
 
-      <form onSubmit={modoRecuperacao ? handleForgotPassword : handleLogin} noValidate className="relative space-y-4">
+      <form onSubmit={modoRecuperacao ? handleForgotPassword : handleLogin} noValidate className="relative space-y-3">
         <Input
           label="E-mail"
           type="email"
           placeholder="seu@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          icon={<Mail className="w-5 h-5" />}
+          icon={<Mail className="w-4 h-4" />}
           required
-          className="rounded-xl bg-zinc-950/60"
+          className="h-10 rounded-xl bg-zinc-950/60 text-xs"
         />
 
         {!modoRecuperacao && (
@@ -304,12 +304,12 @@ export default function LandingScreen() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              icon={<Lock className="w-5 h-5" />}
+              icon={<Lock className="w-4 h-4" />}
               required
-              className="rounded-xl bg-zinc-950/60"
+              className="h-10 rounded-xl bg-zinc-950/60 text-xs"
             />
-            <div className="pt-1 text-right">
-              <a href="#" data-testid="esqueceu-a-senha" onClick={abrirRecuperacaoSenha} className="inline-block cursor-pointer text-[11px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300">Esqueceu a senha?</a>
+            <div className="pt-0.5 text-right">
+              <a href="#" data-testid="esqueceu-a-senha" onClick={abrirRecuperacaoSenha} className="inline-block cursor-pointer text-[10px] tracking-wide text-zinc-500 transition-colors hover:text-zinc-300">Esqueceu a senha?</a>
             </div>
           </div>
         )}
@@ -317,10 +317,10 @@ export default function LandingScreen() {
         <button
           type="submit"
           disabled={isLoading}
-          className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 text-sm font-bold uppercase tracking-widest text-zinc-950 shadow-lg shadow-white/10 transition-colors hover:bg-zinc-200 disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-3 text-xs font-bold uppercase tracking-widest text-zinc-950 shadow-lg shadow-white/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-blue-500/40 active:translate-y-0 disabled:opacity-50"
         >
           {modoRecuperacao ? (isLoading ? "Enviando..." : "Enviar") : (isLoading ? "Entrando..." : "Entrar")}
-          {!isLoading && <ArrowRight className="w-5 h-5" />}
+          {!isLoading && <ArrowRight className="w-4 h-4" />}
         </button>
 
         {modoRecuperacao && (
@@ -336,7 +336,7 @@ export default function LandingScreen() {
 
       {!modoRecuperacao && (
         <>
-          <div className="relative my-6">
+          <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-zinc-800" />
             </div>
@@ -345,10 +345,10 @@ export default function LandingScreen() {
             </div>
           </div>
 
-          <div className="relative flex flex-col gap-4">
+          <div className="relative flex flex-col gap-3">
             <Button
               variant="outline"
-              className="w-full rounded-full py-3 h-auto bg-white border-white text-zinc-950 hover:bg-zinc-200 hover:text-zinc-950 hover:border-zinc-300 normal-case tracking-widest"
+              className="w-full rounded-full py-2.5 h-auto text-xs bg-white border-white text-zinc-950 hover:bg-zinc-200 hover:text-zinc-950 hover:border-zinc-300 normal-case tracking-widest"
               onClick={handleGoogleLogin}
               disabled={isLoading}
             >
@@ -357,7 +357,7 @@ export default function LandingScreen() {
             </Button>
           </div>
 
-          <div className="relative mt-6 flex items-center justify-between">
+          <div className="relative mt-4 flex items-center justify-between">
             <button
               type="button"
               onClick={closeLogin}
