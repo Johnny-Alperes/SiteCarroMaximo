@@ -171,6 +171,7 @@ interface TravelItem {
   distance: number;
   fuelCost?: number;
   vehicleId: string;
+  sourceCollection?: string;
 }
 
 interface CalibrationItem {
@@ -484,6 +485,7 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           "ipva",
         ];
         const results = await Promise.all(collectionNames.map(fetchCollection));
+        const mobileTrips = await fetchCollection("trips");
 
         setMaintenances(results[0] as MaintenanceItem[]);
         setFuelings(results[1] as FuelItem[]);
@@ -496,7 +498,15 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
         setAlignments(results[8] as AlignmentItem[]);
         setAcRecords(results[9] as ACItem[]);
         setWashRecords(results[10] as WashItem[]);
-        setTravels(results[11] as TravelItem[]);
+        const travelRecords: TravelItem[] = [
+          ...(results[11] as TravelItem[]).map((item) => ({ ...item, sourceCollection: "travel" })),
+          ...(mobileTrips as TravelItem[]).map((item) => ({ ...item, sourceCollection: "trips" })),
+        ];
+        const uniqueTravels = new globalThis.Map<string, TravelItem>();
+        for (const item of travelRecords) {
+          if (!uniqueTravels.has(item.id)) uniqueTravels.set(item.id, item);
+        }
+        setTravels(Array.from(uniqueTravels.values()));
         setCalibrations(results[12] as CalibrationItem[]);
         setLicensings(results[13] as LicensingItem[]);
         setFines(results[14] as FineItem[]);
@@ -940,7 +950,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
     try {
       const target = deleteTarget;
-      await deleteDoc(doc(db, `users/${user.uid}/${target.tab}`, target.item.id));
+      const collectionName = target.tab === "travel" ? target.item.sourceCollection ?? "travel" : target.tab;
+      await deleteDoc(doc(db, `users/${user.uid}/${collectionName}`, target.item.id));
       window.clearInterval(deleteTimer);
       setDeleteProgress(100);
       window.setTimeout(() => {

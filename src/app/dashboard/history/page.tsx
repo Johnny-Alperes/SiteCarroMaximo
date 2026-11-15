@@ -42,6 +42,9 @@ const categoryIcons: any = {
   lavagem: Waves,
   multas: Ban,
   viagem: Map,
+  travel: Map,
+  trips: Map,
+  trip: Map,
   pneus: Disc,
   alinhamento: Compass,
   revisoes: ClipboardCheck,
@@ -61,6 +64,9 @@ const categoryNames: any = {
   lavagem: "Lavagem",
   multas: "Multas",
   viagem: "Viagem",
+  travel: "Viagem",
+  trips: "Viagem",
+  trip: "Viagem",
   pneus: "Pneus",
   alinhamento: "Alinhamento",
   revisoes: "Revisões",
@@ -95,8 +101,10 @@ function HistoryContent() {
         // and merge them. For now, we'll fetch from maintenance as a base.
         // Coleções EXATAS conforme estrutura do App
         const collections = [
-          "alignment", "battery", "defects", "filters", "fuel", 
-          "maintenance", "oil", "revision", "tires_records", "fines", "ipva"
+          "alignment", "battery", "defects", "filters", "fuel",
+          "maintenance", "oil", "revision", "tires_records", "fines", "ipva",
+          "ac", "wash", "calibration", "licensing", "licenciamento",
+          "travel", "trips"
         ];
         
         const fetchAll = async () => {
@@ -116,6 +124,9 @@ function HistoryContent() {
                     if (d.brand && d.type) recordName = `${d.brand} (${d.type})`;
                     else if (d.brand) recordName = d.brand;
                     else if (d.type) recordName = d.type;
+                    else if ((colName === 'travel' || colName === 'trips') && (d.origin || d.destination)) {
+                      recordName = [d.origin, d.destination].filter(Boolean).join(" → ");
+                    }
                     else if (colName === 'battery') recordName = "Bateria";
                     else recordName = "Sem nome";
                   }
@@ -129,7 +140,7 @@ function HistoryContent() {
                     type: colName,
                     name: recordName,
                     date: d.date || d.data || d.createdAt || d.updatedAt || "---",
-                    price: d.price || d.valor || d.total || d.totalPrice || d.custo || d.preco || 0,
+                    price: d.price || d.valor || d.total || d.totalPrice || d.fuelCost || d.custo || d.preco || 0,
                     category: d.category || d.categoria || colName,
                     vehicleId: extractedVehicleId,
                     vehicleModel: d.vehicleModel || d.modeloVeiculo || d.modelo || d.veiculo || "---",
@@ -166,7 +177,7 @@ function HistoryContent() {
                   "multas": ["fines"],
                   "pneus": ["tires_records"],
                   "lavagem": ["wash"],
-                  "viagem": ["travel", "trip"],
+                  "viagem": ["travel", "trips", "trip"],
                   "revisoes": ["revision"],
                   "filtros": ["filters"],
                   "calibragem": ["calibration"],
