@@ -197,7 +197,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 text-sm font-bold uppercase tracking-widest text-zinc-950 shadow-lg shadow-white/10 transition-colors hover:bg-zinc-200 disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 text-sm font-bold uppercase tracking-widest text-zinc-950 shadow-lg shadow-white/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-blue-500/40 active:translate-y-0 disabled:opacity-50"
             >
               {modoRecuperacao ? (isLoading ? "Enviando..." : "Enviar") : (isLoading ? "Entrando..." : "Entrar")}
               {!isLoading && <ArrowRight className="w-5 h-5" />}
@@ -226,7 +226,7 @@ export default function LoginPage() {
               </div>
 
               <div className="relative flex flex-col gap-4">
-                <Button variant="outline" className="w-full rounded-full py-3 h-auto bg-white border-white text-zinc-950 hover:bg-zinc-200 hover:text-zinc-950 hover:border-zinc-300 normal-case tracking-widest" onClick={handleGoogleLogin}>
+                <Button variant="outline" className="w-full rounded-full py-3 h-auto bg-white border-white text-zinc-950 shadow-lg shadow-white/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-600 hover:border-blue-600 hover:text-white hover:shadow-blue-500/40 active:translate-y-0 normal-case tracking-widest" onClick={handleGoogleLogin}>
                   <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -238,7 +238,7 @@ export default function LoginPage() {
               </div>
 
               <p className="relative mt-8 text-center text-sm text-zinc-500">
-                Não tem uma conta? <Link href="/register" className="font-bold uppercase tracking-widest text-white hover:underline">Cadastre-se</Link>
+                Não tem uma conta? <Link href="/register" className="rounded-full px-2 py-0.5 font-bold uppercase tracking-widest text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-500/40">Cadastre-se</Link>
               </p>
             </>
           )}

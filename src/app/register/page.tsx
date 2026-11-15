@@ -161,7 +161,7 @@ export default function RegisterPage() {
           </form>
 
           <p className="relative mt-8 text-center text-sm text-zinc-500">
-            Já tem uma conta? <Link href="/login" className="font-bold uppercase tracking-widest text-white hover:underline">Entrar</Link>
+            Já tem uma conta? <Link href="/login" className="rounded-full px-2 py-0.5 font-bold uppercase tracking-widest text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-500/40">Entrar</Link>
           </p>
         </div>
       </motion.div>

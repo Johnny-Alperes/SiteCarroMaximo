@@ -348,7 +348,7 @@ export default function LandingScreen() {
           <div className="relative flex flex-col gap-3">
             <Button
               variant="outline"
-              className="w-full rounded-full py-2.5 h-auto text-xs bg-white border-white text-zinc-950 hover:bg-zinc-200 hover:text-zinc-950 hover:border-zinc-300 normal-case tracking-widest"
+              className="w-full rounded-full py-2.5 h-auto text-xs bg-white border-white text-zinc-950 shadow-lg shadow-white/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-600 hover:border-blue-600 hover:text-white hover:shadow-blue-500/40 active:translate-y-0 normal-case tracking-widest"
               onClick={handleGoogleLogin}
               disabled={isLoading}
             >
@@ -367,7 +367,7 @@ export default function LandingScreen() {
             </button>
             <Link
               href="/register"
-              className="text-[10px] uppercase tracking-widest text-zinc-500 transition-colors hover:text-white"
+              className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-widest text-zinc-500 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-500/40 active:translate-y-0"
             >
               Cadastrar-se
             </Link>
@@ -417,7 +417,7 @@ export default function LandingScreen() {
               <button
                 type="button"
                 onClick={toggleLogin}
-                className="bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200"
+                className="bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-500/40 active:translate-y-0"
               >
                 {showLogin ? "Fechar" : "Entrar"}
               </button>
@@ -464,7 +464,7 @@ export default function LandingScreen() {
               <button
                 type="button"
                 onClick={toggleLogin}
-                className="block w-full bg-white px-4 py-2 text-center text-xs font-bold uppercase tracking-widest text-zinc-950"
+                className="block w-full bg-white px-4 py-2 text-center text-xs font-bold uppercase tracking-widest text-zinc-950 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-500/40 active:translate-y-0"
               >
                 {showLogin ? "Fechar" : "Entrar"}
               </button>
@@ -500,7 +500,7 @@ export default function LandingScreen() {
           <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row">
             <Link
               href="/register"
-              className="bg-white px-8 py-4 text-base font-bold uppercase tracking-widest text-zinc-950 transition-all hover:bg-zinc-200"
+              className="bg-white px-8 py-4 text-base font-bold uppercase tracking-widest text-zinc-950 shadow-lg shadow-white/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white hover:shadow-blue-500/40 active:translate-y-0"
             >
               Cadastrar-se
             </Link>
