@@ -9,7 +9,8 @@ import {
   collection, 
   getDocs,
   deleteDoc,
-  addDoc
+  addDoc,
+  setDoc
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
@@ -507,6 +508,35 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           if (!uniqueTravels.has(item.id)) uniqueTravels.set(item.id, item);
         }
         setTravels(Array.from(uniqueTravels.values()));
+
+        const mobileTripIds = new Set((mobileTrips as TravelItem[]).map((item) => item.id));
+        const legacyTrips = (results[11] as TravelItem[]).filter((item) => !mobileTripIds.has(item.id));
+        for (const item of legacyTrips) {
+          const distance = Number(item.distance) || 0;
+          const totalMinutes = distance > 0 ? Math.round((distance / 85) * 60) : 0;
+          void setDoc(doc(db, `users/${user.uid}/trips/${item.id}`), {
+            userId: user.uid,
+            vehicleId: id,
+            date: item.date,
+            origin: item.origin,
+            destination: item.destination,
+            distance,
+            duration: totalMinutes > 0 ? `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}min` : "",
+            checklist: {
+              documents: false,
+              tires: false,
+              oil: false,
+              fuel: false,
+              firstAid: false,
+              triangle: false,
+              insurance: false,
+            },
+            notes: "",
+            ...(typeof item.fuelCost === "number" ? { fuelCost: item.fuelCost } : {}),
+          }).catch((migrationError) => {
+            console.error("Erro ao migrar viagem para trips:", migrationError);
+          });
+        }
         setCalibrations(results[12] as CalibrationItem[]);
         setLicensings(results[13] as LicensingItem[]);
         setFines(results[14] as FineItem[]);
@@ -950,8 +980,12 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
     try {
       const target = deleteTarget;
-      const collectionName = target.tab === "travel" ? target.item.sourceCollection ?? "travel" : target.tab;
-      await deleteDoc(doc(db, `users/${user.uid}/${collectionName}`, target.item.id));
+      const collectionNames = target.tab === "travel" ? ["travel", "trips"] : [target.tab];
+      await Promise.all(
+        collectionNames.map((collectionName) =>
+          deleteDoc(doc(db, `users/${user.uid}/${collectionName}`, target.item.id))
+        )
+      );
       window.clearInterval(deleteTimer);
       setDeleteProgress(100);
       window.setTimeout(() => {
@@ -1234,17 +1268,41 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
     try {
       let createdRecords: any[] = [];
+      const collectionName = tabId === "travel" ? "trips" : tabId;
+      const dataToSave: Record<string, unknown> =
+        tabId === "travel"
+          ? {
+              ...payload,
+              userId: user.uid,
+              duration: (() => {
+                const distance = Number(payload.distance) || 0;
+                if (distance <= 0) return "";
+                const totalMinutes = Math.round((distance / 85) * 60);
+                return `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}min`;
+              })(),
+              checklist: {
+                documents: false,
+                tires: false,
+                oil: false,
+                fuel: false,
+                firstAid: false,
+                triangle: false,
+                insurance: false,
+              },
+              notes: "",
+            }
+          : { ...payload, userId: user.uid };
 
       if (tabId === "tires_records" && formData.allFour === "Sim") {
         const fourPositions = ["Dianteiro esquerdo", "Dianteiro direito", "Traseiro esquerdo", "Traseiro direito"];
         for (const position of fourPositions) {
           const recordPayload = { ...payload, position };
-          const docRef = await addDoc(collection(db, `users/${user.uid}/${tabId}`), recordPayload);
-          createdRecords.push({ id: docRef.id, ...recordPayload });
+          const docRef = await addDoc(collection(db, `users/${user.uid}/${collectionName}`), recordPayload);
+          createdRecords.push({ id: docRef.id, ...recordPayload, sourceCollection: collectionName });
         }
       } else {
-        const docRef = await addDoc(collection(db, `users/${user.uid}/${tabId}`), payload);
-        createdRecords = [{ id: docRef.id, ...payload }];
+        const docRef = await addDoc(collection(db, `users/${user.uid}/${collectionName}`), dataToSave);
+        createdRecords = [{ id: docRef.id, ...dataToSave, sourceCollection: collectionName }];
       }
 
       window.clearInterval(progressTimer);
