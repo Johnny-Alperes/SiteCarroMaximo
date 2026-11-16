@@ -33,26 +33,20 @@ export function CityAutocomplete({
   useEffect(() => {
     const query = value.trim();
 
-    if (selectedCity && selectedCity.label === value) {
-      setSuggestions([]);
-      setIsOpen(false);
-      setIsSearching(false);
-      return;
-    }
-
     if (query.length < 2) {
       setSuggestions([]);
       setIsOpen(false);
       setIsSearching(false);
+      setActiveIndex(-1);
       return;
     }
 
     let cancelled = false;
     const controller = new AbortController();
-    setIsSearching(true);
 
     const timer = window.setTimeout(async () => {
       try {
+        setIsSearching(true);
         const results = await searchCities(query, controller.signal);
         if (cancelled) return;
         setSuggestions(results);
@@ -73,7 +67,7 @@ export function CityAutocomplete({
       controller.abort();
       window.clearTimeout(timer);
     };
-  }, [value, selectedCity]);
+  }, [value]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

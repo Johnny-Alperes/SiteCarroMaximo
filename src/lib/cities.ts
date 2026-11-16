@@ -1,4 +1,4 @@
-export interface City {
+﻿export interface City {
   id: string;
   name: string;
   state: string;
@@ -8,176 +8,39 @@ export interface City {
   lon: number;
 }
 
-interface PhotonFeature {
-  properties?: {
-    osm_id?: number;
-    osm_type?: string;
-    name?: string;
-    state?: string;
-    country?: string;
-    countrycode?: string;
-    type?: string;
-  };
-  geometry?: {
-    coordinates?: [number, number];
-  };
-}
-
-const STATE_ABBREVIATIONS: Record<string, string> = {
-  Acre: "AC",
-  Alagoas: "AL",
-  Amapá: "AP",
-  Amazonas: "AM",
-  Bahia: "BA",
-  Ceará: "CE",
-  "Distrito Federal": "DF",
-  "Espírito Santo": "ES",
-  Goiás: "GO",
-  Maranhão: "MA",
-  "Mato Grosso": "MT",
-  "Mato Grosso do Sul": "MS",
-  "Minas Gerais": "MG",
-  Pará: "PA",
-  Paraíba: "PB",
-  Paraná: "PR",
-  Pernambuco: "PE",
-  Piauí: "PI",
-  "Rio de Janeiro": "RJ",
-  "Rio Grande do Norte": "RN",
-  "Rio Grande do Sul": "RS",
-  Rondônia: "RO",
-  Roraima: "RR",
-  "Santa Catarina": "SC",
-  "São Paulo": "SP",
-  Sergipe: "SE",
-  Tocantins: "TO",
-};
-
-const PLACE_TYPES = new Set(["city", "town", "village", "municipality", "locality", "district", "county", "state"]);
-
-function getRegionLabel(state?: string, countryCode?: string) {
-  if (!state) return "";
-  if (countryCode === "BR") return STATE_ABBREVIATIONS[state] ?? state;
-  return state;
-}
-
-function buildLabel(name: string, region: string, country: string) {
-  const parts = [name];
-  if (region && region !== name) parts.push(region);
-  if (country && country !== name && country !== region) parts.push(country);
-  return parts.join(" - ");
-}
-
-function normalizeText(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
-}
-
-function scorePlace(name: string, label: string, type: string | undefined, query: string) {
-  const nName = normalizeText(name);
-  const nLabel = normalizeText(label);
-  const nQuery = normalizeText(query);
-  let score = 0;
-  if (nName === nQuery || nLabel === nQuery) score += 120;
-  else if (nName.startsWith(nQuery)) score += 90;
-  else if (nLabel.startsWith(nQuery) || nName.includes(nQuery)) score += 70;
-  else if (nLabel.includes(nQuery)) score += 50;
-  else score += 10;
-  if (type === "city" || type === "municipality") score += 30;
-  else if (type === "town" || type === "village" || type === "locality") score += 20;
-  else if (type === "district" || type === "county") score += 10;
-  return score;
-}
-
 export async function searchCities(query: string, signal?: AbortSignal): Promise<City[]> {
-  const trimmed = query.trim();
-  if (trimmed.length < 2) return [];
-
-  const params = new URLSearchParams({ q: trimmed, limit: "20", lang: "pt" });
-  const response = await fetch(`https://photon.komoot.io/api/?${params.toString()}`, { signal });
-  if (!response.ok) {
-    throw new Error("Não foi possível buscar os locais.");
-  }
-
-  const data = (await response.json()) as { features?: PhotonFeature[] };
-  const features = data.features ?? [];
-  const seen = new Set<string>();
-  const cities: (City & { _score: number })[] = [];
-
-  for (const feature of features) {
-    const properties = feature.properties;
-    const coordinates = feature.geometry?.coordinates;
-    const name = properties?.name?.trim();
-    if (!name || !coordinates) continue;
-    const type = properties?.type ?? "";
-    if (type && !PLACE_TYPES.has(type)) continue;
-
-    const [lon, lat] = coordinates;
-    if (typeof lat !== "number" || typeof lon !== "number") continue;
-
-    const country = properties?.country ?? "";
-    const region = getRegionLabel(properties?.state, properties?.countrycode);
-    const label = buildLabel(name, region, country);
-    const key = normalizeText(`${name}|${region}|${country}`);
-    if (seen.has(key)) continue;
-    seen.add(key);
-
-    cities.push({
-      id: `${properties?.osm_type ?? "place"}-${properties?.osm_id ?? key}`,
-      name,
-      state: region,
-      country,
-      label,
-      lat,
-      lon,
-      _score: scorePlace(name, label, type, trimmed),
-    });
-  }
-
-  cities.sort((a, b) => b._score - a._score || a.label.localeCompare(b.label, "pt-BR"));
-  return cities.slice(0, 8).map(({ _score, ...city }) => city);
-}
-
-function haversineKm(origin: City, destination: City) {
-  const earthRadiusKm = 6371;
-  const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
-  const deltaLat = toRadians(destination.lat - origin.lat);
-  const deltaLon = toRadians(destination.lon - origin.lon);
-  const originLat = toRadians(origin.lat);
-  const destinationLat = toRadians(destination.lat);
-
-  const a =
-    Math.sin(deltaLat / 2) ** 2 +
-    Math.cos(originLat) * Math.cos(destinationLat) * Math.sin(deltaLon / 2) ** 2;
-
-  return 2 * earthRadiusKm * Math.asin(Math.sqrt(a));
-}
-
-export async function getRouteDistanceKm(
-  origin: City,
-  destination: City,
-  signal?: AbortSignal
-): Promise<number> {
+  const q = query.trim();
+  if (q.length < 2) return [];
   try {
-    const coordinates = `${origin.lon},${origin.lat};${destination.lon},${destination.lat}`;
-    const response = await fetch(
-      `https://router.project-osrm.org/route/v1/driving/${coordinates}?overview=false`,
-      { signal }
-    );
+    const res = await fetch(`/api/places/search?q=${encodeURIComponent(q)}`, { signal, cache: "no-store" });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? (data as City[]) : [];
+  } catch {
+    return [];
+  }
+}
 
-    if (response.ok) {
-      const data = await response.json();
-      const distanceInMeters = data?.routes?.[0]?.distance;
-      if (typeof distanceInMeters === "number" && Number.isFinite(distanceInMeters) && distanceInMeters > 0) {
-        return Math.round(distanceInMeters / 1000);
-      }
+export async function getRouteDistanceKm(origin: City, destination: City, signal?: AbortSignal): Promise<number> {
+  try {
+    const params = new URLSearchParams({
+      oLat: String(origin.lat),
+      oLon: String(origin.lon),
+      dLat: String(destination.lat),
+      dLon: String(destination.lon),
+    });
+    const res = await fetch(`/api/places/distance?${params.toString()}`, { signal, cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      if (typeof data?.distance === "number" && Number.isFinite(data.distance)) return data.distance;
     }
   } catch {
-    // Em caso de falha da rota, usa a distância em linha reta como fallback.
+    // fallback local
   }
-
-  return Math.round(haversineKm(origin, destination));
+  const R = 6371;
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(destination.lat - origin.lat);
+  const dLon = toRad(destination.lon - origin.lon);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(origin.lat)) * Math.cos(toRad(destination.lat)) * Math.sin(dLon / 2) ** 2;
+  return Math.round(2 * R * Math.asin(Math.sqrt(a)));
 }

@@ -1219,9 +1219,8 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       return;
     }
 
-    const originText = String(formData.origin || "").trim();
-    const destinationText = String(formData.destination || "").trim();
-    if (originText.length < 2 || destinationText.length < 2) {
+    const { origin, destination } = travelPlaces;
+    if (!origin || !destination) {
       setDistanceLoading(false);
       return;
     }
@@ -1229,49 +1228,26 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
     let cancelled = false;
     const controller = new AbortController();
 
-    const timer = window.setTimeout(async () => {
+    const run = async () => {
       try {
         setDistanceLoading(true);
-        const norm = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-
-        const resolvePlace = async (key: "origin" | "destination", text: string) => {
-          const selected = travelPlaces[key];
-          if (selected && norm(selected.label) === norm(text)) return selected;
-          const results = await searchCities(text, controller.signal);
-          if (!results.length) return null;
-          const nt = norm(text);
-          const best = results.find((r) => norm(r.label) === nt)
-            || results.find((r) => norm(r.name) === nt)
-            || results[0];
-          if (!cancelled) {
-            setTravelPlaces((current) => ({ ...current, [key]: best }));
-          }
-          return best;
-        };
-
-        const [origin, destination] = await Promise.all([
-          resolvePlace("origin", originText),
-          resolvePlace("destination", destinationText),
-        ]);
-        if (!origin || !destination || cancelled) return;
-
         const distance = await getRouteDistanceKm(origin, destination, controller.signal);
         if (!cancelled) {
           setFormData((current) => ({ ...current, distance: String(distance) }));
         }
       } catch {
-        // ignora falhas de rede/busca; distância pode ser informada manualmente
+        // falha de rede: distância pode ser informada manualmente
       } finally {
         if (!cancelled) setDistanceLoading(false);
       }
-    }, 600);
+    };
 
+    run();
     return () => {
       cancelled = true;
       controller.abort();
-      window.clearTimeout(timer);
     };
-  }, [activeTab, formData.origin, formData.destination, travelPlaces]);
+  }, [activeTab, travelPlaces]);
 
   const handleRegisterService = async (e: React.FormEvent) => {
     e.preventDefault();
