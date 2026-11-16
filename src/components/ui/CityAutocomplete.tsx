@@ -29,9 +29,19 @@ export function CityAutocomplete({
   const [isSearching, setIsSearching] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const suppressSearchRef = useRef(false);
 
   useEffect(() => {
     const query = value.trim();
+
+    if (suppressSearchRef.current) {
+      suppressSearchRef.current = false;
+      setSuggestions([]);
+      setIsOpen(false);
+      setIsSearching(false);
+      setActiveIndex(-1);
+      return;
+    }
 
     if (query.length < 2) {
       setSuggestions([]);
@@ -80,6 +90,7 @@ export function CityAutocomplete({
   }, []);
 
   const handleSelect = (city: City) => {
+    suppressSearchRef.current = true;
     setSuggestions([]);
     setIsOpen(false);
     setActiveIndex(-1);
