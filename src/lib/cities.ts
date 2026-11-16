@@ -53,21 +53,33 @@ const STATE_ABBREVIATIONS: Record<string, string> = {
   Tocantins: "TO",
 };
 
-const VALID_CITY_TYPES = new Set(["city", "town", "village", "municipality"]);
+const VALID_PLACE_TYPES = new Set(["city", "town", "village", "municipality", "locality", "district", "county", "state", "country"]);
 
-function getStateAbbreviation(state?: string) {
+function getRegionLabel(state?: string, countryCode?: string) {
   if (!state) return "";
-  return STATE_ABBREVIATIONS[state] ?? state;
+  if (countryCode === "BR") return STATE_ABBREVIATIONS[state] ?? state;
+  return state;
+}
+
+function buildLabel(name: string, region: string, country: string) {
+  const parts = [name];
+  if (region && region !== name) parts.push(region);
+  if (country && country !== name && country !== region) parts.push(country);
+  return parts.join(" - ");
 }
 
 export async function searchCities(query: string, signal?: AbortSignal): Promise<City[]> {
   const trimmed = query.trim();
   if (trimmed.length < 3) return [];
 
-  const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(trimmed)}&limit=10&bbox=-74,-34,-34,6`;
-  const response = await fetch(url, { signal });
+  const params = new URLSearchParams({
+    q: trimmed,
+    limit: "15",
+    lang: "pt",
+  });
+  const response = await fetch(`https://photon.komoot.io/api/?${params.toString()}`, { signal });
   if (!response.ok) {
-    throw new Error("Não foi possível buscar as cidades.");
+    throw new Error("Não foi possível buscar os locais.");
   }
 
   const data = (await response.json()) as { features?: PhotonFeature[] };
@@ -79,29 +91,30 @@ export async function searchCities(query: string, signal?: AbortSignal): Promise
     const properties = feature.properties;
     const coordinates = feature.geometry?.coordinates;
     if (!properties?.name || !coordinates) continue;
-    if (properties.countrycode !== "BR") continue;
-    if (!VALID_CITY_TYPES.has(properties.type ?? "")) continue;
+    if (!VALID_PLACE_TYPES.has(properties.type ?? "")) continue;
 
     const [lon, lat] = coordinates;
     if (typeof lat !== "number" || typeof lon !== "number") continue;
 
-    const state = getStateAbbreviation(properties.state);
-    const key = `${properties.name}|${state}`.toLowerCase();
+    const country = properties.country ?? "";
+    const region = getRegionLabel(properties.state, properties.countrycode);
+    const label = buildLabel(properties.name, region, country);
+    const key = `${properties.name}|${region}|${country}`.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
 
     cities.push({
-      id: `${properties.osm_type ?? "city"}${properties.osm_id ?? key}`,
+      id: `${properties.osm_type ?? "place"}-${properties.osm_id ?? key}`,
       name: properties.name,
-      state,
-      country: properties.country ?? "Brasil",
-      label: state ? `${properties.name} - ${state}` : properties.name,
+      state: region,
+      country,
+      label,
       lat,
       lon,
     });
   }
 
-  return cities.slice(0, 6);
+  return cities.slice(0, 8);
 }
 
 function haversineKm(origin: City, destination: City) {

@@ -154,13 +154,12 @@ export function CityAutocomplete({
                   )}
                 >
                   <MapPin className="h-4 w-4 shrink-0 text-zinc-500" />
-                  <span className="truncate font-medium">{city.name}</span>
-                  {city.state && <span className="shrink-0 text-xs text-zinc-500">{city.state}</span>}
+                  <span className="truncate font-medium">{city.label}</span>
                 </button>
               ))
             ) : (
               <p className="px-4 py-3 text-xs text-zinc-500">
-                {isSearching ? "Buscando cidades..." : "Nenhuma cidade encontrada."}
+                {isSearching ? "Buscando locais..." : "Nenhum local encontrado."}
               </p>
             )}
           </div>
