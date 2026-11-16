@@ -53,7 +53,8 @@ const STATE_ABBREVIATIONS: Record<string, string> = {
   Tocantins: "TO",
 };
 
-const VALID_PLACE_TYPES = new Set(["city", "town", "village", "municipality", "locality", "district", "county", "state", "country"]);
+const ALLOWED_TYPES = new Set(["city", "town", "village", "municipality", "locality", "district", "county"]);
+const PREFERRED_TYPES = new Set(["city", "town", "village", "municipality", "locality"]);
 
 function getRegionLabel(state?: string, countryCode?: string) {
   if (!state) return "";
@@ -68,13 +69,33 @@ function buildLabel(name: string, region: string, country: string) {
   return parts.join(" - ");
 }
 
+function normalizeText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function scorePlace(name: string, type: string | undefined, query: string) {
+  const normalizedName = normalizeText(name);
+  const normalizedQuery = normalizeText(query);
+  let score = 0;
+  if (normalizedName === normalizedQuery) score += 100;
+  else if (normalizedName.startsWith(normalizedQuery)) score += 80;
+  else if (normalizedName.includes(normalizedQuery)) score += 50;
+  else score += 10;
+  if (PREFERRED_TYPES.has(type ?? "")) score += 20;
+  else if (ALLOWED_TYPES.has(type ?? "")) score += 5;
+  return score;
+}
+
 export async function searchCities(query: string, signal?: AbortSignal): Promise<City[]> {
   const trimmed = query.trim();
   if (trimmed.length < 3) return [];
 
   const params = new URLSearchParams({
     q: trimmed,
-    limit: "15",
+    limit: "20",
     lang: "pt",
   });
   const response = await fetch(`https://photon.komoot.io/api/?${params.toString()}`, { signal });
@@ -85,13 +106,13 @@ export async function searchCities(query: string, signal?: AbortSignal): Promise
   const data = (await response.json()) as { features?: PhotonFeature[] };
   const features = data.features ?? [];
   const seen = new Set<string>();
-  const cities: City[] = [];
+  const cities: (City & { _score: number })[] = [];
 
   for (const feature of features) {
     const properties = feature.properties;
     const coordinates = feature.geometry?.coordinates;
     if (!properties?.name || !coordinates) continue;
-    if (!VALID_PLACE_TYPES.has(properties.type ?? "")) continue;
+    if (!ALLOWED_TYPES.has(properties.type ?? "")) continue;
 
     const [lon, lat] = coordinates;
     if (typeof lat !== "number" || typeof lon !== "number") continue;
@@ -111,10 +132,12 @@ export async function searchCities(query: string, signal?: AbortSignal): Promise
       label,
       lat,
       lon,
+      _score: scorePlace(properties.name, properties.type, trimmed),
     });
   }
 
-  return cities.slice(0, 8);
+  cities.sort((a, b) => b._score - a._score || a.label.localeCompare(b.label, "pt-BR"));
+  return cities.slice(0, 8).map(({ _score, ...city }) => city);
 }
 
 function haversineKm(origin: City, destination: City) {
