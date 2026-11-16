@@ -1228,22 +1228,23 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
 
     let cancelled = false;
     const controller = new AbortController();
+
     const timer = window.setTimeout(async () => {
       try {
         setDistanceLoading(true);
+        const norm = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 
         const resolvePlace = async (key: "origin" | "destination", text: string) => {
           const selected = travelPlaces[key];
-          if (selected && selected.label === text) return selected;
+          if (selected && norm(selected.label) === norm(text)) return selected;
           const results = await searchCities(text, controller.signal);
           if (!results.length) return null;
-          const normalized = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-          const best = results.find((r) => r.label.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === normalized)
-            || results.find((r) => r.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === normalized)
+          const nt = norm(text);
+          const best = results.find((r) => norm(r.label) === nt)
+            || results.find((r) => norm(r.name) === nt)
             || results[0];
           if (!cancelled) {
             setTravelPlaces((current) => ({ ...current, [key]: best }));
-            setFormData((current) => (current[key] === text ? { ...current, [key]: best.label } : current));
           }
           return best;
         };
@@ -1259,11 +1260,11 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
           setFormData((current) => ({ ...current, distance: String(distance) }));
         }
       } catch {
-        // mantém distância manual/atual em caso de falha na busca de rota
+        // ignora falhas de rede/busca; distância pode ser informada manualmente
       } finally {
         if (!cancelled) setDistanceLoading(false);
       }
-    }, 500);
+    }, 600);
 
     return () => {
       cancelled = true;

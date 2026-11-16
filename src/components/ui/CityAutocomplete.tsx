@@ -29,16 +29,9 @@ export function CityAutocomplete({
   const [isSearching, setIsSearching] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
-  const skipSearchRef = useRef(false);
-  const debounceRef = useRef<number | null>(null);
 
   useEffect(() => {
     const query = value.trim();
-
-    if (skipSearchRef.current) {
-      skipSearchRef.current = false;
-      return;
-    }
 
     if (selectedCity && selectedCity.label === value) {
       setSuggestions([]);
@@ -54,28 +47,31 @@ export function CityAutocomplete({
       return;
     }
 
-    setIsSearching(true);
+    let cancelled = false;
     const controller = new AbortController();
+    setIsSearching(true);
 
-    debounceRef.current = window.setTimeout(async () => {
+    const timer = window.setTimeout(async () => {
       try {
         const results = await searchCities(query, controller.signal);
+        if (cancelled) return;
         setSuggestions(results);
         setActiveIndex(-1);
         setIsOpen(true);
-      } catch (error) {
-        if ((error as Error).name !== "AbortError") {
+      } catch {
+        if (!cancelled) {
           setSuggestions([]);
           setIsOpen(false);
         }
       } finally {
-        setIsSearching(false);
+        if (!cancelled) setIsSearching(false);
       }
-    }, 350);
+    }, 300);
 
     return () => {
-      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+      cancelled = true;
       controller.abort();
+      window.clearTimeout(timer);
     };
   }, [value, selectedCity]);
 
@@ -85,13 +81,11 @@ export function CityAutocomplete({
         setIsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleSelect = (city: City) => {
-    skipSearchRef.current = true;
     setSuggestions([]);
     setIsOpen(false);
     setActiveIndex(-1);
@@ -100,7 +94,6 @@ export function CityAutocomplete({
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!isOpen || suggestions.length === 0) return;
-
     if (event.key === "ArrowDown") {
       event.preventDefault();
       setActiveIndex((current) => (current + 1) % suggestions.length);
@@ -138,7 +131,7 @@ export function CityAutocomplete({
           className="flex h-12 w-full rounded-xl border border-zinc-700 bg-zinc-950/60 py-2 pl-11 pr-4 text-sm text-zinc-100 outline-none transition-all placeholder:text-zinc-600 focus:border-zinc-500 focus-visible:ring-1 focus-visible:ring-white/20"
         />
         {isOpen && (
-          <div className="absolute left-0 right-0 top-full z-40 mt-1 overflow-hidden rounded-xl border border-zinc-700 bg-zinc-950 shadow-2xl shadow-black/60">
+          <div className="absolute left-0 right-0 top-full z-40 mt-1 max-h-72 overflow-y-auto rounded-xl border border-zinc-700 bg-zinc-950 shadow-2xl shadow-black/60">
             {suggestions.length > 0 ? (
               suggestions.map((city, index) => (
                 <button
@@ -148,9 +141,7 @@ export function CityAutocomplete({
                   onClick={() => handleSelect(city)}
                   className={cn(
                     "flex w-full items-center gap-2 px-4 py-3 text-left text-sm transition-colors",
-                    index === activeIndex
-                      ? "bg-white/10 text-white"
-                      : "text-zinc-300 hover:bg-white/5 hover:text-white"
+                    index === activeIndex ? "bg-white/10 text-white" : "text-zinc-300 hover:bg-white/5 hover:text-white"
                   )}
                 >
                   <MapPin className="h-4 w-4 shrink-0 text-zinc-500" />
