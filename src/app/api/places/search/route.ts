@@ -1,27 +1,16 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 
-type NominatimItem = {
-  place_id: number;
-  lat: string;
-  lon: string;
-  name?: string;
-  display_name?: string;
-  addresstype?: string;
-  type?: string;
-  class?: string;
-  address?: {
-    city?: string;
-    town?: string;
-    village?: string;
-    municipality?: string;
-    hamlet?: string;
-    suburb?: string;
-    county?: string;
+type PhotonFeature = {
+  properties?: {
+    osm_id?: number;
+    osm_type?: string;
+    name?: string;
     state?: string;
-    state_district?: string;
     country?: string;
-    country_code?: string;
+    countrycode?: string;
+    type?: string;
   };
+  geometry?: { coordinates?: [number, number] };
 };
 
 const BR_STATE: Record<string, string> = {
@@ -34,73 +23,68 @@ const BR_STATE: Record<string, string> = {
 };
 
 const norm = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-const tokens = (s: string) => norm(s).split(/\s+/).filter(Boolean);
 
-function scoreMatch(name: string, label: string, q: string) {
+function scoreMatch(name: string, label: string, q: string, type?: string) {
   const nn = norm(name);
   const nl = norm(label);
   const nq = norm(q);
-  const qt = tokens(q);
-  const nt = tokens(name);
+  const qt = nq.split(/\s+/).filter(Boolean);
+  const nt = nn.split(/\s+/).filter(Boolean);
   let s = 0;
-  if (nn === nq || nl === nq) s = 140;
-  else if (nn.startsWith(nq)) s = 110;
-  else if (nl.startsWith(nq) || nn.includes(nq)) s = 90;
-  else if (nl.includes(nq)) s = 70;
-  if (qt.length > 1 && qt.every((t) => nt.some((w) => w.startsWith(t) || w.includes(t)))) s = Math.max(s, 100);
-  if (qt.length > 1 && qt.every((t) => norm(label).includes(t))) s = Math.max(s, 80);
+  if (nn === nq || nl === nq) s = 150;
+  else if (nn.startsWith(nq)) s = 120;
+  else if (nt.some((w) => w.startsWith(nq))) s = 105;
+  else if (nn.includes(nq)) s = 85;
+  else if (nl.includes(nq)) s = 65;
+
+  if (qt.length > 1) {
+    if (qt.every((t) => nt.some((w) => w.startsWith(t)))) s = Math.max(s, 130);
+    else if (qt.every((t) => nt.some((w) => w.startsWith(t) || w.includes(t)))) s = Math.max(s, 115);
+    else if (qt.every((t) => nl.includes(t))) s = Math.max(s, 90);
+  }
+
   if (s === 0) s = 10;
+  if (type === "city" || type === "municipality") s += 20;
+  else if (type === "town" || type === "village" || type === "locality") s += 15;
+  else if (type === "district" || type === "county" || type === "state") s += 5;
   return s;
 }
 
-async function nominatimSearch(params: URLSearchParams) {
-  const res = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
-    headers: { "User-Agent": "SiteCarroMaximo/1.0 (travel-search)" },
-    cache: "no-store",
-  });
-  if (!res.ok) return [] as NominatimItem[];
+async function fetchPhoton(q: string) {
+  const params = new URLSearchParams({ q, limit: "15", lang: "pt" });
+  const res = await fetch(`https://photon.komoot.io/api/?${params.toString()}`, { cache: "no-store" });
+  if (!res.ok) return [] as PhotonFeature[];
   const data = await res.json();
-  return Array.isArray(data) ? (data as NominatimItem[]) : [];
+  return Array.isArray(data?.features) ? (data.features as PhotonFeature[]) : [];
 }
 
 export async function GET(req: NextRequest) {
   const q = (req.nextUrl.searchParams.get("q") || "").trim();
   if (q.length < 2) return NextResponse.json([]);
 
-  const base = {
-    format: "jsonv2",
-    addressdetails: "1",
-    limit: "12",
-    "accept-language": "pt-BR,pt,en",
-  };
-
-  const queries: URLSearchParams[] = [new URLSearchParams({ ...base, q })];
-  queries.push(new URLSearchParams({ ...base, city: q }));
   const words = q.split(/\s+/).filter(Boolean);
+  const queries = [q];
   if (words.length > 1) {
     const prefix = words.slice(0, -1).join(" ");
-    if (prefix.length >= 2) {
-      queries.push(new URLSearchParams({ ...base, q: prefix, city: prefix }));
-    }
+    if (prefix.length >= 2 && norm(prefix) !== norm(q)) queries.push(prefix);
   }
 
-  const batches = await Promise.all(queries.map((p) => nominatimSearch(p)));
-  const nq = norm(q);
+  const batches = await Promise.all(queries.map((term) => fetchPhoton(term)));
   const seen = new Set<string>();
   const out: Array<{ id: string; name: string; state: string; country: string; label: string; lat: number; lon: number; _s: number }> = [];
 
-  for (const data of batches) {
-    for (const item of data) {
-      const lat = Number(item.lat);
-      const lon = Number(item.lon);
-      if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-      const a = item.address || {};
-      const name = (item.name || a.city || a.town || a.village || a.municipality || a.hamlet || a.suburb || a.county || a.state || "").trim();
-      if (!name) continue;
-      const country = a.country || "";
-      const cc = (a.country_code || "").toUpperCase();
-      let state = a.state || a.state_district || "";
-      if (cc === "BR" && BR_STATE[state]) state = BR_STATE[state];
+  for (const features of batches) {
+    for (const feature of features) {
+      const p = feature.properties || {};
+      const coords = feature.geometry?.coordinates;
+      const name = (p.name || "").trim();
+      if (!name || !coords) continue;
+      const [lon, lat] = coords;
+      if (typeof lat !== "number" || typeof lon !== "number") continue;
+
+      const country = p.country || "";
+      let state = p.state || "";
+      if (p.countrycode === "BR" && BR_STATE[state]) state = BR_STATE[state];
 
       const parts = [name];
       if (state && norm(state) !== norm(name)) parts.push(state);
@@ -111,10 +95,16 @@ export async function GET(req: NextRequest) {
       if (seen.has(key)) continue;
       seen.add(key);
 
-      let _s = scoreMatch(name, label, q);
-      const t = item.addresstype || item.type || "";
-      if (["city", "town", "village", "municipality", "administrative"].includes(t)) _s += 10;
-      out.push({ id: String(item.place_id), name, state, country, label, lat, lon, _s });
+      out.push({
+        id: `${p.osm_type || "place"}-${p.osm_id || key}`,
+        name,
+        state,
+        country,
+        label,
+        lat,
+        lon,
+        _s: scoreMatch(name, label, q, p.type),
+      });
     }
   }
 
