@@ -47,7 +47,7 @@ export function CityAutocomplete({
       return;
     }
 
-    if (query.length < 3) {
+    if (query.length < 2) {
       setSuggestions([]);
       setIsOpen(false);
       setIsSearching(false);

@@ -53,8 +53,7 @@ const STATE_ABBREVIATIONS: Record<string, string> = {
   Tocantins: "TO",
 };
 
-const ALLOWED_TYPES = new Set(["city", "town", "village", "municipality", "locality", "district", "county"]);
-const PREFERRED_TYPES = new Set(["city", "town", "village", "municipality", "locality"]);
+const PLACE_TYPES = new Set(["city", "town", "village", "municipality", "locality", "district", "county", "state"]);
 
 function getRegionLabel(state?: string, countryCode?: string) {
   if (!state) return "";
@@ -73,31 +72,31 @@ function normalizeText(value: string) {
   return value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
+    .toLowerCase()
+    .trim();
 }
 
-function scorePlace(name: string, type: string | undefined, query: string) {
-  const normalizedName = normalizeText(name);
-  const normalizedQuery = normalizeText(query);
+function scorePlace(name: string, label: string, type: string | undefined, query: string) {
+  const nName = normalizeText(name);
+  const nLabel = normalizeText(label);
+  const nQuery = normalizeText(query);
   let score = 0;
-  if (normalizedName === normalizedQuery) score += 100;
-  else if (normalizedName.startsWith(normalizedQuery)) score += 80;
-  else if (normalizedName.includes(normalizedQuery)) score += 50;
+  if (nName === nQuery || nLabel === nQuery) score += 120;
+  else if (nName.startsWith(nQuery)) score += 90;
+  else if (nLabel.startsWith(nQuery) || nName.includes(nQuery)) score += 70;
+  else if (nLabel.includes(nQuery)) score += 50;
   else score += 10;
-  if (PREFERRED_TYPES.has(type ?? "")) score += 20;
-  else if (ALLOWED_TYPES.has(type ?? "")) score += 5;
+  if (type === "city" || type === "municipality") score += 30;
+  else if (type === "town" || type === "village" || type === "locality") score += 20;
+  else if (type === "district" || type === "county") score += 10;
   return score;
 }
 
 export async function searchCities(query: string, signal?: AbortSignal): Promise<City[]> {
   const trimmed = query.trim();
-  if (trimmed.length < 3) return [];
+  if (trimmed.length < 2) return [];
 
-  const params = new URLSearchParams({
-    q: trimmed,
-    limit: "20",
-    lang: "pt",
-  });
+  const params = new URLSearchParams({ q: trimmed, limit: "20", lang: "pt" });
   const response = await fetch(`https://photon.komoot.io/api/?${params.toString()}`, { signal });
   if (!response.ok) {
     throw new Error("Não foi possível buscar os locais.");
@@ -111,28 +110,30 @@ export async function searchCities(query: string, signal?: AbortSignal): Promise
   for (const feature of features) {
     const properties = feature.properties;
     const coordinates = feature.geometry?.coordinates;
-    if (!properties?.name || !coordinates) continue;
-    if (!ALLOWED_TYPES.has(properties.type ?? "")) continue;
+    const name = properties?.name?.trim();
+    if (!name || !coordinates) continue;
+    const type = properties?.type ?? "";
+    if (type && !PLACE_TYPES.has(type)) continue;
 
     const [lon, lat] = coordinates;
     if (typeof lat !== "number" || typeof lon !== "number") continue;
 
-    const country = properties.country ?? "";
-    const region = getRegionLabel(properties.state, properties.countrycode);
-    const label = buildLabel(properties.name, region, country);
-    const key = `${properties.name}|${region}|${country}`.toLowerCase();
+    const country = properties?.country ?? "";
+    const region = getRegionLabel(properties?.state, properties?.countrycode);
+    const label = buildLabel(name, region, country);
+    const key = normalizeText(`${name}|${region}|${country}`);
     if (seen.has(key)) continue;
     seen.add(key);
 
     cities.push({
-      id: `${properties.osm_type ?? "place"}-${properties.osm_id ?? key}`,
-      name: properties.name,
+      id: `${properties?.osm_type ?? "place"}-${properties?.osm_id ?? key}`,
+      name,
       state: region,
       country,
       label,
       lat,
       lon,
-      _score: scorePlace(properties.name, properties.type, trimmed),
+      _score: scorePlace(name, label, type, trimmed),
     });
   }
 

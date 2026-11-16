@@ -52,7 +52,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { CityAutocomplete } from "@/components/ui/CityAutocomplete";
-import { getRouteDistanceKm, type City } from "@/lib/cities";
+import { getRouteDistanceKm, searchCities, type City } from "@/lib/cities";
 
 interface Vehicle {
   id: string;
@@ -1219,31 +1219,58 @@ export default function VehicleDetailsPage({ params }: { params: Promise<{ id: s
       return;
     }
 
-    const { origin, destination } = travelPlaces;
-    if (!origin || !destination) {
+    const originText = String(formData.origin || "").trim();
+    const destinationText = String(formData.destination || "").trim();
+    if (originText.length < 2 || destinationText.length < 2) {
       setDistanceLoading(false);
       return;
     }
 
     let cancelled = false;
     const controller = new AbortController();
-    setDistanceLoading(true);
+    const timer = window.setTimeout(async () => {
+      try {
+        setDistanceLoading(true);
 
-    getRouteDistanceKm(origin, destination, controller.signal)
-      .then((distance) => {
+        const resolvePlace = async (key: "origin" | "destination", text: string) => {
+          const selected = travelPlaces[key];
+          if (selected && selected.label === text) return selected;
+          const results = await searchCities(text, controller.signal);
+          if (!results.length) return null;
+          const normalized = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+          const best = results.find((r) => r.label.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === normalized)
+            || results.find((r) => r.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === normalized)
+            || results[0];
+          if (!cancelled) {
+            setTravelPlaces((current) => ({ ...current, [key]: best }));
+            setFormData((current) => (current[key] === text ? { ...current, [key]: best.label } : current));
+          }
+          return best;
+        };
+
+        const [origin, destination] = await Promise.all([
+          resolvePlace("origin", originText),
+          resolvePlace("destination", destinationText),
+        ]);
+        if (!origin || !destination || cancelled) return;
+
+        const distance = await getRouteDistanceKm(origin, destination, controller.signal);
         if (!cancelled) {
           setFormData((current) => ({ ...current, distance: String(distance) }));
         }
-      })
-      .finally(() => {
+      } catch {
+        // mantém distância manual/atual em caso de falha na busca de rota
+      } finally {
         if (!cancelled) setDistanceLoading(false);
-      });
+      }
+    }, 500);
 
     return () => {
       cancelled = true;
       controller.abort();
+      window.clearTimeout(timer);
     };
-  }, [travelPlaces, activeTab]);
+  }, [activeTab, formData.origin, formData.destination, travelPlaces]);
 
   const handleRegisterService = async (e: React.FormEvent) => {
     e.preventDefault();
