@@ -111,7 +111,3 @@ export async function GET(req: NextRequest) {
   out.sort((a, b) => b._s - a._s || a.label.localeCompare(b.label, "pt-BR"));
   return NextResponse.json(out.slice(0, 8).map(({ _s, ...r }) => r));
 }
-
-  out.sort((a, b) => b._s - a._s || a.label.localeCompare(b.label, "pt-BR"));
-  return NextResponse.json(out.slice(0, 8).map(({ _s, ...r }) => r));
-}

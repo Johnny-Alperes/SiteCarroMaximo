@@ -161,57 +161,68 @@
   .btn-modern {
     position: relative;
     overflow: hidden;
-    background-image: linear-gradient(#e4e4e7, #e4e4e7);
+    background-color: #fff;
+    background-image: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.5) 50%, transparent 70%);
     background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 0% 100%;
+    background-position: 130% 0;
+    background-size: 200% 100%;
     transition:
-      background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-      color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      background-position 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+      color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
       box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
       transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: transform, background-size;
+    will-change: transform;
   }
 
   .btn-modern:hover {
-    background-size: 100% 100%;
-    box-shadow: 0 16px 34px -16px rgba(255, 255, 255, 0.5);
+    background-color: #18181b;
+    background-position: -30% 0;
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 18px 38px -16px rgba(255, 255, 255, 0.45);
+    color: #fafafa;
     transform: translateY(-2px);
   }
 
   .btn-modern:active {
-    background-size: 100% 100%;
-    box-shadow: 0 8px 20px -14px rgba(255, 255, 255, 0.4);
+    background-color: #18181b;
+    color: #fafafa;
+    box-shadow: 0 8px 20px -14px rgba(255, 255, 255, 0.35);
     transform: translateY(0);
   }
 
   .btn-ghost {
     position: relative;
     overflow: hidden;
-    background-image: linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09));
+    background-color: transparent;
+    background-image: linear-gradient(115deg, transparent 30%, rgba(0, 0, 0, 0.12) 50%, transparent 70%);
     background-repeat: no-repeat;
-    background-position: center bottom;
-    background-size: 100% 0%;
+    background-position: 130% 0;
+    background-size: 200% 100%;
     transition:
-      background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      background-position 0.65s cubic-bezier(0.22, 1, 0.36, 1),
       border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-      color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
       box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
       transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: transform, background-size;
+    will-change: transform;
   }
 
   .btn-ghost:hover {
-    background-size: 100% 100%;
-    border-color: rgba(255, 255, 255, 0.7);
-    box-shadow: 0 16px 34px -18px rgba(255, 255, 255, 0.35);
-    color: #fff;
+    background-color: #fafafa;
+    background-position: -30% 0;
+    border-color: #fafafa;
+    box-shadow: 0 18px 38px -16px rgba(255, 255, 255, 0.5);
+    color: #09090b;
     transform: translateY(-2px);
   }
 
   .btn-ghost:active {
-    background-size: 100% 100%;
-    box-shadow: 0 8px 20px -16px rgba(255, 255, 255, 0.3);
+    background-color: #fafafa;
+    color: #09090b;
+    box-shadow: 0 8px 20px -14px rgba(255, 255, 255, 0.4);
     transform: translateY(0);
   }
 

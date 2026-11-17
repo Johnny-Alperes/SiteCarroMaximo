@@ -348,7 +348,7 @@ export default function LandingScreen() {
           <div className="relative flex flex-col gap-3">
             <Button
               variant="outline"
-              className="btn-modern w-full rounded-full py-2.5 h-auto text-xs bg-white border-white text-zinc-950 shadow-lg shadow-white/10 normal-case tracking-widest hover:border-zinc-200"
+              className="btn-modern w-full rounded-full py-2.5 h-auto text-xs bg-white border-white text-zinc-950 shadow-lg shadow-white/10 normal-case tracking-widest"
               onClick={handleGoogleLogin}
               disabled={isLoading}
             >
@@ -367,7 +367,7 @@ export default function LandingScreen() {
             </button>
             <Link
               href="/register"
-              className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-widest text-zinc-500 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/10 hover:text-white hover:shadow-lg hover:shadow-white/10 active:translate-y-0"
+              className="rounded-full px-3 py-1.5 text-[10px] uppercase tracking-widest text-zinc-500 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-zinc-950 hover:shadow-lg hover:shadow-white/10 active:translate-y-0"
             >
               Cadastrar-se
             </Link>
