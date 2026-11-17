@@ -158,6 +158,69 @@
     transform: translateY(-1px) scale(1.12) rotate(-2deg);
   }
 
+  .btn-modern {
+    position: relative;
+    overflow: hidden;
+    background-image: linear-gradient(#e4e4e7, #e4e4e7);
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0% 100%;
+    transition:
+      background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, background-size;
+  }
+
+  .btn-modern:hover {
+    background-size: 100% 100%;
+    box-shadow: 0 16px 34px -16px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .btn-modern:active {
+    background-size: 100% 100%;
+    box-shadow: 0 8px 20px -14px rgba(255, 255, 255, 0.4);
+    transform: translateY(0);
+  }
+
+  .btn-ghost {
+    position: relative;
+    overflow: hidden;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09));
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: 100% 0%;
+    transition:
+      background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, background-size;
+  }
+
+  .btn-ghost:hover {
+    background-size: 100% 100%;
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 16px 34px -18px rgba(255, 255, 255, 0.35);
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost:active {
+    background-size: 100% 100%;
+    box-shadow: 0 8px 20px -16px rgba(255, 255, 255, 0.3);
+    transform: translateY(0);
+  }
+
+  .btn-modern:focus-visible,
+  .btn-ghost:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.7);
+    outline-offset: 3px;
+  }
+
   .modern-record {
     transition:
       background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
